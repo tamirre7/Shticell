@@ -6,7 +6,7 @@ public class CellIdentifier
     private char col;
 
 
-    public void CellIdentifier(int row, char col)
+    public CellIdentifier(int row, char col)
     {
         this.row = row;
         this.col = col;
