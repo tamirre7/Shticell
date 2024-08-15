@@ -1,20 +1,22 @@
 package spreadsheet.cell.impl;
 
+import expressions.expressionsimpl.BinaryExpression;
 import spreadsheet.cell.api.Cell;
-
+import spreadsheet.cell.api.EffectiveValue;
+import expressions.Expression;
 import java.util.List;
 
 public class Cellimpl implements Cell
 {
     private final CellIdentifierimpl identifier;
     private String originalValue;
-    private String effectiveValue;
+    private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
     private List<CellIdentifierimpl> dependencies;
     private List<CellIdentifierimpl> influences;
 
 
-    public Cellimpl(CellIdentifierimpl identifier, String originalValue, String effectiveValue,
+    public Cellimpl(CellIdentifierimpl identifier, String originalValue, EffectiveValue effectiveValue,
                     int lastModifiedVersion, List<CellIdentifierimpl> dependencies,
                     List<CellIdentifierimpl> influences) {
         this.identifier = identifier;
@@ -29,16 +31,20 @@ public class Cellimpl implements Cell
         return identifier;
     }
     @Override
+    public void setCellOriginalValue(String value){originalValue = value;}
+    @Override
     public String getOriginalValue() {
         return originalValue;
     }
     @Override
-    public String getEffectiveValue() {
+    public EffectiveValue getEffectiveValue() {
         return effectiveValue;
     }
     @Override
-    public void setEffectiveValue(String effectiveValue) {
-        this.effectiveValue = effectiveValue;
+    public void calculateEffectiveValue() {
+        //Expression expression = new BinaryExpression()
+
+       // effectiveValue = expression.evaluate();
     }
     @Override
     public int getLastModifiedVersion() {
@@ -53,7 +59,7 @@ public class Cellimpl implements Cell
         return influences;
     }
     @Override
-    public void updateCell(String newOriginalValue, String newEffectiveValue, int newVersion,
+    public void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
                            List<CellIdentifierimpl> newDependencies, List<CellIdentifierimpl> newInfluences) {
         this.originalValue = newOriginalValue;
         this.effectiveValue = newEffectiveValue;

@@ -103,7 +103,10 @@ public class SpreadSheetimpl implements SpreadSheet {
                 CellIdentifierimpl cellId = new CellIdentifierimpl(row, (char) ('A' + col));
                 Cell cell = cells.get(cellId);
                 if (cell != null) {
-                    sb.append(cell.getEffectiveValue()).append(" ".repeat(widthCol - cell.getEffectiveValue().length())).append("|");
+                    String effectiveValueStr = cell.getEffectiveValue().getValue().toString();
+                    sb.append(effectiveValueStr)
+                            .append(" ".repeat(widthCol - effectiveValueStr.length()))
+                            .append("|");
                 } else {
                     sb.append(" ".repeat(widthCol)).append("|");
                 }

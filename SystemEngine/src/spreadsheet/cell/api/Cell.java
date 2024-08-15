@@ -8,11 +8,13 @@ public interface Cell
 {
     CellIdentifierimpl getIdentifier();
 
+    void setCellOriginalValue(String value);
+
     String getOriginalValue();
 
-    String getEffectiveValue();
+    void calculateEffectiveValue();
 
-    void setEffectiveValue(String effectiveValue);
+    EffectiveValue getEffectiveValue();
 
     int getLastModifiedVersion();
 
@@ -20,6 +22,6 @@ public interface Cell
 
     List<CellIdentifierimpl> getInfluences();
 
-     void updateCell(String newOriginalValue, String newEffectiveValue, int newVersion,
+     void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
                            List<CellIdentifierimpl> newDependencies, List<CellIdentifierimpl> newInfluences);
 }
