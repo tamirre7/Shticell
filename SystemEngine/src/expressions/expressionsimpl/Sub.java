@@ -1,25 +1,22 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.CellType;
+import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.impl.EffectiveValueimpl;
 
 public class Sub extends TernaryExpression {
 
-    public Sub(Expression source, Expression startIndex, Expression endIndex) {
-        super(source, startIndex, endIndex);
+    public Sub(Expression argument1, Expression argument2, Expression argument3) {
+        super(argument1, argument2, argument3);
     }
 
     @Override
-    protected Object evaluate(Object source, Object startIndex, Object endIndex) {
-        if (source instanceof String && startIndex instanceof Number && endIndex instanceof Number) {
-            String str = (String) source;
-            int start = ((Number) startIndex).intValue();
-            int end = ((Number) endIndex).intValue();
-
-            if (start < 0 || end >= str.length() || start > end) {
-                return "UNDEFINED";
-            }
-            return str.substring(start, end + 1);
-        }
-        throw new IllegalArgumentException("Arguments must be a string and two integers.");
+    protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2, EffectiveValue arg3) {
+        double value = arg1.extractValueWithExpectation(Double.class)
+                - arg2.extractValueWithExpectation(Double.class)
+                + arg3.extractValueWithExpectation(Double.class);
+        return new EffectiveValueimpl(CellType.NUMERIC, value);
     }
 }

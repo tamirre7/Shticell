@@ -1,29 +1,27 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellType;
+import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.impl.CellIdentifierimpl;
+import spreadsheet.cell.impl.EffectiveValueimpl;
 
-public class Ref extends UnaryExpression {
+public class Ref implements Expression {
 
-    public Ref(Expression cellId) {
-        super(cellId);
+    private final CellIdentifierimpl cellIdentifier;
+
+    public Ref(CellIdentifierimpl cellIdentifier) {
+        this.cellIdentifier = cellIdentifier;
     }
 
     @Override
-    protected Object evaluate(Object cellId) {
-        if (cellId instanceof String) {
-            String cellIdentifier = (String) cellId;
-            // This is a placeholder. In a real application, you would look up the cell value.
-            return getCellValue(cellIdentifier);
+    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+        Cell cell = spreadSheet.getCell(cellIdentifier);
+        if (cell != null) {
+            return cell.getEffectiveValue();
         }
-        throw new IllegalArgumentException("Argument must be a string representing a cell identifier.");
-    }
-
-    // Placeholder method to simulate cell value retrieval
-    private Object getCellValue(String cellId) {
-        // Implement actual logic to retrieve cell value based on cellId
-        // For now, returning a placeholder value
-        return "Cell value for " + cellId;
+        return new EffectiveValueimpl(CellType.BLANK, null);
     }
 }
-
-
