@@ -1,5 +1,8 @@
 package expressions;
 
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.EffectiveValue;
+
 public interface Expression {
 
     /**
@@ -7,5 +10,5 @@ public interface Expression {
      *
      * @return the result of the function
      */
-    Object evaluate();
+    EffectiveValue evaluate(SpreadSheet spreadSheet);
 }

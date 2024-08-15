@@ -1,11 +1,13 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.EffectiveValue;
 
 public abstract class BinaryExpression implements Expression {
 
-    private Expression argument1;
-    private Expression argument2;
+    private final Expression argument1;
+    private final Expression argument2;
 
     public BinaryExpression(Expression argument1, Expression argument2) {
         this.argument1 = argument1;
@@ -13,9 +15,11 @@ public abstract class BinaryExpression implements Expression {
     }
 
     @Override
-    public Object evaluate() {
-        return evaluate(argument1.evaluate(), argument2.evaluate());
+    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+        EffectiveValue value1 = argument1.evaluate(spreadSheet);
+        EffectiveValue value2 = argument2.evaluate(spreadSheet);
+        return evaluate(value1, value2);
     }
 
-    protected abstract Object evaluate(Object arg1, Object arg2);
+    protected abstract EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2);
 }

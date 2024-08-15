@@ -1,12 +1,14 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
+import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.api.SpreadSheet;
 
 public abstract class TernaryExpression implements Expression {
 
-    private Expression argument1;
-    private Expression argument2;
-    private Expression argument3;
+    private final Expression argument1;
+    private final Expression argument2;
+    private final Expression argument3;
 
     public TernaryExpression(Expression argument1, Expression argument2, Expression argument3) {
         this.argument1 = argument1;
@@ -15,9 +17,13 @@ public abstract class TernaryExpression implements Expression {
     }
 
     @Override
-    public Object evaluate() {
-        return evaluate(argument1.evaluate(), argument2.evaluate(), argument3.evaluate());
+    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+        return evaluate(
+                argument1.evaluate(spreadSheet),
+                argument2.evaluate(spreadSheet),
+                argument3.evaluate(spreadSheet)
+        );
     }
 
-    protected abstract Object evaluate(Object arg1, Object arg2, Object arg3);
+    protected abstract EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2, EffectiveValue arg3);
 }

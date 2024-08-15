@@ -7,7 +7,7 @@ public class EffectiveValueimpl implements EffectiveValue {
     private CellType cellType;
     private Object value;
 
-    public void EffectiveValueImpl(CellType cellType, Object value) {
+    public EffectiveValueimpl(CellType cellType, Object value) {
         this.cellType = cellType;
         this.value = value;
     }
