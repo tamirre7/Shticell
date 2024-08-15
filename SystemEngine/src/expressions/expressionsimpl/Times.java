@@ -1,9 +1,9 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Times extends BinaryFunction {
-    public Times (Function argument1, Function argument2) {
+public class Times extends BinaryExpression {
+    public Times (Expression argument1, Expression argument2) {
         super(argument1, argument2);
     }
 

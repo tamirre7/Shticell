@@ -1,14 +1,14 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public abstract class TernaryFunction implements Function {
+public abstract class TernaryExpression implements Expression {
 
-    private Function argument1;
-    private Function argument2;
-    private Function argument3;
+    private Expression argument1;
+    private Expression argument2;
+    private Expression argument3;
 
-    public TernaryFunction(Function argument1, Function argument2, Function argument3) {
+    public TernaryExpression(Expression argument1, Expression argument2, Expression argument3) {
         this.argument1 = argument1;
         this.argument2 = argument2;
         this.argument3 = argument3;

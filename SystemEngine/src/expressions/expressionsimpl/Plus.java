@@ -1,9 +1,9 @@
-package functions.functionimpl;
-import functions.Function;
+package expressions.expressionsimpl;
+import expressions.Expression;
 
-public class Plus extends BinaryFunction {
+public class Plus extends BinaryExpression {
 
-    public Plus (Function argument1, Function argument2) {
+    public Plus (Expression argument1, Expression argument2) {
         super(argument1, argument2);
     }
 

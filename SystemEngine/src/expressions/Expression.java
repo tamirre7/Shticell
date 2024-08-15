@@ -1,6 +1,6 @@
-package functions;
+package expressions;
 
-public interface Function {
+public interface Expression {
 
     /**
      * Evaluate the function and return the result.

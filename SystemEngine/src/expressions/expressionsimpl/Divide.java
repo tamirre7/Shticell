@@ -1,8 +1,8 @@
-package functions.functionimpl;
-import functions.Function;
+package expressions.expressionsimpl;
+import expressions.Expression;
 
-public class Divide extends BinaryFunction {
-    public Divide (Function argument1, Function argument2) {
+public class Divide extends BinaryExpression {
+    public Divide (Expression argument1, Expression argument2) {
         super(argument1, argument2);
     }
 

@@ -1,12 +1,12 @@
 
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Pow extends BinaryFunction {
+public class Pow extends BinaryExpression {
 
-    public Pow(Function function1, Function function2) {
-        super(function1, function2);
+    public Pow(Expression expression1, Expression expression2) {
+        super(expression1, expression2);
     }
 
     @Override

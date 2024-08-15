@@ -1,9 +1,9 @@
-package functions.functionimpl;
-import functions.Function;
+package expressions.expressionsimpl;
+import expressions.Expression;
 
-public class Abs extends UnaryFunction {
+public class Abs extends UnaryExpression {
 
-    public Abs(Function argument) {
+    public Abs(Expression argument) {
         super(argument);
     }
 

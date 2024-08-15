@@ -1,10 +1,10 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Sub extends TernaryFunction {
+public class Sub extends TernaryExpression {
 
-    public Sub(Function source, Function startIndex, Function endIndex) {
+    public Sub(Expression source, Expression startIndex, Expression endIndex) {
         super(source, startIndex, endIndex);
     }
 

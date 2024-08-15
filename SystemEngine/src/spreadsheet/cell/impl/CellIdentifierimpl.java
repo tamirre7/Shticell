@@ -1,22 +1,30 @@
-package cell;
+package spreadsheet.cell.impl;
 
-public class CellIdentifier
+import spreadsheet.cell.api.CellIdentifier;
+
+public class CellIdentifierimpl implements CellIdentifier
 {
-    private int row;
-    private char col;
+    private final int row;
+    private final char col;
 
 
-    public CellIdentifier(int row, char col)
+    public CellIdentifierimpl(int row, char col)
     {
         this.row = row;
         this.col = col;
     }
 
     @Override
+    public int getRow(){ return row; }
+
+    @Override
+    public char getCol(){ return col; }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        CellIdentifier that = (CellIdentifier) obj;
+        CellIdentifierimpl that = (CellIdentifierimpl) obj;
         return row == that.row && col == that.col;
     }
 

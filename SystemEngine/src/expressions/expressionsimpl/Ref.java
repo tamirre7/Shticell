@@ -1,10 +1,10 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Ref extends UnaryFunction {
+public class Ref extends UnaryExpression {
 
-    public Ref(Function cellId) {
+    public Ref(Expression cellId) {
         super(cellId);
     }
 

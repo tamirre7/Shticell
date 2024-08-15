@@ -1,8 +1,8 @@
-package functions.functionimpl;
-import functions.Function;
+package expressions.expressionsimpl;
+import expressions.Expression;
 
-public class Minus  extends BinaryFunction {
-    public Minus (Function argument1, Function argument2) {
+public class Minus  extends BinaryExpression {
+    public Minus (Expression argument1, Expression argument2) {
         super(argument1, argument2);
     }
 

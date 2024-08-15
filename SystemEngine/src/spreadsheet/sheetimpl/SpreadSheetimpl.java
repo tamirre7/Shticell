@@ -1,19 +1,21 @@
-package spreadsheet;
+package spreadsheet.sheetimpl;
 
-import cell.*;
+import spreadsheet.api.Dimentions;
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.impl.CellIdentifierimpl;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
-public class SpreadSheet {
+public class SpreadSheetimpl implements SpreadSheet {
     private final Dimentions sheetDimentions;
     private String name;
     private int version;
-    private Map<CellIdentifier, Cell> cells;
+    private Map<CellIdentifierimpl, Cell> cells;
 
-
-    public SpreadSheet(String name, int version, Dimentions sheetDimentions) {
+    public SpreadSheetimpl(String name, int version, Dimentions sheetDimentions) {
         this.name = name;
         this.version = version;
         this.cells = new HashMap<>();
@@ -21,40 +23,40 @@ public class SpreadSheet {
     }
 
     // Getters and Setters
-
+    @Override
     public String getName() {
         return name;
     }
-
+    @Override
     public void setName(String name) {
         this.name = name;
     }
-
+    @Override
     public int getVersion() {
         return version;
     }
-
+    @Override
     public Dimentions getSheetDimentions() {
         return sheetDimentions;
     }
-
+    @Override
     public void setVersion(int version) {
         this.version = version;
     }
-
-    public Map<CellIdentifier, Cell> getCells() {
+    @Override
+    public Map<CellIdentifierimpl, Cell> getCells() {
         return cells;
     }
-
+    @Override
     public void addOrUpdateCell(Cell cell) {
         cells.put(cell.getIdentifier(), cell);
     }
-
-    public Cell getCell(CellIdentifier identifier) {
+    @Override
+    public Cell getCell(CellIdentifierimpl identifier) {
         return cells.get(identifier);
     }
-
-    public void removeCell(CellIdentifier identifier) {
+    @Override
+    public void removeCell(CellIdentifierimpl identifier) {
         cells.remove(identifier);
     }
 
@@ -62,7 +64,7 @@ public class SpreadSheet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SpreadSheet sheet = (SpreadSheet) o;
+        SpreadSheetimpl sheet = (SpreadSheetimpl) o;
         return version == sheet.version &&
                 Objects.equals(name, sheet.name) &&
                 Objects.equals(cells, sheet.cells);
@@ -98,7 +100,7 @@ public class SpreadSheet {
             sb.append(String.format("%02d", row)).append(" "); // Row number
 
             for (int col = 0; col < numCols; col++) {
-                CellIdentifier cellId = new CellIdentifier(row, (char) ('A' + col));
+                CellIdentifierimpl cellId = new CellIdentifierimpl(row, (char) ('A' + col));
                 Cell cell = cells.get(cellId);
                 if (cell != null) {
                     sb.append(cell.getEffectiveValue()).append(" ".repeat(widthCol - cell.getEffectiveValue().length())).append("|");

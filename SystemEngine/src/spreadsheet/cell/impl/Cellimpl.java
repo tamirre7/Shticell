@@ -1,20 +1,22 @@
-package cell;
+package spreadsheet.cell.impl;
+
+import spreadsheet.cell.api.Cell;
+
 import java.util.List;
 
-
-public class Cell
+public class Cellimpl implements Cell
 {
-    private final CellIdentifier identifier;
+    private final CellIdentifierimpl identifier;
     private String originalValue;
     private String effectiveValue;
     private int lastModifiedVersion;
-    private List<CellIdentifier> dependencies;
-    private List<CellIdentifier> influences;
+    private List<CellIdentifierimpl> dependencies;
+    private List<CellIdentifierimpl> influences;
 
 
-    public Cell(CellIdentifier identifier, String originalValue, String effectiveValue,
-                int lastModifiedVersion, List<CellIdentifier> dependencies,
-                List<CellIdentifier> influences) {
+    public Cellimpl(CellIdentifierimpl identifier, String originalValue, String effectiveValue,
+                    int lastModifiedVersion, List<CellIdentifierimpl> dependencies,
+                    List<CellIdentifierimpl> influences) {
         this.identifier = identifier;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
@@ -22,37 +24,37 @@ public class Cell
         this.dependencies = dependencies;
         this.influences = influences;
     }
-
-    public CellIdentifier getIdentifier() {
+    @Override
+    public CellIdentifierimpl getIdentifier() {
         return identifier;
     }
-
+    @Override
     public String getOriginalValue() {
         return originalValue;
     }
-
+    @Override
     public String getEffectiveValue() {
         return effectiveValue;
     }
-
+    @Override
     public void setEffectiveValue(String effectiveValue) {
         this.effectiveValue = effectiveValue;
     }
-
+    @Override
     public int getLastModifiedVersion() {
         return lastModifiedVersion;
     }
-
-    public List<CellIdentifier> getDependencies() {
+    @Override
+    public List<CellIdentifierimpl> getDependencies() {
         return dependencies;
     }
-
-    public List<CellIdentifier> getInfluences() {
+    @Override
+    public List<CellIdentifierimpl> getInfluences() {
         return influences;
     }
-
+    @Override
     public void updateCell(String newOriginalValue, String newEffectiveValue, int newVersion,
-                           List<CellIdentifier> newDependencies, List<CellIdentifier> newInfluences) {
+                           List<CellIdentifierimpl> newDependencies, List<CellIdentifierimpl> newInfluences) {
         this.originalValue = newOriginalValue;
         this.effectiveValue = newEffectiveValue;
         this.lastModifiedVersion = newVersion;
@@ -75,7 +77,7 @@ public class Cell
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Cell cell = (Cell) obj;
+        Cellimpl cell = (Cellimpl) obj;
         return identifier.equals(cell.identifier);
     }
 

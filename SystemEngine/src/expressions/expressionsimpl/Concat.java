@@ -1,10 +1,10 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Concat extends BinaryFunction {
+public class Concat extends BinaryExpression {
 
-    public Concat(Function str1, Function str2) {
+    public Concat(Expression str1, Expression str2) {
         super(str1, str2);
     }
 

@@ -1,9 +1,9 @@
-package functions.functionimpl;
+package expressions.expressionsimpl;
 
-import functions.Function;
+import expressions.Expression;
 
-public class Mod extends BinaryFunction {
-    public Mod (Function argument1, Function argument2) {
+public class Mod extends BinaryExpression {
+    public Mod (Expression argument1, Expression argument2) {
         super(argument1, argument2);
     }
 
