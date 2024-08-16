@@ -1,9 +1,8 @@
 package spreadsheet.cell.impl;
 
-import expressions.expressionsimpl.BinaryExpression;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
-import expressions.Expression;
+
 import java.util.List;
 
 public class Cellimpl implements Cell
