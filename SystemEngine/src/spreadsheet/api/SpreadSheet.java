@@ -1,7 +1,7 @@
 package spreadsheet.api;
 
 import spreadsheet.cell.api.Cell;
-import spreadsheet.cell.impl.CellIdentifierimpl;
+import spreadsheet.cell.api.CellIdentifier;
 
 import java.util.Map;
 
@@ -16,11 +16,11 @@ public interface SpreadSheet {
 
     void setVersion(int version);
 
-    Map<CellIdentifierimpl, Cell> getCells();
+    Map<CellIdentifier, Cell> getCells();
 
     void addOrUpdateCell(Cell cell);
 
-    Cell getCell(CellIdentifierimpl identifier);
+    Cell getCell(CellIdentifier identifier);
 
-    void removeCell(CellIdentifierimpl identifier);
+    void removeCell(CellIdentifier identifier);
 }

@@ -3,8 +3,8 @@ package spreadsheet.sheetimpl;
 import spreadsheet.api.Dimentions;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierimpl;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,7 +13,7 @@ public class SpreadSheetimpl implements SpreadSheet {
     private final Dimentions sheetDimentions;
     private String name;
     private int version;
-    private Map<CellIdentifierimpl, Cell> cells;
+    private Map<CellIdentifier, Cell> cells;
 
     public SpreadSheetimpl(String name, int version, Dimentions sheetDimentions) {
         this.name = name;
@@ -44,7 +44,7 @@ public class SpreadSheetimpl implements SpreadSheet {
         this.version = version;
     }
     @Override
-    public Map<CellIdentifierimpl, Cell> getCells() {
+    public Map<CellIdentifier, Cell> getCells() {
         return cells;
     }
     @Override
@@ -52,11 +52,11 @@ public class SpreadSheetimpl implements SpreadSheet {
         cells.put(cell.getIdentifier(), cell);
     }
     @Override
-    public Cell getCell(CellIdentifierimpl identifier) {
+    public Cell getCell(CellIdentifier identifier) {
         return cells.get(identifier);
     }
     @Override
-    public void removeCell(CellIdentifierimpl identifier) {
+    public void removeCell(CellIdentifier identifier) {
         cells.remove(identifier);
     }
 
@@ -100,7 +100,7 @@ public class SpreadSheetimpl implements SpreadSheet {
             sb.append(String.format("%02d", row)).append(" "); // Row number
 
             for (int col = 0; col < numCols; col++) {
-                CellIdentifierimpl cellId = new CellIdentifierimpl(row, (char) ('A' + col));
+                CellIdentifier cellId = new CellIdentifierimpl(row, (char) ('A' + col));
                 Cell cell = cells.get(cellId);
                 if (cell != null) {
                     String effectiveValueStr = cell.getEffectiveValue().getValue().toString();

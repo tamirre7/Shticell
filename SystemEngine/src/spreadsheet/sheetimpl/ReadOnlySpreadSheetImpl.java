@@ -3,7 +3,7 @@ package spreadsheet.sheetimpl;
 import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.CellIdentifierimpl;
+import spreadsheet.cell.api.CellIdentifier;
 
 public class ReadOnlySpreadSheetImpl implements ReadOnlySpreadSheet {
     private final SpreadSheet spreadSheet;
@@ -13,7 +13,7 @@ public class ReadOnlySpreadSheetImpl implements ReadOnlySpreadSheet {
     }
 
     @Override
-    public EffectiveValue getCellEffectiveValue(CellIdentifierimpl identifier) {
+    public EffectiveValue getCellEffectiveValue(CellIdentifier identifier) {
         var cell = spreadSheet.getCell(identifier);
         return cell != null ? cell.getEffectiveValue() : null;
     }

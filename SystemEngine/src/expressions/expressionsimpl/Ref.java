@@ -2,17 +2,14 @@ package expressions.expressionsimpl;
 
 import expressions.Expression;
 import spreadsheet.api.ReadOnlySpreadSheet;
-import spreadsheet.cell.api.Cell;
-import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.CellIdentifierimpl;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.api.CellIdentifier;
 
 public class Ref implements Expression {
 
-    private final CellIdentifierimpl cellIdentifier;
+    private final CellIdentifier cellIdentifier;
 
-    public Ref(CellIdentifierimpl cellIdentifier) {
+    public Ref(CellIdentifier cellIdentifier) {
         this.cellIdentifier = cellIdentifier;
     }
 
