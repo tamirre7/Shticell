@@ -2,7 +2,7 @@ package expressions.expressionsimpl;
 
 import expressions.Expression;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.api.SpreadSheet;
+import spreadsheet.api.ReadOnlySpreadSheet;
 
 public abstract class TernaryExpression implements Expression {
 
@@ -17,7 +17,7 @@ public abstract class TernaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+    public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         return evaluate(
                 argument1.evaluate(spreadSheet),
                 argument2.evaluate(spreadSheet),

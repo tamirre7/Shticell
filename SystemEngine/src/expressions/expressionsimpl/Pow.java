@@ -1,23 +1,22 @@
-
 package expressions.expressionsimpl;
 
 import expressions.Expression;
+import spreadsheet.cell.api.CellType;
+import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.impl.EffectiveValueimpl;
 
 public class Pow extends BinaryExpression {
 
-    public Pow(Expression expression1, Expression expression2) {
-        super(expression1, expression2);
+    public Pow(Expression argument1, Expression argument2) {
+        super(argument1, argument2);
     }
 
     @Override
-    protected Object evaluate(Object arg1, Object arg2) {
-        // Ensure that both arguments are cast to Double
-        if (arg1 instanceof Number && arg2 instanceof Number) {
-            double base = ((Number) arg1).doubleValue();
-            double exponent = ((Number) arg2).doubleValue();
-            return Math.pow(base, exponent);
-        } else {
-            throw new IllegalArgumentException("Arguments to Pow must be numeric");
-        }
+    protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
+        double value = Math.pow(
+                arg1.extractValueWithExpectation(Double.class),
+                arg2.extractValueWithExpectation(Double.class)
+        );
+        return new EffectiveValueimpl(CellType.NUMERIC, value);
     }
 }

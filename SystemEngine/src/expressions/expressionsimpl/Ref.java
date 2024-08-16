@@ -1,7 +1,7 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
-import spreadsheet.api.SpreadSheet;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
@@ -17,11 +17,7 @@ public class Ref implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
-        Cell cell = spreadSheet.getCell(cellIdentifier);
-        if (cell != null) {
-            return cell.getEffectiveValue();
-        }
-        return new EffectiveValueimpl(CellType.BLANK, null);
+    public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
+        return spreadSheet.getCellEffectiveValue(cellIdentifier);
     }
 }

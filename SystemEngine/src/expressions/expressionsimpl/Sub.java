@@ -1,22 +1,29 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
-import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.EffectiveValueimpl;
 
 public class Sub extends TernaryExpression {
 
-    public Sub(Expression argument1, Expression argument2, Expression argument3) {
-        super(argument1, argument2, argument3);
+    public Sub(Expression source, Expression startIndex, Expression endIndex) {
+        super(source, startIndex, endIndex);
     }
 
     @Override
-    protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2, EffectiveValue arg3) {
-        double value = arg1.extractValueWithExpectation(Double.class)
-                - arg2.extractValueWithExpectation(Double.class)
-                + arg3.extractValueWithExpectation(Double.class);
-        return new EffectiveValueimpl(CellType.NUMERIC, value);
+    protected EffectiveValue evaluate(EffectiveValue source, EffectiveValue startIndex, EffectiveValue endIndex) {
+        String sourceStr = source.extractValueWithExpectation(String.class);
+        Integer startIdx = startIndex.extractValueWithExpectation(Integer.class);
+        Integer endIdx = endIndex.extractValueWithExpectation(Integer.class);
+
+        if (sourceStr == null || startIdx == null || endIdx == null ||
+                startIdx < 0 || endIdx >= sourceStr.length() || startIdx > endIdx) {
+            return new EffectiveValueimpl(CellType.STRING, "!UNDEFINED!");
+        }
+
+        String result = sourceStr.substring(startIdx, endIdx + 1);
+        return new EffectiveValueimpl(CellType.STRING, result);
     }
 }
+

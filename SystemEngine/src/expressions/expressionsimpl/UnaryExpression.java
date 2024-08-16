@@ -1,7 +1,7 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
-import spreadsheet.api.SpreadSheet;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.EffectiveValue;
 
 public abstract class UnaryExpression implements Expression {
@@ -13,7 +13,7 @@ public abstract class UnaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+    public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         return evaluate(argument.evaluate(spreadSheet));
     }
 

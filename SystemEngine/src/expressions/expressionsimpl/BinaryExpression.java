@@ -1,7 +1,7 @@
 package expressions.expressionsimpl;
 
 import expressions.Expression;
-import spreadsheet.api.SpreadSheet;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.EffectiveValue;
 
 public abstract class BinaryExpression implements Expression {
@@ -15,7 +15,7 @@ public abstract class BinaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SpreadSheet spreadSheet) {
+    public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         EffectiveValue value1 = argument1.evaluate(spreadSheet);
         EffectiveValue value2 = argument2.evaluate(spreadSheet);
         return evaluate(value1, value2);
