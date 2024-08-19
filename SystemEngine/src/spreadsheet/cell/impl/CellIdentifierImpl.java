@@ -2,13 +2,13 @@ package spreadsheet.cell.impl;
 
 import spreadsheet.cell.api.CellIdentifier;
 
-public class CellIdentifierimpl implements CellIdentifier
+public class CellIdentifierImpl implements CellIdentifier
 {
     private final int row;
     private final char col;
 
 
-    public CellIdentifierimpl(int row, char col)
+    public CellIdentifierImpl(int row, char col)
     {
         this.row = row;
         this.col = col;
@@ -24,7 +24,7 @@ public class CellIdentifierimpl implements CellIdentifier
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        CellIdentifierimpl that = (CellIdentifierimpl) obj;
+        CellIdentifierImpl that = (CellIdentifierImpl) obj;
         return row == that.row && col == that.col;
     }
 

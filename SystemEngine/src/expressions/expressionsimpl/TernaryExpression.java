@@ -1,6 +1,6 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.api.ReadOnlySpreadSheet;
 

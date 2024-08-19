@@ -1,12 +1,12 @@
 package spreadsheet.cell.api;
 
-import spreadsheet.cell.impl.CellIdentifierimpl;
+import spreadsheet.cell.impl.CellIdentifierImpl;
 
 import java.util.List;
 
 public interface Cell
 {
-    CellIdentifierimpl getIdentifier();
+    CellIdentifierImpl getIdentifier();
 
     void setCellOriginalValue(String value);
 
@@ -18,10 +18,10 @@ public interface Cell
 
     int getLastModifiedVersion();
 
-    List<CellIdentifierimpl> getDependencies();
+    List<CellIdentifierImpl> getDependencies();
 
-    List<CellIdentifierimpl> getInfluences();
+    List<CellIdentifierImpl> getInfluences();
 
      void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
-                           List<CellIdentifierimpl> newDependencies, List<CellIdentifierimpl> newInfluences);
+                     List<CellIdentifierImpl> newDependencies, List<CellIdentifierImpl> newInfluences);
 }

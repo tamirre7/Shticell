@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Minus extends BinaryExpression {
 
@@ -14,6 +15,11 @@ public class Minus extends BinaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
         double value = arg1.extractValueWithExpectation(Double.class) - arg2.extractValueWithExpectation(Double.class);
-        return new EffectiveValueimpl(CellType.NUMERIC, value);
+        return new EffectiveValueImpl(CellType.NUMERIC, value);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.NUMERIC;
     }
 }

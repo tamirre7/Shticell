@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Divide extends BinaryExpression {
 
@@ -15,7 +16,12 @@ public class Divide extends BinaryExpression {
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
         double divisor = arg2.extractValueWithExpectation(Double.class);
         double result = divisor == 0 ? Double.NaN : arg1.extractValueWithExpectation(Double.class) / divisor;
-        return new EffectiveValueimpl(CellType.NUMERIC, result);
+        return new EffectiveValueImpl(CellType.NUMERIC, result);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.NUMERIC;
     }
 
 }

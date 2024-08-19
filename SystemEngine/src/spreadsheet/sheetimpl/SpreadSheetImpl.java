@@ -4,18 +4,18 @@ import spreadsheet.api.Dimentions;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.cell.impl.CellIdentifierimpl;
+import spreadsheet.cell.impl.CellIdentifierImpl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class SpreadSheetimpl implements SpreadSheet {
+public class SpreadSheetImpl implements SpreadSheet {
     private final Dimentions sheetDimentions;
     private String name;
     private int version;
     private Map<CellIdentifier, Cell> cells;
 
-    public SpreadSheetimpl(String name, int version, Dimentions sheetDimentions) {
+    public SpreadSheetImpl(String name, int version, Dimentions sheetDimentions) {
         this.name = name;
         this.version = version;
         this.cells = new HashMap<>();
@@ -64,7 +64,7 @@ public class SpreadSheetimpl implements SpreadSheet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SpreadSheetimpl sheet = (SpreadSheetimpl) o;
+        SpreadSheetImpl sheet = (SpreadSheetImpl) o;
         return version == sheet.version &&
                 Objects.equals(name, sheet.name) &&
                 Objects.equals(cells, sheet.cells);
@@ -100,7 +100,7 @@ public class SpreadSheetimpl implements SpreadSheet {
             sb.append(String.format("%02d", row)).append(" "); // Row number
 
             for (int col = 0; col < numCols; col++) {
-                CellIdentifier cellId = new CellIdentifierimpl(row, (char) ('A' + col));
+                CellIdentifier cellId = new CellIdentifierImpl(row, (char) ('A' + col));
                 Cell cell = cells.get(cellId);
                 if (cell != null) {
                     String effectiveValueStr = cell.getEffectiveValue().getValue().toString();

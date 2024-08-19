@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Sub extends TernaryExpression {
 
@@ -19,11 +20,16 @@ public class Sub extends TernaryExpression {
 
         if (sourceStr == null || startIdx == null || endIdx == null ||
                 startIdx < 0 || endIdx >= sourceStr.length() || startIdx > endIdx) {
-            return new EffectiveValueimpl(CellType.STRING, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.STRING, "!UNDEFINED!");
         }
 
         String result = sourceStr.substring(startIdx, endIdx + 1);
-        return new EffectiveValueimpl(CellType.STRING, result);
+        return new EffectiveValueImpl(CellType.STRING, result);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.STRING;
     }
 }
 

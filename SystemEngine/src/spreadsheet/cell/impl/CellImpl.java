@@ -5,19 +5,19 @@ import spreadsheet.cell.api.EffectiveValue;
 
 import java.util.List;
 
-public class Cellimpl implements Cell
+public class CellImpl implements Cell
 {
-    private final CellIdentifierimpl identifier;
+    private final CellIdentifierImpl identifier;
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
-    private List<CellIdentifierimpl> dependencies;
-    private List<CellIdentifierimpl> influences;
+    private List<CellIdentifierImpl> dependencies;
+    private List<CellIdentifierImpl> influences;
 
 
-    public Cellimpl(CellIdentifierimpl identifier, String originalValue, EffectiveValue effectiveValue,
-                    int lastModifiedVersion, List<CellIdentifierimpl> dependencies,
-                    List<CellIdentifierimpl> influences) {
+    public CellImpl(CellIdentifierImpl identifier, String originalValue, EffectiveValue effectiveValue,
+                    int lastModifiedVersion, List<CellIdentifierImpl> dependencies,
+                    List<CellIdentifierImpl> influences) {
         this.identifier = identifier;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
@@ -26,7 +26,7 @@ public class Cellimpl implements Cell
         this.influences = influences;
     }
     @Override
-    public CellIdentifierimpl getIdentifier() {
+    public CellIdentifierImpl getIdentifier() {
         return identifier;
     }
     @Override
@@ -50,16 +50,16 @@ public class Cellimpl implements Cell
         return lastModifiedVersion;
     }
     @Override
-    public List<CellIdentifierimpl> getDependencies() {
+    public List<CellIdentifierImpl> getDependencies() {
         return dependencies;
     }
     @Override
-    public List<CellIdentifierimpl> getInfluences() {
+    public List<CellIdentifierImpl> getInfluences() {
         return influences;
     }
     @Override
     public void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
-                           List<CellIdentifierimpl> newDependencies, List<CellIdentifierimpl> newInfluences) {
+                           List<CellIdentifierImpl> newDependencies, List<CellIdentifierImpl> newInfluences) {
         this.originalValue = newOriginalValue;
         this.effectiveValue = newEffectiveValue;
         this.lastModifiedVersion = newVersion;
@@ -82,7 +82,7 @@ public class Cellimpl implements Cell
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Cellimpl cell = (Cellimpl) obj;
+        CellImpl cell = (CellImpl) obj;
         return identifier.equals(cell.identifier);
     }
 

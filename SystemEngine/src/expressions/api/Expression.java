@@ -1,14 +1,11 @@
-package expressions;
+package expressions.api;
 
 import spreadsheet.api.ReadOnlySpreadSheet;
+import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 
 public interface Expression {
 
-    /**
-     * Evaluate the function and return the result.
-     *
-     * @return the result of the function
-     */
+    CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet);
     EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet);
 }

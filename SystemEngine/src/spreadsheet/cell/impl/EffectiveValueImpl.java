@@ -3,11 +3,11 @@ package spreadsheet.cell.impl;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.api.CellType;
 
-public class EffectiveValueimpl implements EffectiveValue {
+public class EffectiveValueImpl implements EffectiveValue {
     private CellType cellType;
     private Object value;
 
-    public EffectiveValueimpl(CellType cellType, Object value) {
+    public EffectiveValueImpl(CellType cellType, Object value) {
         this.cellType = cellType;
         this.value = value;
     }

@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Concat extends BinaryExpression {
 
@@ -14,6 +15,11 @@ public class Concat extends BinaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
         String value = arg1.extractValueWithExpectation(String.class) + arg2.extractValueWithExpectation(String.class);
-        return new EffectiveValueimpl(CellType.STRING, value);
+        return new EffectiveValueImpl(CellType.STRING, value);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.STRING;
     }
 }

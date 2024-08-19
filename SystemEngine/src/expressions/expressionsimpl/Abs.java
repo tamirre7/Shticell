@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Abs extends UnaryExpression {
 
@@ -14,6 +15,11 @@ public class Abs extends UnaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg) {
         double value = Math.abs(arg.extractValueWithExpectation(Double.class));
-        return new EffectiveValueimpl(CellType.NUMERIC, value);
+        return new EffectiveValueImpl(CellType.NUMERIC, value);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.NUMERIC;
     }
 }

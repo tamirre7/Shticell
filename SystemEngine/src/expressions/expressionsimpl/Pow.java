@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Pow extends BinaryExpression {
 
@@ -17,6 +18,11 @@ public class Pow extends BinaryExpression {
                 arg1.extractValueWithExpectation(Double.class),
                 arg2.extractValueWithExpectation(Double.class)
         );
-        return new EffectiveValueimpl(CellType.NUMERIC, value);
+        return new EffectiveValueImpl(CellType.NUMERIC, value);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.NUMERIC;
     }
 }

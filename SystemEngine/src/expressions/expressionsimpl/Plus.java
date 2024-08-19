@@ -1,9 +1,10 @@
 package expressions.expressionsimpl;
 
-import expressions.Expression;
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.EffectiveValueimpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Plus extends BinaryExpression {
 
@@ -25,6 +26,11 @@ public class Plus extends BinaryExpression {
         double result = value1 + value2;
 
         // Return the result wrapped in an EffectiveValue
-        return new EffectiveValueimpl(CellType.NUMERIC, result);
+        return new EffectiveValueImpl(CellType.NUMERIC, result);
+    }
+
+    @Override
+    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
+        return CellType.NUMERIC;
     }
 }
