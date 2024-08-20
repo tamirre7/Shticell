@@ -1,9 +1,14 @@
 package spreadsheet.cell.impl;
 
+import expressions.api.Expression;
+import spreadsheet.api.ReadOnlySpreadSheet;
+import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
 
 import java.util.List;
+
+import static expressions.parser.FunctionParser.parseExpression;
 
 public class CellImpl implements Cell
 {
@@ -13,11 +18,12 @@ public class CellImpl implements Cell
     private int lastModifiedVersion;
     private List<CellIdentifierImpl> dependencies;
     private List<CellIdentifierImpl> influences;
+    private ReadOnlySpreadSheet sheet;
 
 
     public CellImpl(CellIdentifierImpl identifier, String originalValue, EffectiveValue effectiveValue,
                     int lastModifiedVersion, List<CellIdentifierImpl> dependencies,
-                    List<CellIdentifierImpl> influences) {
+                    List<CellIdentifierImpl> influences, ReadOnlySpreadSheet sheet) {
         this.identifier = identifier;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
@@ -41,9 +47,8 @@ public class CellImpl implements Cell
     }
     @Override
     public void calculateEffectiveValue() {
-        //Expression expression = new BinaryExpression()
-
-       // effectiveValue = expression.evaluate();
+        Expression expression = parseExpression(originalValue, sheet);
+        this.effectiveValue = expression.evaluate(sheet);
     }
     @Override
     public int getLastModifiedVersion() {

@@ -1,7 +1,8 @@
 package spreadsheet.cell.api;
 
 public enum CellType {
-    NUMERIC(Double.class) ,
+    NUMERIC_DOUBLE(Double.class) ,
+    NUMERIC_INT(Integer.class) ,
     STRING(String.class) ,
     BOOLEAN(Boolean.class) ;
 

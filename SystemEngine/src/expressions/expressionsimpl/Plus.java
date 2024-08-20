@@ -26,11 +26,11 @@ public class Plus extends BinaryExpression {
         double result = value1 + value2;
 
         // Return the result wrapped in an EffectiveValue
-        return new EffectiveValueImpl(CellType.NUMERIC, result);
+        return new EffectiveValueImpl(CellType.NUMERIC_DOUBLE, result);
     }
 
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
+        return CellType.NUMERIC_DOUBLE;
     }
 }

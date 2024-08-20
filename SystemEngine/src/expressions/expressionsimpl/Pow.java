@@ -18,11 +18,11 @@ public class Pow extends BinaryExpression {
                 arg1.extractValueWithExpectation(Double.class),
                 arg2.extractValueWithExpectation(Double.class)
         );
-        return new EffectiveValueImpl(CellType.NUMERIC, value);
+        return new EffectiveValueImpl(CellType.NUMERIC_DOUBLE, value);
     }
 
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
+        return CellType.NUMERIC_DOUBLE;
     }
 }

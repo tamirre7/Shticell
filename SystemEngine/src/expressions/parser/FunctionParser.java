@@ -1,11 +1,12 @@
 package expressions.parser;
 
 import expressions.api.Expression;
-import expressions.expressionsimpl.IdentityExpression;
-import expressions.expressionsimpl.Minus;
-import expressions.expressionsimpl.Plus;
+import expressions.expressionsimpl.*;
+import spreadsheet.api.ReadOnlySpreadSheet;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.impl.CellIdentifierImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,18 +15,20 @@ import java.util.Stack;
 public enum FunctionParser {
     IDENTITY {
         @Override
-        public Expression parse(List<String> arguments) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
             // validations of the function. it should have exactly one argument
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for IDENTITY function. Expected 1, but got " + arguments.size());
             }
 
             // all is good. create the relevant function instance
-            String actualValue = arguments.get(0).trim();
+            String actualValue = arguments.getFirst().trim();
             if (isBoolean(actualValue)) {
                 return new IdentityExpression(Boolean.parseBoolean(actualValue), CellType.BOOLEAN);
+            } else if (isInteger(actualValue)) {
+                return new IdentityExpression(Integer.parseInt(actualValue), CellType.NUMERIC_INT);
             } else if (isNumeric(actualValue)) {
-                return new IdentityExpression(Double.parseDouble(actualValue), CellType.NUMERIC);
+                return new IdentityExpression(Double.parseDouble(actualValue), CellType.NUMERIC_DOUBLE);
             } else {
                 return new IdentityExpression(actualValue, CellType.STRING);
             }
@@ -33,6 +36,15 @@ public enum FunctionParser {
 
         private boolean isBoolean(String value) {
             return "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value);
+        }
+
+        private boolean isInteger(String value) {
+            try {
+                Integer.parseInt(value);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
 
         private boolean isNumeric(String value) {
@@ -46,19 +58,19 @@ public enum FunctionParser {
     },
     PLUS {
         @Override
-        public Expression parse(List<String> arguments) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
             // validations of the function (e.g. number of arguments)
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for PLUS function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim());
-            Expression right = parseExpression(arguments.get(1).trim());
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType().equals(CellType.NUMERIC) || !right.getFunctionResultType().equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for PLUS function. Expected NUMERIC, but got " + left.getFunctionResultType() + " and " + right.getFunctionResultType());
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for PLUS function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -67,19 +79,19 @@ public enum FunctionParser {
     },
     MINUS {
         @Override
-        public Expression parse(List<String> arguments) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for MINUS function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim());
-            Expression right = parseExpression(arguments.get(1).trim());
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType().equals(CellType.NUMERIC) || !right.getFunctionResultType().equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for MINUS function. Expected NUMERIC, but got " + left.getFunctionResultType() + " and " + right.getFunctionResultType());
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for MINUS function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -87,12 +99,188 @@ public enum FunctionParser {
         }
     },
 
+    TIMES {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for TIMES function. Expected 2, but got " + arguments.size());
+            }
 
-    ;
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
 
-    abstract public Expression parse(List<String> arguments);
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for TIMES function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+            }
 
-    public static Expression parseExpression(String input) {
+            // all is good. create the relevant function instance
+            return new Times(left, right);
+        }
+
+    },
+
+    DIVIDE {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for DIVIDE function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for DIVIDE function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Divide(left, right);
+        }
+    },
+
+    MOD {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for MOD function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for MOD function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Mod(left, right);
+        }
+    },
+
+    POW {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for POW function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for POW function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Pow(left, right);
+        }
+    },
+
+    ABS {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 1) {
+                throw new IllegalArgumentException("Invalid number of arguments for ABS function. Expected 1, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression exp = parseExpression(arguments.getFirst().trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!exp.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_DOUBLE)) {
+                throw new IllegalArgumentException("Invalid argument types for ABS function. Expected NUMERIC, but got " + exp.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Abs(exp);
+        }
+    },
+
+    CONCAT {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for CONCAT function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)) {
+                throw new IllegalArgumentException("Invalid argument types for CONCAT function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Concat(left, right);
+        }
+    },
+
+    SUB {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 3) {
+                throw new IllegalArgumentException("Invalid number of arguments for SUB function. Expected 3, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
+            Expression middle = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(2).trim(), ReadOnlySheet);
+
+            // more validations on the expected argument types
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_INT) || !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC_INT)) {
+                throw new IllegalArgumentException("Invalid argument types for SUB function. Expected STRING and 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + middle.getFunctionResultType(ReadOnlySheet) + "and" + right.getFunctionResultType(ReadOnlySheet));
+            }
+
+            // all is good. create the relevant function instance
+            return new Sub(left, middle, right);
+        }
+    },
+
+    REF {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 1) {
+                throw new IllegalArgumentException("Invalid number of arguments for REF function. Expected 1, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            String cellId = arguments.getFirst().trim();
+
+            // parse the cell-id to extract the row and column
+            int row = Integer.parseInt(cellId.substring(0, cellId.length() - 1)); // extract the row number
+            char col = cellId.charAt(cellId.length() - 1); // extract the column letter
+
+            // create an instance of CellIdentifierImpl using the row and column
+            CellIdentifier cellIdentifier = new CellIdentifierImpl(row, col);
+
+            // create the relevant Ref function instance
+            return new Ref(cellIdentifier);
+        }
+    };
+
+
+    abstract public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet);
+
+    public static Expression parseExpression(String input, ReadOnlySpreadSheet ReadOnlySheet) {
 
         if (input.startsWith("{") && input.endsWith("}")) {
 
@@ -100,15 +288,15 @@ public enum FunctionParser {
             List<String> topLevelParts = parseMainParts(functionContent);
 
 
-            String functionName = topLevelParts.get(0).trim().toUpperCase();
+            String functionName = topLevelParts.getFirst().trim().toUpperCase();
 
             //remove the first element from the array
-            topLevelParts.remove(0);
-            return FunctionParser.valueOf(functionName).parse(topLevelParts);
+            topLevelParts.removeFirst();
+            return FunctionParser.valueOf(functionName).parse(topLevelParts, ReadOnlySheet);
         }
 
         // handle identity expression
-        return FunctionParser.IDENTITY.parse(List.of(input.trim()));
+        return FunctionParser.IDENTITY.parse(List.of(input.trim()), ReadOnlySheet);
     }
 
     private static List<String> parseMainParts(String input) {
@@ -117,9 +305,9 @@ public enum FunctionParser {
         Stack<Character> stack = new Stack<>();
 
         for (char c : input.toCharArray()) {
-            if (c == '{') {
+            if (c == '{')
                 stack.push(c);
-            } else if (c == '}') {
+            else if (c == '}') {
                 stack.pop();
             }
 
@@ -133,7 +321,7 @@ public enum FunctionParser {
         }
 
         // Add the last part
-        if (buffer.length() > 0) {
+        if (!buffer.isEmpty()) {
             parts.add(buffer.toString().trim());
         }
 
@@ -146,11 +334,11 @@ public enum FunctionParser {
 //        String input = "1";
 //        parseMainParts(input).forEach(System.out::println);
 
-//        String input = "{plus, 1, 2}";
-        String input = "{plus, {minus, 44, 22}, {plus, 1, 2}}";
-//        String input = "{upper_case, hello world}";
+//      String input = "{plus, 1, 2}";
+  //      String input = "{plus, {divide, 44, 22}, {abs,-2}}";
 //        String input = "4";
-        Expression expression = parseExpression(input);
+        String input = "{plus, 5, 2}";
+        Expression expression = parseExpression(input, null);
         EffectiveValue result = expression.evaluate(null);
         System.out.println("result: " + result.getValue() + " of type " + result.getCellType());
     }

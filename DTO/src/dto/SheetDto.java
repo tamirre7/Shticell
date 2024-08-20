@@ -1,20 +1,36 @@
 package dto;
 
+import spreadsheet.api.Dimentions;
+import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
+
+import java.util.Map;
+
+import java.util.Collections;
+import java.util.HashMap;
+
+
 public class SheetDto {
+    private final Dimentions sheetDimentions;
     private final String name;
     private final int version;
-    private final int numRows;
-    private final int numCols;
-    private final int widthCol;
-    private final Map<CellIdentifierDto, CellDto> cells; // Map of cell identifiers to their DTOs
+    private final Map<CellIdentifier, CellDto> cells;
 
-    public SheetDto(String name, int version, int numRows, int numCols, int widthCol, Map<CellIdentifierDto, CellDto> cells) {
+    public SheetDto(String name, int version, Map<CellIdentifier, CellDto> cells, Dimentions sheetDimentions) {
         this.name = name;
         this.version = version;
-        this.numRows = numRows;
-        this.numCols = numCols;
-        this.widthCol = widthCol;
-        this.cells = cells;
+        this.sheetDimentions = sheetDimentions;
+        this.cells = new HashMap<>();
+        for (Map.Entry<CellIdentifier, CellDto> entry : cells.entrySet()) {
+            this.cells.put(entry.getKey(), new CellDto(
+                    entry.getValue().getCellId(),
+                    entry.getValue().getOriginalValue(),
+                    entry.getValue().getEffectiveValue(),
+                    entry.getValue().getLastModifiedVersion(),
+                    entry.getValue().getDependencies(),
+                    entry.getValue().getInfluences()
+            ));
+        }
     }
 
     // Getters
@@ -26,19 +42,12 @@ public class SheetDto {
         return version;
     }
 
-    public int getNumRows() {
-        return numRows;
-    }
+    public Dimentions getSheetDimentions() {return sheetDimentions;}
 
-    public int getNumCols() {
-        return numCols;
-    }
-
-    public int getWidthCol() {
-        return widthCol;
-    }
-
-    public Map<CellIdentifierDto, CellDto> getCells() {
-        return cells;
+    // Return an unmodifiable view of the map to prevent external modification
+    public Map<CellIdentifier, CellDto> getCells() {
+        return Collections.unmodifiableMap(cells);
     }
 }
+
+

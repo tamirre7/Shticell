@@ -1,6 +1,8 @@
 package command.api;
 
 
+import dto.*;
+
 public interface Engine {
 
     LoadDto loadFile(String path);

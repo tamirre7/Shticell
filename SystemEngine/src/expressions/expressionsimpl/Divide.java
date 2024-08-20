@@ -16,12 +16,12 @@ public class Divide extends BinaryExpression {
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
         double divisor = arg2.extractValueWithExpectation(Double.class);
         double result = divisor == 0 ? Double.NaN : arg1.extractValueWithExpectation(Double.class) / divisor;
-        return new EffectiveValueImpl(CellType.NUMERIC, result);
+        return new EffectiveValueImpl(CellType.NUMERIC_DOUBLE, result);
     }
 
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
+        return CellType.NUMERIC_DOUBLE;
     }
 
 }

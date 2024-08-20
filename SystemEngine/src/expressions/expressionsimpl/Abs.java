@@ -15,11 +15,11 @@ public class Abs extends UnaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg) {
         double value = Math.abs(arg.extractValueWithExpectation(Double.class));
-        return new EffectiveValueImpl(CellType.NUMERIC, value);
+        return new EffectiveValueImpl(CellType.NUMERIC_DOUBLE, value);
     }
 
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
+        return CellType.NUMERIC_DOUBLE;
     }
 }

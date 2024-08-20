@@ -14,6 +14,25 @@ public class CellIdentifierImpl implements CellIdentifier
         this.col = col;
     }
 
+    // Method to create a CellIdentifierImpl from a string
+    public static CellIdentifierImpl fromString(String cellId) {
+        if (cellId == null || cellId.isEmpty()) {
+            throw new IllegalArgumentException("Cell ID cannot be null or empty");
+        }
+
+        // Extract the column (assuming single letter) and row
+        char col = cellId.charAt(0);
+        int row;
+
+        try {
+            row = Integer.parseInt(cellId.substring(1));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid cell ID format: " + cellId, e);
+        }
+
+        return new CellIdentifierImpl(row, col);
+    }
+
     @Override
     public int getRow(){ return row; }
 

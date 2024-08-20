@@ -25,6 +25,7 @@ public class Sub extends TernaryExpression {
 
         String result = sourceStr.substring(startIdx, endIdx + 1);
         return new EffectiveValueImpl(CellType.STRING, result);
+
     }
 
     @Override

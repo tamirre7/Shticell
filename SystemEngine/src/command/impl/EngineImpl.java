@@ -1,45 +1,173 @@
 package command.impl;
 
 import command.api.Engine;
+import dto.CellDto;
+import dto.SheetDto;
+import dto.VerDto;
+import expressions.api.Expression;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import spreadsheet.api.Dimentions;
+import spreadsheet.api.ReadOnlySpreadSheet;
+import spreadsheet.api.SpreadSheet;
+import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
+import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.cell.impl.CellImpl;
+import spreadsheet.sheetimpl.DimentionsImpl;
+import spreadsheet.sheetimpl.SpreadSheetImpl;
+import xml.generated.*;
+import dto.LoadDto;
+import dto.ExitDto;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
-
+    private SpreadSheet currentSheet = null;
 
     @Override
-    public LoadDto loadFile(String path)
-    {
+    public LoadDto loadFile(String path) {
         try {
-            // Step 1: Set up JAXB context and unmarshaller
-            JAXBContext jaxbContext = JAXBContext.newInstance(SpreadsheetXml.class);
+            // Initialize JAXB context and unmarshaller
+            JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-            // Step 2: Unmarshal the XML file into a SpreadsheetXml object
-            SpreadsheetXml spreadsheetXml = (SpreadsheetXml) unmarshaller.unmarshal(new File(path));
+            // Unmarshal the XML file to STLSheet object
+            STLSheet stlSheet = (STLSheet) unmarshaller.unmarshal(new File(path));
 
-            // Step 3: Map SpreadsheetXml to SpreadSheetImpl
-            mapXmlToSpreadsheet(spreadsheetXml);
+            // Get the layout and size information from the STLSheet
+            STLLayout stlLayout = stlSheet.getSTLLayout();
+            STLSize stlSize = stlLayout.getSTLSize();
 
-            // Step 4: Return LoadDto indicating success
-            return new LoadDto(true, "File loaded successfully");
+            // Create Dimentions object
+            Dimentions sheetDimensions = new DimentionsImpl(
+                    stlLayout.getRows(),
+                    stlLayout.getColumns(),
+                    stlSize.getRowsHeightUnits(),
+                    stlSize.getColumnWidthUnits()
+            );
 
+            // Create a new SpreadSheet instance with the provided dimensions
+            SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(),1,sheetDimensions);
+
+            // Iterate over the cells and add them to the spreadsheet
+            STLCells stlCells = stlSheet.getSTLCells();
+            for (STLCell stlCell : stlCells.getSTLCell()) {
+                // Convert column string to char
+                char columnChar = stlCell.getColumn().charAt(0);
+
+                // Create a CellIdentifierImpl instance with row and column
+                CellIdentifierImpl cellId = new CellIdentifierImpl(stlCell.getRow(), columnChar);
+
+                Expression expression = parseExpression(stlCell.getSTLOriginalValue(), (ReadOnlySpreadSheet) spreadSheet);
+                EffectiveValue effectiveValue = expression.evaluate((ReadOnlySpreadSheet) spreadSheet);
+
+                // Initialize dependencies and influences as empty lists or based on STLCell data
+                List<CellIdentifierImpl> dependencies = new ArrayList<>();
+                List<CellIdentifierImpl> influences = new ArrayList<>();
+
+                // Create a CellImpl instance with the cell identifier, original value, effective value,
+                // last modified version (if known, e.g., 0 for new cells), and lists for dependencies and influences
+                CellImpl cell = new CellImpl(
+                        cellId,
+                        stlCell.getSTLOriginalValue(),
+                        effectiveValue,
+                        1, // Assuming lastModifiedVersion is 0 for new cells
+                        dependencies,
+                        influences,
+                        (ReadOnlySpreadSheet) spreadSheet
+                );
+
+                // Add the cell to the spreadsheet
+                spreadSheet.addOrUpdateCell(cell);
+            }
+
+            // Return a LoadDto with the populated SpreadSheet
+            this.currentSheet = spreadSheet;
+            return new LoadDto(spreadSheet);
         } catch (JAXBException e) {
+            // Handle JAXB exceptions
             e.printStackTrace();
-            return new LoadDto(false, "Failed to load file: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            // Handle other exceptions
+            e.printStackTrace();
+            return null;
         }
     }
 
+
+
     @Override
     public SheetDto displaySpreadsheet() {
-        return null;
+        // Check if currentSheet is null
+        if (currentSheet == null) {
+            throw new IllegalStateException("Current sheet is not available");
+        }
+
+        String name = currentSheet.getName();
+        int version = currentSheet.getVersion();
+        Dimentions dimensions = currentSheet.getSheetDimentions();
+
+        // Convert cells from Cell to CellDto
+        Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getCells().entrySet()) {
+            Cell cell = entry.getValue();
+            CellDto cellDto = new CellDto(
+                    cell.getIdentifier(),
+                    cell.getOriginalValue(),
+                    cell.getEffectiveValue(),
+                    cell.getLastModifiedVersion(),
+                    cell.getDependencies(),
+                    cell.getInfluences()
+            );
+            cellDtos.put(entry.getKey(), cellDto);
+        }
+
+        return new SheetDto(name, version, cellDtos, dimensions);
     }
+
 
     @Override
     public CellDto displayCellValue(String cellid) {
-        return null;
+        // Check if cellid is null or empty
+        if (cellid == null || cellid.isEmpty()) {
+            throw new IllegalArgumentException("Cell ID cannot be null or empty");
+        }
+
+        // Check if currentSheet is null
+        if (currentSheet == null) {
+            throw new IllegalStateException("Current sheet is not available");
+        }
+
+        CellIdentifierImpl cellIdentifier = CellIdentifierImpl.fromString(cellid);
+
+        // Retrieve the cell from the currentSheet
+        Cell cell = currentSheet.getCell(cellIdentifier);
+
+        // Check if the cell is found
+        if (cell == null) {
+             // throw new NoSuchElementException("Cell with ID " + cellid + " does not exist");
+        }
+
+        // Create and return a CellDto
+        return new CellDto(
+                cell.getIdentifier(),
+                cell.getOriginalValue(),
+                cell.getEffectiveValue(),
+                cell.getLastModifiedVersion(),
+                cell.getDependencies(),
+                cell.getInfluences()
+        );
     }
+
 
     @Override
     public CellDto updateCell(String cellid) {
