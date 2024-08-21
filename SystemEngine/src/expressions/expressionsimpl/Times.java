@@ -15,10 +15,10 @@ public class Times extends BinaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
         double value = arg1.extractValueWithExpectation(Double.class) * arg2.extractValueWithExpectation(Double.class);
-        return new EffectiveValueImpl(CellType.NUMERIC_DOUBLE, value);
+        return new EffectiveValueImpl(CellType.NUMERIC, value);
     }
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC_DOUBLE;
+        return CellType.NUMERIC;
     }
 }

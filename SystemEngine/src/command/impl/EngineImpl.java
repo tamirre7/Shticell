@@ -91,7 +91,7 @@ public class EngineImpl implements Engine {
 
             // Return a LoadDto with the populated SpreadSheet
             this.currentSheet = spreadSheet;
-            return new LoadDto(spreadSheet);
+            return new LoadDto(true,"yay");
         } catch (JAXBException e) {
             // Handle JAXB exceptions
             e.printStackTrace();

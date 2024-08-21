@@ -15,17 +15,25 @@ public class Sub extends TernaryExpression {
     @Override
     protected EffectiveValue evaluate(EffectiveValue source, EffectiveValue startIndex, EffectiveValue endIndex) {
         String sourceStr = source.extractValueWithExpectation(String.class);
-        Integer startIdx = startIndex.extractValueWithExpectation(Integer.class);
-        Integer endIdx = endIndex.extractValueWithExpectation(Integer.class);
+        Double startIdx = startIndex.extractValueWithExpectation(Double.class);
+        Double endIdx = endIndex.extractValueWithExpectation(Double.class);
 
         if (sourceStr == null || startIdx == null || endIdx == null ||
-                startIdx < 0 || endIdx >= sourceStr.length() || startIdx > endIdx) {
+                startIdx < 0 || endIdx >= sourceStr.length() || startIdx > endIdx ||
+                !isInteger(startIdx) || !isInteger(endIdx)) {
             return new EffectiveValueImpl(CellType.STRING, "!UNDEFINED!");
         }
 
-        String result = sourceStr.substring(startIdx, endIdx + 1);
+        int start = (int) Math.floor(startIdx);
+        int end = (int) Math.floor(endIdx);
+        String result = sourceStr.substring(start, end +1);
         return new EffectiveValueImpl(CellType.STRING, result);
 
+    }
+
+    public static boolean isInteger(double number) {
+        // Check if the number is an integer
+        return number == Math.floor(number);
     }
 
     @Override
