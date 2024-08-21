@@ -170,7 +170,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for POW function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for POW function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance

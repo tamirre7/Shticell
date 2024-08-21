@@ -165,7 +165,6 @@ public class EngineImpl implements Engine {
         );
     }
 
-
     @Override
     public CellDto updateCell(String cellid) {
         return null;

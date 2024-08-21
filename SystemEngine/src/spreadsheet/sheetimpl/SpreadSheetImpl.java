@@ -23,6 +23,19 @@ public class SpreadSheetImpl implements SpreadSheet {
         this.sheetDimentions = sheetDimentions;
     }
 
+    @Override
+    public boolean isValidCellID(CellIdentifier cellID) {
+        if (cellID.getRow() < 1 ||
+                cellID.getRow() > this.sheetDimentions.getNumRows())
+            throw new IllegalArgumentException("Invalid cell identifier - ROW out of range : Expected number between 1-" + this.sheetDimentions.getNumRows() + " but got " + cellID.getRow());
+
+        if (cellID.getCol() < 'A' ||
+                cellID.getCol() > this.sheetDimentions.getNumCols() + 'A')
+            throw new IllegalArgumentException("Invalid cell identifier - COL out of range: Expected character between A - " + this.sheetDimentions.getNumCols() + 'A' + " but got " + cellID.getCol());
+
+        return true;
+    }
+
     // Getters and Setters
     @Override
     public String getName() {

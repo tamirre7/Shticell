@@ -16,8 +16,18 @@ public class Ref implements Expression {
 
     @Override
     public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
+        if (cellIdentifier.getRow() < 1 ||
+                cellIdentifier.getRow() > spreadSheet.getDimentions().getNumRows())
+            throw new IllegalArgumentException("Invalid cell identifier - ROW out of range : Expected number between 1-" + spreadSheet.getDimentions().getNumRows() + " but got " + cellIdentifier.getRow());
+
+        if (cellIdentifier.getCol() < 'A' ||
+                cellIdentifier.getCol() > spreadSheet.getDimentions().getNumCols() + 'A')
+            throw new IllegalArgumentException("Invalid cell identifier - COL out of range: Expected character between A - " + spreadSheet.getDimentions().getNumCols() + 'A' + " but got " + cellIdentifier.getCol());
+
         return spreadSheet.getCellEffectiveValue(cellIdentifier);
     }
+
+
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
