@@ -149,13 +149,10 @@ public class EngineImpl implements Engine {
 
         CellIdentifierImpl cellIdentifier = CellIdentifierImpl.fromString(cellid);
 
+        currentSheet.isValidCellID(cellIdentifier);
+
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
-
-        // Check if the cell is found
-        if (cell == null) {
-             // throw new NoSuchElementException("Cell with ID " + cellid + " does not exist");
-        }
 
         // Create and return a CellDto
         return new CellDto(

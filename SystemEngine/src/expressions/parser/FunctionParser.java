@@ -255,12 +255,7 @@ public enum FunctionParser {
             // structure is good. parse arguments
             String cellId = arguments.getFirst().trim();
 
-            // parse the cell-id to extract the row and column
-            int row = Integer.parseInt(cellId.substring(0, cellId.length() - 1)); // extract the row number
-            char col = cellId.charAt(cellId.length() - 1); // extract the column letter
-
-            // create an instance of CellIdentifierImpl using the row and column
-            CellIdentifier cellIdentifier = new CellIdentifierImpl(row, col);
+            CellIdentifier cellIdentifier = CellIdentifierImpl.fromString(cellId);;
 
             // create the relevant Ref function instance
             return new Ref(cellIdentifier);
@@ -324,10 +319,10 @@ public enum FunctionParser {
 //        String input = "1";
 //        parseMainParts(input).forEach(System.out::println);
 
-//      String input = "{plus, 1, 2}";
+          String input = "{pow, 2, -1}";
       //  String input = "{plus, {divide, 44, 22}, {abs,-2.5}}";
 //        String input = "4";
-        String input = "{sub, hello, 2.5,4}";
+        // String input = "{ref,A17}";
         Expression expression = parseExpression(input, null);
         EffectiveValue result = expression.evaluate(null);
         System.out.println("result: " + result.getValue() + " of type " + result.getCellType());

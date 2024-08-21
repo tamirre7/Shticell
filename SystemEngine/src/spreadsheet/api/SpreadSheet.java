@@ -23,4 +23,7 @@ public interface SpreadSheet {
     Cell getCell(CellIdentifier identifier);
 
     void removeCell(CellIdentifier identifier);
-}
+
+    boolean isValidCellID(CellIdentifier cellID);
+
+ }

@@ -21,15 +21,16 @@ public class CellIdentifierImpl implements CellIdentifier
         }
 
         // Extract the column (assuming single letter) and row
-        char col = cellId.charAt(0);
         int row;
-
+        char col;
         try {
-            row = Integer.parseInt(cellId.substring(1));
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid cell ID format: " + cellId, e);
+            // Parse the cell-id to extract the row and column
+            col = cellId.charAt(0); // extract the column letter
+            row = Integer.parseInt(cellId.substring(1, cellId.length())); // extract the row number
+        } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
+            // Handle exceptions related to invalid row number or column letter
+            throw new IllegalArgumentException("Invalid cell identifier: " + cellId, e);
         }
-
         return new CellIdentifierImpl(row, col);
     }
 
