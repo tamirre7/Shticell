@@ -14,4 +14,5 @@ public interface ReadOnlySpreadSheet {
     Dimension getSheetDimentions();
     Map<CellIdentifier, Cell> getActiveCells();
     Cell getCell(CellIdentifier identifier);
+    int getAmountOfCellsChangedInVersion();
 }

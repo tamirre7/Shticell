@@ -6,6 +6,7 @@ import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static expressions.parser.FunctionParser.parseExpression;
@@ -28,8 +29,8 @@ public class CellImpl implements Cell
         this.originalValue = originalValue;
         this.effectiveValue = null;
         this.lastModifiedVersion = lastModifiedVersion;
-        this.dependencies = null;
-        this.influences = null;
+        this.dependencies = new ArrayList<>();
+        this.influences = new ArrayList<>();
         this.sheet = sheet;
     }
     @Override
@@ -71,15 +72,10 @@ public class CellImpl implements Cell
     }
 
 
+
     @Override
-    public String toString() {
-        return "Cell:" +
-                "identifier=" + identifier +
-                ", originalValue='" + originalValue + '\'' +
-                ", effectiveValue='" + effectiveValue + '\'' +
-                ", lastModifiedVersion=" + lastModifiedVersion +
-                ", dependencies=" + dependencies +
-                ", influences=" + influences;
+   public void updateVersion(int version) {
+        this.lastModifiedVersion = version;
     }
 
     @Override

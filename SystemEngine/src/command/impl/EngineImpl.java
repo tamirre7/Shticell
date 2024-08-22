@@ -30,6 +30,7 @@ import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
     private SpreadSheet currentSheet = null;
+    private Map <Integer, SpreadSheet> sheetVersionMap = null;
 
     @Override
     public LoadDto loadFile(String path) {
@@ -82,11 +83,12 @@ public class EngineImpl implements Engine {
                 );
 
                 // Add the cell to the spreadsheet
-                spreadSheet.addOrUpdateCell(cell);
+                spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
 
             // Return a LoadDto with the populated SpreadSheet
             this.currentSheet = spreadSheet;
+            sheetVersionMap.put(1,currentSheet);
             return new LoadDto(true,"yay");
         } catch (JAXBException e) {
             // Handle JAXB exceptions
@@ -127,7 +129,7 @@ public class EngineImpl implements Engine {
             cellDtos.put(entry.getKey(), cellDto);
         }
 
-        return new SheetDto(name, version, cellDtos, dimensions);
+        return new SheetDto(name, version, cellDtos, dimensions,currentSheet.getAmountOfCellsChangedInVersion());
     }
 
 
@@ -143,7 +145,7 @@ public class EngineImpl implements Engine {
             throw new IllegalStateException("Current sheet is not available");
         }
 
-        CellIdentifierImpl cellIdentifier = CellIdentifierImpl.fromString(cellid);
+        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
 
         currentSheet.isValidCellID(cellIdentifier);
 
@@ -162,19 +164,125 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public CellDto updateCell(String cellid) {
-        return null;
+    public CellDto updateCell(String cellid, String originalValue) {
+        if (originalValue == null) {
+            throw new IllegalArgumentException("Original value must be entered (can also be empty)");
+        }
+
+        // Check if cellid is null or empty
+        if (cellid == null || cellid.isEmpty()) {
+            throw new IllegalArgumentException("Cell ID cannot be null or empty");
+        }
+
+        // Check if currentSheet is null
+        if (currentSheet == null) {
+            throw new IllegalStateException("Current sheet is not available");
+        }
+
+        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
+        currentSheet.isValidCellID(cellIdentifier);
+
+        SpreadSheet updatedSheet;
+        try {
+            updatedSheet = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue);
+        } catch (Exception e) {
+            // Handle exceptions from the update process
+            throw new RuntimeException("Failed to update cell value: " + e.getMessage(), e);
+        }
+
+        if (!updatedSheet.equals(currentSheet)) {
+            sheetVersionMap.put(updatedSheet.getVersion(), updatedSheet);
+            currentSheet = updatedSheet;
+        }
+
+        // Retrieve the cell from the currentSheet
+        Cell cell = currentSheet.getCell(cellIdentifier);
+        if (cell == null) {
+            throw new IllegalStateException("Cell not found after update");
+        }
+
+        // Create and return a CellDto
+        return new CellDto(
+                cell.getIdentifier(),
+                cell.getOriginalValue(),
+                cell.getEffectiveValue(),
+                cell.getLastModifiedVersion(),
+                cell.getDependencies(),
+                cell.getInfluences()
+        );
     }
+
 
     @Override
     public VerDto displayVersions() {
-        return null;
+        if (currentSheet == null) {
+            throw new IllegalStateException("Current sheet is not available");
+        }
+
+        Map<Integer, SheetDto> versionSheetDtoMap = new HashMap<>();
+
+        for (Map.Entry<Integer, SpreadSheet> entry : sheetVersionMap.entrySet()) {
+            Integer version = entry.getKey();
+            SpreadSheet spreadSheet = entry.getValue();
+
+            // Convert SpreadSheet to SheetDto
+            Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+
+            for (Map.Entry<CellIdentifier, Cell> cellEntry : spreadSheet.getActiveCells().entrySet()) {
+                Cell cell = cellEntry.getValue();
+                CellDto cellDto = new CellDto(
+                        cell.getIdentifier(),
+                        cell.getOriginalValue(),
+                        cell.getEffectiveValue(),
+                        cell.getLastModifiedVersion(),
+                        cell.getDependencies(),
+                        cell.getInfluences()
+                );
+                cellDtos.put(cellEntry.getKey(), cellDto);
+            }
+
+            SheetDto sheetDto = new SheetDto(
+                    spreadSheet.getName(),
+                    spreadSheet.getVersion(),
+                    cellDtos,
+                    spreadSheet.getSheetDimentions(),
+                    spreadSheet.getAmountOfCellsChangedInVersion()
+            );
+
+            versionSheetDtoMap.put(version, sheetDto);
+        }
+
+        // Return the version information wrapped in a VerDto
+        return new VerDto(versionSheetDtoMap);
     }
 
     @Override
-    public VerDto displaySheetByVersion(String version) {
-        return null;
+    public SheetDto displaySheetByVersion(int version) {
+        // Retrieve the SpreadSheet from the version map
+        SpreadSheet sheet = sheetVersionMap.get(version);
+        if (sheet == null) {
+            throw new IllegalArgumentException("No spreadsheet found for the specified version");
+        }
+
+        // Convert cells from Cell to CellDto
+        Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+        for (Map.Entry<CellIdentifier, Cell> entry : sheet.getActiveCells().entrySet()) {
+            Cell cell = entry.getValue();
+            CellDto cellDto = new CellDto(
+                    cell.getIdentifier(),
+                    cell.getOriginalValue(),
+                    cell.getEffectiveValue(),
+                    cell.getLastModifiedVersion(),
+                    cell.getDependencies(),
+                    cell.getInfluences()
+            );
+            cellDtos.put(entry.getKey(), cellDto);
+        }
+
+        // Return a SheetDto with the retrieved SpreadSheet
+        return new SheetDto(sheet.getName(), sheet.getVersion(), cellDtos, sheet.getSheetDimentions(), currentSheet.getAmountOfCellsChangedInVersion());
     }
+
 
     @Override
     public ExitDto exitSystem() {

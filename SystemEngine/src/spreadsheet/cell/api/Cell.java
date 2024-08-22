@@ -21,4 +21,6 @@ public interface Cell
     List<CellIdentifierImpl> getDependencies();
 
     List<CellIdentifierImpl> getInfluences();
+
+    void updateVersion(int newVersion);
 }

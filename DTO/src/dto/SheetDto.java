@@ -14,11 +14,13 @@ public class SheetDto {
     private final String name;
     private final int version;
     private final Map<CellIdentifier, CellDto> cells;
+    private final int amountOfCellsChangedInVersion;
 
-    public SheetDto(String name, int version, Map<CellIdentifier, CellDto> cells, Dimension sheetDimension) {
+    public SheetDto(String name, int version, Map<CellIdentifier, CellDto> cells, Dimension sheetDimension, int cellsAmount) {
         this.name = name;
         this.version = version;
         this.sheetDimension = sheetDimension;
+        this.amountOfCellsChangedInVersion = cellsAmount;
         this.cells = new HashMap<>();
         for (Map.Entry<CellIdentifier, CellDto> entry : cells.entrySet()) {
             this.cells.put(entry.getKey(), new CellDto(

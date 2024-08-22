@@ -15,7 +15,7 @@ public class CellIdentifierImpl implements CellIdentifier
     }
 
     // Method to create a CellIdentifierImpl from a string
-    public static CellIdentifierImpl fromString(String cellId) {
+    public  CellIdentifierImpl(String cellId) {
         if (cellId == null || cellId.isEmpty()) {
             throw new IllegalArgumentException("Cell ID cannot be null or empty");
         }
@@ -31,7 +31,9 @@ public class CellIdentifierImpl implements CellIdentifier
             // Handle exceptions related to invalid row number or column letter
             throw new IllegalArgumentException("Invalid cell identifier: " + cellId, e);
         }
-        return new CellIdentifierImpl(row, col);
+
+        this.row = row;
+        this.col = col;
     }
 
     @Override

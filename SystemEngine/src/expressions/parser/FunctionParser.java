@@ -255,7 +255,7 @@ public enum FunctionParser {
             // structure is good. parse arguments
             String cellId = arguments.getFirst().trim();
 
-            CellIdentifier cellIdentifier = CellIdentifierImpl.fromString(cellId);;
+            CellIdentifier cellIdentifier = new CellIdentifierImpl(cellId);;
 
             // create the relevant Ref function instance
             return new Ref(cellIdentifier);

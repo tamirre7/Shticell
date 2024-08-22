@@ -8,8 +8,8 @@ public interface Engine {
     LoadDto loadFile(String path);
     SheetDto displaySpreadsheet();
     CellDto displayCellValue(String cellid);
-    CellDto updateCell(String cellid);
+    CellDto updateCell(String cellid, String originalValue);
     VerDto displayVersions();
-    VerDto displaySheetByVersion(String version);
+    SheetDto displaySheetByVersion(int version);
     ExitDto exitSystem();
 }
