@@ -11,7 +11,7 @@ public interface ReadOnlySpreadSheet {
     String getName();
     int getVersion();
     boolean isValidCellID(CellIdentifier cellID);
-    Dimentions getSheetDimentions();
-    Map<CellIdentifier, Cell> getCells();
+    Dimension getSheetDimentions();
+    Map<CellIdentifier, Cell> getActiveCells();
     Cell getCell(CellIdentifier identifier);
 }

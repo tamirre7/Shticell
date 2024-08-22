@@ -1,6 +1,6 @@
 package spreadsheet.api;
 
-public interface Dimentions {
+public interface Dimension {
     int getNumRows();
     int getNumCols();
     int getWidthCol();

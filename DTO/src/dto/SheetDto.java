@@ -1,7 +1,6 @@
 package dto;
 
-import spreadsheet.api.Dimentions;
-import spreadsheet.cell.api.Cell;
+import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.CellIdentifier;
 
 import java.util.Map;
@@ -11,15 +10,15 @@ import java.util.HashMap;
 
 
 public class SheetDto {
-    private final Dimentions sheetDimentions;
+    private final Dimension sheetDimension;
     private final String name;
     private final int version;
     private final Map<CellIdentifier, CellDto> cells;
 
-    public SheetDto(String name, int version, Map<CellIdentifier, CellDto> cells, Dimentions sheetDimentions) {
+    public SheetDto(String name, int version, Map<CellIdentifier, CellDto> cells, Dimension sheetDimension) {
         this.name = name;
         this.version = version;
-        this.sheetDimentions = sheetDimentions;
+        this.sheetDimension = sheetDimension;
         this.cells = new HashMap<>();
         for (Map.Entry<CellIdentifier, CellDto> entry : cells.entrySet()) {
             this.cells.put(entry.getKey(), new CellDto(
@@ -42,7 +41,7 @@ public class SheetDto {
         return version;
     }
 
-    public Dimentions getSheetDimentions() {return sheetDimentions;}
+    public Dimension getSheetDimentions() {return sheetDimension;}
 
     // Return an unmodifiable view of the map to prevent external modification
     public Map<CellIdentifier, CellDto> getCells() {

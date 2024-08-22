@@ -8,15 +8,14 @@ import expressions.api.Expression;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import spreadsheet.api.Dimentions;
-import spreadsheet.api.ReadOnlySpreadSheet;
+import spreadsheet.api.Dimension;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
-import spreadsheet.sheetimpl.DimentionsImpl;
+import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import xml.generated.*;
 import dto.LoadDto;
@@ -47,7 +46,7 @@ public class EngineImpl implements Engine {
             STLSize stlSize = stlLayout.getSTLSize();
 
             // Create Dimentions object
-            Dimentions sheetDimensions = new DimentionsImpl(
+            Dimension sheetDimensions = new DimensionImpl(
                     stlLayout.getRows(),
                     stlLayout.getColumns(),
                     stlSize.getRowsHeightUnits(),
@@ -78,10 +77,7 @@ public class EngineImpl implements Engine {
                 CellImpl cell = new CellImpl(
                         cellId,
                         stlCell.getSTLOriginalValue(),
-                        effectiveValue,
                         1, // Assuming lastModifiedVersion is 0 for new cells
-                        dependencies,
-                        influences,
                         spreadSheet
                 );
 
@@ -114,11 +110,11 @@ public class EngineImpl implements Engine {
 
         String name = currentSheet.getName();
         int version = currentSheet.getVersion();
-        Dimentions dimensions = currentSheet.getSheetDimentions();
+        Dimension dimensions = currentSheet.getSheetDimentions();
 
         // Convert cells from Cell to CellDto
         Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getCells().entrySet()) {
+        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
             Cell cell = entry.getValue();
             CellDto cellDto = new CellDto(
                     cell.getIdentifier(),

@@ -21,15 +21,16 @@ public class CellImpl implements Cell
     private ReadOnlySpreadSheet sheet;
 
 
-    public CellImpl(CellIdentifierImpl identifier, String originalValue, EffectiveValue effectiveValue,
-                    int lastModifiedVersion, List<CellIdentifierImpl> dependencies,
-                    List<CellIdentifierImpl> influences, ReadOnlySpreadSheet sheet) {
+    public CellImpl(CellIdentifierImpl identifier, String originalValue,
+                    int lastModifiedVersion,
+                     ReadOnlySpreadSheet sheet) {
         this.identifier = identifier;
         this.originalValue = originalValue;
-        this.effectiveValue = effectiveValue;
+        this.effectiveValue = null;
         this.lastModifiedVersion = lastModifiedVersion;
-        this.dependencies = dependencies;
-        this.influences = influences;
+        this.dependencies = null;
+        this.influences = null;
+        this.sheet = sheet;
     }
     @Override
     public CellIdentifierImpl getIdentifier() {
@@ -46,9 +47,15 @@ public class CellImpl implements Cell
         return effectiveValue;
     }
     @Override
-    public void calculateEffectiveValue() {
+    public boolean calculateEffectiveValue() {
         Expression expression = parseExpression(originalValue, sheet);
-        this.effectiveValue = expression.evaluate(sheet);
+        EffectiveValue newEffectiveValue = expression.evaluate(sheet);
+        if (newEffectiveValue.equals(effectiveValue)) {
+            return false;
+        } else {
+            effectiveValue = newEffectiveValue;
+            return true;
+        }
     }
     @Override
     public int getLastModifiedVersion() {
@@ -62,15 +69,7 @@ public class CellImpl implements Cell
     public List<CellIdentifierImpl> getInfluences() {
         return influences;
     }
-    @Override
-    public void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
-                           List<CellIdentifierImpl> newDependencies, List<CellIdentifierImpl> newInfluences) {
-        this.originalValue = newOriginalValue;
-        this.effectiveValue = newEffectiveValue;
-        this.lastModifiedVersion = newVersion;
-        this.dependencies = newDependencies;
-        this.influences = newInfluences;
-    }
+
 
     @Override
     public String toString() {

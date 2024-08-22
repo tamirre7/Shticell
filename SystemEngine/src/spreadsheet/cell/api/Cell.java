@@ -12,7 +12,7 @@ public interface Cell
 
     String getOriginalValue();
 
-    void calculateEffectiveValue();
+    boolean calculateEffectiveValue();
 
     EffectiveValue getEffectiveValue();
 
@@ -21,7 +21,4 @@ public interface Cell
     List<CellIdentifierImpl> getDependencies();
 
     List<CellIdentifierImpl> getInfluences();
-
-     void updateCell(String newOriginalValue, EffectiveValue newEffectiveValue, int newVersion,
-                     List<CellIdentifierImpl> newDependencies, List<CellIdentifierImpl> newInfluences);
 }

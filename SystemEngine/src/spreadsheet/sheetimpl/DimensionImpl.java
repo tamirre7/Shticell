@@ -1,15 +1,15 @@
 package spreadsheet.sheetimpl;
-import spreadsheet.api.Dimentions;
+import spreadsheet.api.Dimension;
 
 import java.util.Objects;
 
-public class DimentionsImpl implements Dimentions {
+public class DimensionImpl implements Dimension {
     private final int numRows;
     private final int numCols;
     private final int widthCol;
     private final int heightRow;
 
-    public DimentionsImpl(int numRows, int numCols, int widthCol, int heightRow) {
+    public DimensionImpl(int numRows, int numCols, int widthCol, int heightRow) {
         this.numRows = numRows;
         this.numCols = numCols;
         this.widthCol = widthCol;
@@ -36,7 +36,7 @@ public class DimentionsImpl implements Dimentions {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DimentionsImpl that = (DimentionsImpl) o;
+        DimensionImpl that = (DimensionImpl) o;
         return numRows == that.numRows &&
                 numCols == that.numCols &&
                 widthCol == that.widthCol &&
