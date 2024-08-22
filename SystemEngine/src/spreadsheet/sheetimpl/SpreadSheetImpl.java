@@ -4,6 +4,7 @@ import spreadsheet.api.Dimentions;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
+import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,12 @@ public class SpreadSheetImpl implements SpreadSheet {
             throw new IllegalArgumentException("Invalid cell identifier - COL out of range: Expected character between A - " + this.sheetDimentions.getNumCols() + 'A' + " but got " + cellID.getCol());
 
         return true;
+    }
+
+    @Override
+    public EffectiveValue getCellEffectiveValue(CellIdentifier identifier) {
+        Cell cell = cells.get(identifier);
+        return cell != null ? cell.getEffectiveValue() : null;
     }
 
     // Getters and Setters

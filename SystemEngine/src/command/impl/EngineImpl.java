@@ -66,8 +66,8 @@ public class EngineImpl implements Engine {
                 // Create a CellIdentifierImpl instance with row and column
                 CellIdentifierImpl cellId = new CellIdentifierImpl(stlCell.getRow(), columnChar);
 
-                Expression expression = parseExpression(stlCell.getSTLOriginalValue(), (ReadOnlySpreadSheet) spreadSheet);
-                EffectiveValue effectiveValue = expression.evaluate((ReadOnlySpreadSheet) spreadSheet);
+                Expression expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
+                EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
                 // Initialize dependencies and influences as empty lists or based on STLCell data
                 List<CellIdentifierImpl> dependencies = new ArrayList<>();
@@ -82,7 +82,7 @@ public class EngineImpl implements Engine {
                         1, // Assuming lastModifiedVersion is 0 for new cells
                         dependencies,
                         influences,
-                        (ReadOnlySpreadSheet) spreadSheet
+                        spreadSheet
                 );
 
                 // Add the cell to the spreadsheet
