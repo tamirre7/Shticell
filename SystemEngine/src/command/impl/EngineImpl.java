@@ -1,6 +1,6 @@
-package command.impl;
+package engine.impl;
 
-import command.api.Engine;
+import engine.api.Engine;
 import dto.CellDto;
 import dto.SheetDto;
 import dto.VerDto;
@@ -30,7 +30,7 @@ import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
     private SpreadSheet currentSheet = null;
-    private Map <Integer, SpreadSheet> sheetVersionMap = null;
+    private Map <Integer, SpreadSheet> sheetVersionMap = new HashMap<>();
 
     @Override
     public LoadDto loadFile(String path) {
@@ -104,7 +104,7 @@ public class EngineImpl implements Engine {
 
 
     @Override
-    public SheetDto displaySpreadsheet() {
+    public SheetDto displayCurrentSpreadsheet() {
         // Check if currentSheet is null
         if (currentSheet == null) {
             throw new IllegalStateException("Current sheet is not available");
@@ -286,7 +286,7 @@ public class EngineImpl implements Engine {
 
     @Override
     public ExitDto exitSystem() {
-        return null;
+        return new ExitDto("Exiting application. Goodbye!");
     }
 }
 

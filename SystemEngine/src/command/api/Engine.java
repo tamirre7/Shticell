@@ -1,4 +1,4 @@
-package command.api;
+package engine.api;
 
 
 import dto.*;
@@ -6,7 +6,7 @@ import dto.*;
 public interface Engine {
 
     LoadDto loadFile(String path);
-    SheetDto displaySpreadsheet();
+    SheetDto displayCurrentSpreadsheet();
     CellDto displayCellValue(String cellid);
     CellDto updateCell(String cellid, String originalValue);
     VerDto displayVersions();

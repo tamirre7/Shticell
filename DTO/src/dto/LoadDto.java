@@ -20,11 +20,4 @@ public class LoadDto {
         return message;
     }
 
-    @Override
-    public String toString() {
-        return "LoadDto{" +
-                "succeeded=" + succeeded +
-                ", message='" + message + '\'' +
-                '}';
-    }
 }

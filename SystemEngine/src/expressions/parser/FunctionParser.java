@@ -312,20 +312,4 @@ public enum FunctionParser {
 
         return parts;
     }
-
-    public static void main(String[] args) {
-
-        //String input = "plus, {plus, 1, 2}, {plus, 1, {plus, 1, 2}}";
-//        String input = "1";
-//        parseMainParts(input).forEach(System.out::println);
-
-          String input = "{pow, 2, -1}";
-      //  String input = "{plus, {divide, 44, 22}, {abs,-2.5}}";
-//        String input = "4";
-        // String input = "{ref,A17}";
-        Expression expression = parseExpression(input, null);
-        EffectiveValue result = expression.evaluate(null);
-        System.out.println("result: " + result.getValue() + " of type " + result.getCellType());
-    }
-
 }
