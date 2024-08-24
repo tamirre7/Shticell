@@ -1,7 +1,7 @@
 package shticellui;
 
-import engine.api.Engine;
-import engine.impl.EngineImpl;
+import command.api.Engine;
+import command.impl.EngineImpl;
 import shticellui.menu.api.Menu;
 import shticellui.menu.impl.MainMenu;
 

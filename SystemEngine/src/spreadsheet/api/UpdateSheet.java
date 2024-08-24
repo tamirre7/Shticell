@@ -1,6 +1,5 @@
 package spreadsheet.api;
 
-import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 

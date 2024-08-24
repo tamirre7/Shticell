@@ -1,7 +1,7 @@
 package shticellui.command.impl;
 
 import dto.ExitDto;
-import engine.api.Engine;
+import command.api.Engine;
 import shticellui.command.api.Command;
 
 public class ExitApp implements Command {
