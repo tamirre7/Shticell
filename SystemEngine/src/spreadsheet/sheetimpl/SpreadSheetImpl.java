@@ -120,7 +120,7 @@ public class SpreadSheetImpl implements SpreadSheet {
         return ++version;
     }
 
-    private void updateDependenciesAndInfluences() {
+    public void updateDependenciesAndInfluences() {
         for (Cell cell : activeCells.values()) {
             // Parse the cell's value to find references
             String originalValue = cell.getOriginalValue();
@@ -131,10 +131,10 @@ public class SpreadSheetImpl implements SpreadSheet {
 
                 if (referencedCell != null) {
                     // Add current cell as a dependency for the referenced cell
-                    referencedCell.getDependencies().add(cell.getIdentifier());
+                    referencedCell.getInfluences().add(cell.getIdentifier());
 
                     // Add current cell to the influences of the referenced cell
-                    cell.getInfluences().add(referencedCell.getIdentifier());
+                    cell.getDependencies().add(referencedCell.getIdentifier());
                 }
             }
         }

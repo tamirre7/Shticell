@@ -23,4 +23,6 @@ public interface Cell
     List<CellIdentifierImpl> getInfluences();
 
     void updateVersion(int newVersion);
+
+    void setEffectiveValue (EffectiveValue effectiveValue);
 }

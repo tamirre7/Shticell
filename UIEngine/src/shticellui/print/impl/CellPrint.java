@@ -12,20 +12,19 @@ public class CellPrint implements Printable {
 
     @Override
     public void print() {
-        System.out.println("Cell: " +
-                "identifier =" + cell.getCellId() +
-                ", originalValue ='" + cell.getOriginalValue() + '\'' +
-                ", effectiveValue ='" + cell.getEffectiveValue() + '\'' +
-                ", lastModifiedVersion =" + cell.getLastModifiedVersion() +
-                ", dependencies =" + cell.getDependencies() +
-                ", influences =" + cell.getInfluences());
+        System.out.println("Cell: identifier: " + cell.getCellId());
+        System.out.println("OriginalValue = " + cell.getOriginalValue());
+        System.out.println("EffectiveValue = " + cell.getEffectiveValue().getValue().toString());
+        System.out.println("lastModifiedVersion = " + cell.getLastModifiedVersion());
+        System.out.println("dependencies = " + cell.getDependencies());
+        System.out.println("influences = " + cell.getInfluences());
+
     }
 
     public void printForUpdateFunc()
     {
-        System.out.println("Cell: " +
-                "identifier =" + cell.getCellId() +
-                ", originalValue ='" + cell.getOriginalValue() + '\'' +
-                ", effectiveValue ='" + cell.getEffectiveValue());
+        System.out.println("Cell identifier: " + cell.getCellId());
+        System.out.println("OriginalValue = " + cell.getOriginalValue());
+        System.out.println("EffectiveValue = " + cell.getEffectiveValue().getValue().toString());
     }
 }

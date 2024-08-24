@@ -87,6 +87,11 @@ public class CellImpl implements Cell
     }
 
     @Override
+    public void setEffectiveValue (EffectiveValue effectiveValue) {
+        this.effectiveValue = effectiveValue;
+    }
+
+    @Override
     public int hashCode() {
         return identifier.hashCode();
     }

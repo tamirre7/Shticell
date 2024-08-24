@@ -20,6 +20,7 @@ public class DisplayCellValue implements Command {
         while (cellDto == null) {
             System.out.println("Please enter the cell ID:");
             cellID = scanner.nextLine();
+            cellID = cellID.toUpperCase();
 
             try {
                 cellDto = engine.displayCellValue(cellID);

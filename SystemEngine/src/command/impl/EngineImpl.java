@@ -22,6 +22,8 @@ import xml.generated.*;
 import dto.LoadDto;
 import dto.ExitDto;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +37,10 @@ public class EngineImpl implements Engine {
 
     @Override
     public LoadDto loadFile(String path) {
+        File file = new File(path);
+        InputStream inputStream;
         try {
+            inputStream = new FileInputStream(file);
             // Initialize JAXB context and unmarshaller
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -51,12 +56,12 @@ public class EngineImpl implements Engine {
             Dimension sheetDimensions = new DimensionImpl(
                     stlLayout.getRows(),
                     stlLayout.getColumns(),
-                    stlSize.getRowsHeightUnits(),
-                    stlSize.getColumnWidthUnits()
+                    stlSize.getColumnWidthUnits(),
+                    stlSize.getRowsHeightUnits()
             );
 
             // Create a new SpreadSheet instance with the provided dimensions
-            SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(),1,sheetDimensions);
+        SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(),1,sheetDimensions);
 
             // Iterate over the cells and add them to the spreadsheet
             STLCells stlCells = stlSheet.getSTLCells();
@@ -82,10 +87,13 @@ public class EngineImpl implements Engine {
                         1, // Assuming lastModifiedVersion is 0 for new cells
                         spreadSheet
                 );
+                cell.setEffectiveValue(effectiveValue);
 
                 // Add the cell to the spreadsheet
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
+
+            spreadSheet.updateDependenciesAndInfluences();
 
             // Return a LoadDto with the populated SpreadSheet
             this.currentSheet = spreadSheet;
@@ -98,7 +106,7 @@ public class EngineImpl implements Engine {
         } catch (Exception e) {
             // Handle other exceptions
             e.printStackTrace();
-            return null;
+            return new LoadDto(false,"error");
         }
     }
 
@@ -150,6 +158,7 @@ public class EngineImpl implements Engine {
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
 
+
         // Create and return a CellDto
         return new CellDto(
                 cell.getIdentifier(),
@@ -173,10 +182,6 @@ public class EngineImpl implements Engine {
             throw new IllegalArgumentException("Cell ID cannot be null or empty");
         }
 
-        // Check if currentSheet is null
-        if (currentSheet == null) {
-            throw new IllegalStateException("Current sheet is not available");
-        }
 
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
         currentSheet.isValidCellID(cellIdentifier);

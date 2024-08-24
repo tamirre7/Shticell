@@ -17,21 +17,32 @@ public class VersionPrint implements Printable {
     public void print() {
         // Define column widths
         final int versionColumnWidth = 10;
-        final int cellsChangedColumnWidth = 20;
+        final int cellsChangedColumnWidth = 15;
 
         Map<Integer, SheetDto> versionsMap = version.getVersions();
 
         // Print table header
         System.out.printf("%-" + versionColumnWidth + "s %-" + cellsChangedColumnWidth + "s%n", "Version", "Cells Changed");
-        System.out.println("-".repeat(versionColumnWidth + cellsChangedColumnWidth));
+
+        // Print table separator line with correct length
+        int separatorLength = versionColumnWidth + cellsChangedColumnWidth;
+        System.out.println("-".repeat(separatorLength));
 
         // Iterate through the map of versions
         for (Map.Entry<Integer, SheetDto> entry : versionsMap.entrySet()) {
             int versionNumber = entry.getKey();
             int cellsChanged = entry.getValue().getAmountOfCellsChangedInVersion();
 
+            // Calculate padding for center alignment
+            String versionStr = String.valueOf(versionNumber);
+            String cellsChangedStr = String.valueOf(cellsChanged);
+            int versionPaddingLeft = (versionColumnWidth - versionStr.length()) / 2;
+            int cellsChangedPaddingLeft = (cellsChangedColumnWidth - cellsChangedStr.length()) / 2;
+
             // Print the version number and the number of cells changed with center alignment
-            System.out.printf("%" + (versionColumnWidth + (versionColumnWidth - String.valueOf(versionNumber).length()) / 2) + "d %" + (cellsChangedColumnWidth + (cellsChangedColumnWidth - String.valueOf(cellsChanged).length()) / 2) + "d%n", versionNumber, cellsChanged);
+            System.out.printf("%" + (versionPaddingLeft + versionStr.length()) + "s%" + (cellsChangedPaddingLeft + versionPaddingLeft + cellsChangedStr.length()) + "s%n", versionStr, cellsChangedStr);
         }
     }
+
 }
+
