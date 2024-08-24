@@ -252,7 +252,7 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            String cellId = arguments.getFirst().trim();
+            String cellId = arguments.getFirst().trim().toUpperCase();
 
             CellIdentifier cellIdentifier = new CellIdentifierImpl(cellId);;
 
