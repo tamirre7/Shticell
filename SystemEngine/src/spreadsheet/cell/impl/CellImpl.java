@@ -72,6 +72,12 @@ public class CellImpl implements Cell, Serializable
         return influences;
     }
 
+    @Override
+    public void resetDependencies () {this.dependencies.clear(); }
+
+    @Override
+    public void resetInfluences() {this.influences.clear(); }
+
 
 
     @Override

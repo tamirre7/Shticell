@@ -9,4 +9,6 @@ public interface UpdateSheet {
     void removeCell(CellIdentifier identifier);
     SpreadSheet updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) ;
     void updateDependenciesAndInfluences();
+    void setAmountOfCellsChangedInVersion(int amountOfCellsChangedInVersion);
+
     }

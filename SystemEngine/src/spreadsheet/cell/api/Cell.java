@@ -25,4 +25,6 @@ public interface Cell
     void updateVersion(int newVersion);
 
     void setEffectiveValue (EffectiveValue effectiveValue);
+    void resetDependencies ();
+    void resetInfluences();
 }

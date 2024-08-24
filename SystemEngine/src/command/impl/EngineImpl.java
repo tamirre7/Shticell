@@ -21,9 +21,8 @@ import spreadsheet.sheetimpl.SpreadSheetImpl;
 import xml.generated.*;
 import dto.LoadDto;
 import dto.ExitDto;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,21 +91,19 @@ public class EngineImpl implements Engine {
                 // Add the cell to the spreadsheet
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
+            spreadSheet.setAmountOfCellsChangedInVersion(spreadSheet.getActiveCells().size());
 
             spreadSheet.updateDependenciesAndInfluences();
 
-            // Return a LoadDto with the populated SpreadSheet
             this.currentSheet = spreadSheet;
-            sheetVersionMap.put(1,currentSheet);
-            return new LoadDto(true,"yay");
+            sheetVersionMap.put(1, currentSheet);
+            return new LoadDto(true, "File loaded successfully.");
+        } catch (FileNotFoundException e) {
+            return new LoadDto(false, "File not found: " + path);
         } catch (JAXBException e) {
-            // Handle JAXB exceptions
-            e.printStackTrace();
-            return null;
+            return new LoadDto(false, "XML parsing error: " + e.getMessage());
         } catch (Exception e) {
-            // Handle other exceptions
-            e.printStackTrace();
-            return new LoadDto(false,"error");
+            return new LoadDto(false, "An unexpected error occurred: " + e.getMessage());
         }
     }
 

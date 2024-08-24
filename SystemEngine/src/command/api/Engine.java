@@ -3,6 +3,8 @@ package command.api;
 
 import dto.*;
 
+import java.io.FileNotFoundException;
+
 public interface Engine {
 
     LoadDto loadFile(String path);

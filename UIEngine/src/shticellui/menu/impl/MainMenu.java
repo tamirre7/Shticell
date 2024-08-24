@@ -63,6 +63,10 @@ public class MainMenu implements Menu {
         System.out.println(e.getMessage());
         System.out.println();
         }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println();
+        }
     }
 
     public void start() {

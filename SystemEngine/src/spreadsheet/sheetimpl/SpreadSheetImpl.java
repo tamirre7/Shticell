@@ -31,6 +31,10 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     @Override
     public int getAmountOfCellsChangedInVersion(){return amountOfCellsChangedInVersion;}
+    @Override
+    public void setAmountOfCellsChangedInVersion(int amountOfCellsChangedInVersion) {
+        this.amountOfCellsChangedInVersion = amountOfCellsChangedInVersion;
+    }
 
     @Override
     public boolean isValidCellID(CellIdentifier cellID) {
@@ -86,10 +90,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
     @Override
     public SpreadSheet updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
-
-
         SpreadSheetImpl newSheetVersion = copySheet();
-        this.updateDependenciesAndInfluences();
         Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + 1, newSheetVersion);
         newSheetVersion.activeCells.put(cellId, newCell);
 
@@ -104,9 +105,10 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             // successful calculation. update sheet and relevant cells version
              int newVersion = newSheetVersion.increaseVersion();
              cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
-             amountOfCellsChangedInVersion = cellsThatHaveChanged.size();
+             newSheetVersion.setAmountOfCellsChangedInVersion(cellsThatHaveChanged.size());
+             newSheetVersion.updateDependenciesAndInfluences();
 
-            return newSheetVersion;
+        return newSheetVersion;
         } catch (Exception e) {
             // deal with the runtime error that was discovered as part of invocation
             return this;
@@ -118,6 +120,10 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     public void updateDependenciesAndInfluences() {
+        for (Cell cell : activeCells.values()) {
+            cell.resetDependencies();
+            cell.resetInfluences();
+        }
         for (Cell cell : activeCells.values()) {
             // Parse the cell's value to find references
             String originalValue = cell.getOriginalValue();
@@ -141,33 +147,34 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     private List<CellIdentifier> extractReferences(String value) {
         List<CellIdentifier> references = new ArrayList<>();
         int i = 0;
+        String upperValue = value.toUpperCase();
 
-        while (i < value.length()) {
+        while (i < upperValue.length()) {
             // Find the start of a REF command
-            int start = value.indexOf("{REF,", i);
+            int start = upperValue.indexOf("{REF,", i);
 
             // If no more REF commands are found, break the loop
             if (start == -1) {
-                break;
+               break;
             }
 
             // Move the index to where the cell ID should start
             int cellIdStart = start + 5; // Move past "{REF,"
 
             // Skip any whitespace after "{REF,"
-            while (cellIdStart < value.length() && value.charAt(cellIdStart) == ' ') {
+            while (cellIdStart < upperValue.length() && upperValue.charAt(cellIdStart) == ' ') {
                 cellIdStart++;
             }
 
             // Find the end of the cell ID (it's before the next comma or closing brace)
             int cellIdEnd = cellIdStart;
-            while (cellIdEnd < value.length() && value.charAt(cellIdEnd) != ',' && value.charAt(cellIdEnd) != '}') {
+            while (cellIdEnd < upperValue.length() && upperValue.charAt(cellIdEnd) != ',' && upperValue.charAt(cellIdEnd) != '}') {
                 cellIdEnd++;
             }
 
             // Extract and add the cell ID if it's valid
             if (cellIdEnd > cellIdStart) {
-                String cellId = value.substring(cellIdStart, cellIdEnd).trim();
+                String cellId = upperValue.substring(cellIdStart, cellIdEnd).trim();
                 references.add(new CellIdentifierImpl(cellId)); // Assuming CellIdentifierImpl has this constructor
             }
 
