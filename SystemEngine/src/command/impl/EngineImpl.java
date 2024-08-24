@@ -5,6 +5,7 @@ import dto.CellDto;
 import dto.SheetDto;
 import dto.VerDto;
 import expressions.api.Expression;
+
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -105,10 +106,6 @@ public class EngineImpl implements Engine {
 
     @Override
     public SheetDto displayCurrentSpreadsheet() {
-        // Check if currentSheet is null
-        if (currentSheet == null) {
-            throw new IllegalStateException("Current sheet is not available");
-        }
 
         String name = currentSheet.getName();
         int version = currentSheet.getVersion();
@@ -135,6 +132,7 @@ public class EngineImpl implements Engine {
 
     @Override
     public CellDto displayCellValue(String cellid) {
+
         // Check if cellid is null or empty
         if (cellid == null || cellid.isEmpty()) {
             throw new IllegalArgumentException("Cell ID cannot be null or empty");
@@ -165,6 +163,7 @@ public class EngineImpl implements Engine {
 
     @Override
     public CellDto updateCell(String cellid, String originalValue) {
+
         if (originalValue == null) {
             throw new IllegalArgumentException("Original value must be entered (can also be empty)");
         }
@@ -215,9 +214,6 @@ public class EngineImpl implements Engine {
 
     @Override
     public VerDto displayVersions() {
-        if (currentSheet == null) {
-            throw new IllegalStateException("Current sheet is not available");
-        }
 
         Map<Integer, SheetDto> versionSheetDtoMap = new HashMap<>();
 
@@ -287,6 +283,12 @@ public class EngineImpl implements Engine {
     @Override
     public ExitDto exitSystem() {
         return new ExitDto("Exiting application. Goodbye!");
+    }
+    @Override
+    public void checkIfFileLoaded(){
+        if (currentSheet == null) {
+            throw new IllegalStateException("Current sheet is not available, please load file first");
+        }
     }
 }
 

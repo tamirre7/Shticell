@@ -27,6 +27,7 @@ public class MainMenu implements Menu {
 
     @Override
     public void handleSelection(int option) {
+        try {
         switch (option) {
             case 1:
                 Command loadFile = new LoadFile();
@@ -41,9 +42,9 @@ public class MainMenu implements Menu {
                 displayCell.execute(engine);
                 break;
             case 4:
-               Command updateCell = new UpdateCellValue();
+                Command updateCell = new UpdateCellValue();
                 updateCell.execute(engine);
-               break;
+                break;
             case 5:
                 Command displayVer = new DisplaySheetVersions();
                 displayVer.execute(engine);
@@ -54,6 +55,13 @@ public class MainMenu implements Menu {
                 break;
             default:
                 System.out.println("Invalid option: Please enter a number between 1 and 6. You have entered:" + option);
+                System.out.println();
+        }
+       
+    }
+        catch (IllegalStateException e) {
+        System.out.println(e.getMessage());
+        System.out.println();
         }
     }
 
@@ -61,9 +69,13 @@ public class MainMenu implements Menu {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
+        System.out.println("Welcome to Shticell!");
+        System.out.println();
+
         while (running) {
             display();
             System.out.print("Please select an option: ");
+            System.out.println();
             int option;
 
             // Validate input

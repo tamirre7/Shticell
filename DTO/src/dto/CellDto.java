@@ -1,13 +1,16 @@
 package dto;
 
+
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 
 import java.util.Collections;
 import java.util.List;
 
+
 public class CellDto {
-    private final CellIdentifierImpl identifier;
+    CellIdentifierImpl cellIdentifier;
     private final String originalValue;
     private final EffectiveValue effectiveValue;
     private final int lastModifiedVersion;
@@ -15,9 +18,9 @@ public class CellDto {
     private final List<CellIdentifierImpl> influences;
 
     // Parameterized constructor
-    public CellDto(CellIdentifierImpl identifier, String originalValue, EffectiveValue effectiveValue,
+    public CellDto(CellIdentifierImpl cellid, String originalValue, EffectiveValue effectiveValue,
                    int lastModifiedVersion, List<CellIdentifierImpl> dependencies, List<CellIdentifierImpl> influences) {
-        this.identifier = identifier;
+        this.cellIdentifier = cellid;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
         this.lastModifiedVersion = lastModifiedVersion;
@@ -25,9 +28,8 @@ public class CellDto {
         this.influences = Collections.unmodifiableList(influences);
     }
 
-    // Getters
     public CellIdentifierImpl getCellId() {
-        return identifier;
+        return cellIdentifier;
     }
 
     public String getOriginalValue() {

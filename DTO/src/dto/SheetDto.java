@@ -1,5 +1,6 @@
 package dto;
 
+
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.CellIdentifier;
 
@@ -45,7 +46,7 @@ public class SheetDto {
         return version;
     }
 
-    public Dimension getSheetDimentions() {return sheetDimension;}
+    public Dimension getSheetDimensions() {return sheetDimension;}
 
     // Return an unmodifiable view of the map to prevent external modification
     public Map<CellIdentifier, CellDto> getCells() {

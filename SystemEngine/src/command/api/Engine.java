@@ -11,5 +11,6 @@ public interface Engine {
     CellDto updateCell(String cellid, String originalValue);
     VerDto displayVersions();
     SheetDto displaySheetByVersion(int version);
+    void checkIfFileLoaded();
     ExitDto exitSystem();
 }

@@ -16,6 +16,8 @@ public class UpdateCellValue implements Command {
         String cellID = null;
         CellDto cellDto = null;
 
+        engine.checkIfFileLoaded();
+
         // Step 1: Loop until a valid cell ID is entered
         while (cellDto == null) {
             System.out.println("Please enter the cell ID:");

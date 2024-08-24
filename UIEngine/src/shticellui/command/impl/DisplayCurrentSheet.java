@@ -9,6 +9,7 @@ import shticellui.print.impl.SpreadSheetPrint;
 public class DisplayCurrentSheet implements Command {
     @Override
     public void execute(Engine engine) {
+        engine.checkIfFileLoaded();
         SheetDto sheet = engine.displayCurrentSpreadsheet();
         Printable sheetToPrint = new SpreadSheetPrint(sheet);
         sheetToPrint.print();

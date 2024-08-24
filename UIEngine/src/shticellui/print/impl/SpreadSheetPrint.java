@@ -20,10 +20,10 @@ public class SpreadSheetPrint implements Printable {
         System.out.println("Version: " + sheet.getVersion());
         System.out.println("Sheet Name: " + sheet.getName());
 
-        int numRows = sheet.getSheetDimentions().getNumRows();
-        int numCols = sheet.getSheetDimentions().getNumCols();
-        int widthCol = sheet.getSheetDimentions().getWidthCol();
-        int heightRow = sheet.getSheetDimentions().getHeightRow();
+        int numRows = sheet.getSheetDimensions().getNumRows();
+        int numCols = sheet.getSheetDimensions().getNumCols();
+        int widthCol = sheet.getSheetDimensions().getWidthCol();
+        int heightRow = sheet.getSheetDimensions().getHeightRow();
 
         // Print column headers
         System.out.print("  "); // Initial space for row numbers

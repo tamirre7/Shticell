@@ -11,8 +11,10 @@ public class DisplayCellValue implements Command {
     @Override
     public void execute(Engine engine) {
         Scanner scanner = new Scanner(System.in);
-        String cellID = null;
+        String cellID;
         CellDto cellDto = null;
+
+        engine.checkIfFileLoaded();
 
         // Step 1: Loop until a valid cell ID is entered
         while (cellDto == null) {

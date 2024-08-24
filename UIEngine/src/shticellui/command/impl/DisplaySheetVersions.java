@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class DisplaySheetVersions implements Command {
     @Override
     public void execute(Engine engine) {
+        engine.checkIfFileLoaded();
         VerDto versions = engine.displayVersions();
         Printable versionsPrintable = new VersionPrint(versions);
         versionsPrintable.print();
