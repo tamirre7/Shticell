@@ -10,14 +10,11 @@ import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpreadSheetImpl implements SpreadSheet {
+public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     private final Dimension sheetDimension;
     private String name;
@@ -224,7 +221,8 @@ public class SpreadSheetImpl implements SpreadSheet {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o)
+            return true;
         if (o == null || getClass() != o.getClass()) return false;
         SpreadSheetImpl sheet = (SpreadSheetImpl) o;
         return version == sheet.version &&

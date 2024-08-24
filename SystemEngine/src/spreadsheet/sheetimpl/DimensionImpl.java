@@ -1,9 +1,10 @@
 package spreadsheet.sheetimpl;
 import spreadsheet.api.Dimension;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class DimensionImpl implements Dimension {
+public class DimensionImpl implements Dimension, Serializable {
     private final int numRows;
     private final int numCols;
     private final int widthCol;

@@ -2,7 +2,9 @@ package spreadsheet.cell.impl;
 
 import spreadsheet.cell.api.CellIdentifier;
 
-public class CellIdentifierImpl implements CellIdentifier
+import java.io.Serializable;
+
+public class CellIdentifierImpl implements CellIdentifier, Serializable
 {
     private final int row;
     private final char col;

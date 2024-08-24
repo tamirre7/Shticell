@@ -6,12 +6,13 @@ import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static expressions.parser.FunctionParser.parseExpression;
 
-public class CellImpl implements Cell
+public class CellImpl implements Cell, Serializable
 {
     private final CellIdentifierImpl identifier;
     private String originalValue;
