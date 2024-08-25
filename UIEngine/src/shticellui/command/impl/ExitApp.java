@@ -6,8 +6,9 @@ import shticellui.command.api.Command;
 
 public class ExitApp implements Command {
     @Override
-    public void execute(Engine engine) {
+    public boolean execute(Engine engine) {
        ExitDto exitDto = engine.exitSystem();
        System.out.println(exitDto.getMessage());
+       return false;
     }
 }

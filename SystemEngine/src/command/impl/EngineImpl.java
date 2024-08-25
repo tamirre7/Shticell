@@ -4,6 +4,7 @@ import command.api.Engine;
 import dto.CellDto;
 import dto.SheetDto;
 import dto.VerDto;
+import exceptions.InvalidExpressionException;
 import expressions.api.Expression;
 
 import jakarta.xml.bind.JAXBContext;
@@ -37,6 +38,13 @@ public class EngineImpl implements Engine {
     @Override
     public LoadDto loadFile(String path) {
         File file = new File(path);
+        if (!file.exists()) {
+            return new LoadDto(false, "File not found: " + path);
+        }
+        if (!path.toLowerCase().endsWith(".xml")) {
+            return new LoadDto(false, "Invalid file type: Only XML files are supported.");
+        }
+
         InputStream inputStream;
         try {
             inputStream = new FileInputStream(file);
@@ -47,54 +55,60 @@ public class EngineImpl implements Engine {
             // Unmarshal the XML file to STLSheet object
             STLSheet stlSheet = (STLSheet) unmarshaller.unmarshal(new File(path));
 
-            // Get the layout and size information from the STLSheet
+            // Validate sheet dimensions
             STLLayout stlLayout = stlSheet.getSTLLayout();
             STLSize stlSize = stlLayout.getSTLSize();
+            int numRows = stlLayout.getRows();
+            int numCols = stlLayout.getColumns();
 
-            // Create Dimentions object
+            if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
+                return new LoadDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20.");
+            }
+
+            // Create Dimensions object
             Dimension sheetDimensions = new DimensionImpl(
-                    stlLayout.getRows(),
-                    stlLayout.getColumns(),
+                    numRows,
+                    numCols,
                     stlSize.getColumnWidthUnits(),
                     stlSize.getRowsHeightUnits()
             );
 
             // Create a new SpreadSheet instance with the provided dimensions
-        SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(),1,sheetDimensions);
+            SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(), 1, sheetDimensions);
 
-            // Iterate over the cells and add them to the spreadsheet
+            // Iterate over the cells and validate their positions
             STLCells stlCells = stlSheet.getSTLCells();
             for (STLCell stlCell : stlCells.getSTLCell()) {
-                // Convert column string to char
-                char columnChar = stlCell.getColumn().charAt(0);
+                int row = stlCell.getRow();
+                String columnStr = stlCell.getColumn();
+                if (columnStr.length() != 1) {
+                    return new LoadDto(false, "Invalid cell column: " + columnStr);
+                }
+                char columnChar = columnStr.charAt(0);
+                int column = columnChar - 'A';
 
-                // Create a CellIdentifierImpl instance with row and column
-                CellIdentifierImpl cellId = new CellIdentifierImpl(stlCell.getRow(), columnChar);
+                if (row < 0 || row >= numRows || column < 0 || column >= numCols) {
+                    return new LoadDto(false, "Invalid cell position: (" + row + ", " + columnChar + ")");
+                }
 
-                Expression expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
+                CellIdentifierImpl cellId = new CellIdentifierImpl(row, columnChar);
+
+                // Evaluate the expression and validate function arguments
+                Expression expression;
+                expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
-                // Initialize dependencies and influences as empty lists or based on STLCell data
-                List<CellIdentifierImpl> dependencies = new ArrayList<>();
-                List<CellIdentifierImpl> influences = new ArrayList<>();
-
-                // Create a CellImpl instance with the cell identifier, original value, effective value,
-                // last modified version (if known, e.g., 0 for new cells), and lists for dependencies and influences
-                CellImpl cell = new CellImpl(
-                        cellId,
-                        stlCell.getSTLOriginalValue(),
-                        1, // Assuming lastModifiedVersion is 0 for new cells
-                        spreadSheet
-                );
+                CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet);
                 cell.setEffectiveValue(effectiveValue);
 
-                // Add the cell to the spreadsheet
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
             spreadSheet.setAmountOfCellsChangedInVersion(spreadSheet.getActiveCells().size());
 
+            // Update dependencies and influences
             spreadSheet.updateDependenciesAndInfluences();
 
+            // Update the current sheet and version map
             this.currentSheet = spreadSheet;
             sheetVersionMap.put(1, currentSheet);
             return new LoadDto(true, "File loaded successfully.");
@@ -106,8 +120,6 @@ public class EngineImpl implements Engine {
             return new LoadDto(false, "An unexpected error occurred: " + e.getMessage());
         }
     }
-
-
 
     @Override
     public SheetDto displayCurrentSpreadsheet() {

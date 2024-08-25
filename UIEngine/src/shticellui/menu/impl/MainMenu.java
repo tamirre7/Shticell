@@ -28,42 +28,37 @@ public class MainMenu implements Menu {
     @Override
     public void handleSelection(int option) {
         try {
-        switch (option) {
-            case 1:
-                Command loadFile = new LoadFile();
-                loadFile.execute(engine);
-                break;
-            case 2:
-                Command displaySheet = new DisplayCurrentSheet();
-                displaySheet.execute(engine);
-                break;
-            case 3:
-                Command displayCell = new DisplayCellValue();
-                displayCell.execute(engine);
-                break;
-            case 4:
-                Command updateCell = new UpdateCellValue();
-                updateCell.execute(engine);
-                break;
-            case 5:
-                Command displayVer = new DisplaySheetVersions();
-                displayVer.execute(engine);
-                break;
-            case 6:
-                Command exitApp = new ExitApp();
-                exitApp.execute(engine);
-                break;
-            default:
-                System.out.println("Invalid option: Please enter a number between 1 and 6. You have entered:" + option);
-                System.out.println();
-        }
-       
-    }
-        catch (IllegalStateException e) {
-        System.out.println(e.getMessage());
-        System.out.println();
-        }
-        catch (IllegalArgumentException e) {
+            Command command;
+            switch (option) {
+                case 1:
+                    command = new LoadFile();
+                    break;
+                case 2:
+                    command = new DisplayCurrentSheet();
+                    break;
+                case 3:
+                    command = new DisplayCellValue();
+                    break;
+                case 4:
+                    command = new UpdateCellValue();
+                    break;
+                case 5:
+                    command = new DisplaySheetVersions();
+                    break;
+                case 6:
+                    command = new ExitApp();
+                    break;
+                default:
+                    System.out.println("Invalid option: Please enter a number between 1 and 6. You have entered:" + option);
+                    System.out.println();
+                    return;
+            }
+
+            boolean continueExecution = command.execute(engine);
+            if (!continueExecution) {
+                System.out.println("Returning to main menu...");
+            }
+        } catch (IllegalStateException | IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.out.println();
         }

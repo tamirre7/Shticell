@@ -12,30 +12,34 @@ import java.util.Scanner;
 
 public class DisplaySheetVersions implements Command {
     @Override
-    public void execute(Engine engine) {
+    public boolean execute(Engine engine) {
         engine.checkIfFileLoaded();
         VerDto versions = engine.displayVersions();
         Printable versionsPrintable = new VersionPrint(versions);
         versionsPrintable.print();
         System.out.println("\n");
-        System.out.println("choose one from the following options:\n");
-        System.out.println("1. Display specific version");
-        System.out.println("2. return to main menu");
-        Scanner scanner = new Scanner(System.in);
-        int choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-                displaySpecificVersion(engine);
-            case 2:
-                //return to manu
 
+        while (true) {
+            System.out.println("Enter a version number you would like to display (or 'back' to return to main menu):");
+            Scanner scanner = new Scanner(System.in);
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("back")) {
+                return false; // Return to main menu
+            }
+
+            try {
+                int version = Integer.parseInt(input);
+                displaySpecificVersion(engine, version);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid version number or 'back'.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
-    public void displaySpecificVersion(Engine engine) {
-        System.out.println("Enter version to display:\n");
-        Scanner scanner = new Scanner(System.in);
-        int version = scanner.nextInt();
+    private void displaySpecificVersion(Engine engine, int version) {
         SheetDto sheet = engine.displaySheetByVersion(version);
         Printable sheetToPrint = new SpreadSheetPrint(sheet);
         sheetToPrint.print();

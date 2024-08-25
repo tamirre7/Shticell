@@ -21,13 +21,13 @@ public enum FunctionParser {
             }
 
             // all is good. create the relevant function instance
-            String actualValue = arguments.getFirst().trim();
+            String actualValue = arguments.getFirst();
             if (isBoolean(actualValue)) {
                 return new IdentityExpression(Boolean.parseBoolean(actualValue), CellType.BOOLEAN);
             } else if (isNumeric(actualValue)) {
                 return new IdentityExpression(Double.parseDouble(actualValue), CellType.NUMERIC);
             } else {
-                return new IdentityExpression(actualValue, CellType.STRING);
+                return new IdentityExpression(actualValue.trim(), CellType.STRING);
             }
         }
 
@@ -54,8 +54,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -75,8 +75,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -97,8 +97,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -120,8 +120,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -142,8 +142,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -164,8 +164,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -186,7 +186,7 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression exp = parseExpression(arguments.getFirst().trim(), ReadOnlySheet);
+            Expression exp = parseExpression(arguments.getFirst(), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!exp.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -207,8 +207,8 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)) {
@@ -229,9 +229,9 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0).trim(), ReadOnlySheet);
-            Expression middle = parseExpression(arguments.get(1).trim(), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(2).trim(), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression middle = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(2), ReadOnlySheet);
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
@@ -252,7 +252,7 @@ public enum FunctionParser {
             }
 
             // structure is good. parse arguments
-            String cellId = arguments.getFirst().trim().toUpperCase();
+            String cellId = arguments.getFirst().toUpperCase();
 
             CellIdentifier cellIdentifier = new CellIdentifierImpl(cellId);;
 
@@ -272,7 +272,7 @@ public enum FunctionParser {
             List<String> topLevelParts = parseMainParts(functionContent);
 
 
-            String functionName = topLevelParts.getFirst().trim().toUpperCase();
+            String functionName = topLevelParts.getFirst().toUpperCase();
 
             //remove the first element from the array
             topLevelParts.removeFirst();
@@ -280,7 +280,7 @@ public enum FunctionParser {
         }
 
         // handle identity expression
-        return FunctionParser.IDENTITY.parse(List.of(input.trim()), ReadOnlySheet);
+        return FunctionParser.IDENTITY.parse(List.of(input), ReadOnlySheet);
     }
 
     private static List<String> parseMainParts(String input) {
@@ -297,7 +297,7 @@ public enum FunctionParser {
 
             if (c == ',' && stack.isEmpty()) {
                 // If we are at a comma and the stack is empty, it's a separator for top-level parts
-                parts.add(buffer.toString().trim());
+                parts.add(buffer.toString());
                 buffer.setLength(0); // Clear the buffer for the next part
             } else {
                 buffer.append(c);
@@ -306,7 +306,7 @@ public enum FunctionParser {
 
         // Add the last part
         if (!buffer.isEmpty()) {
-            parts.add(buffer.toString().trim());
+            parts.add(buffer.toString());
         }
 
         return parts;

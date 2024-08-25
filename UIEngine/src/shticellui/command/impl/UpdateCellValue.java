@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class UpdateCellValue implements Command {
     @Override
-    public void execute(Engine engine) {
+    public boolean execute(Engine engine) {
         Scanner scanner = new Scanner(System.in);
         String cellID = null;
         CellDto cellDto = null;
@@ -20,9 +20,13 @@ public class UpdateCellValue implements Command {
 
         // Step 1: Loop until a valid cell ID is entered
         while (cellDto == null) {
-            System.out.println("Please enter the cell ID:");
+            System.out.println("Please enter the cell ID (or back to return to main menu):");
             cellID = scanner.nextLine();
             cellID = cellID.toUpperCase();
+
+            if (cellID.equals("BACK")) {
+                return false;
+            }
 
             try {
                 cellDto = engine.displayCellValue(cellID);
@@ -53,6 +57,7 @@ public class UpdateCellValue implements Command {
         // Step 3: Display the updated spreadsheet state
         SheetDto updatedSheetDto = engine.displayCurrentSpreadsheet();
         Printable printableSheet = new SpreadSheetPrint(updatedSheetDto);
-        printableSheet.print(); // Print the entire spreadsheet state
+        printableSheet.print();// Print the entire spreadsheet state
+        return true;
     }
 }

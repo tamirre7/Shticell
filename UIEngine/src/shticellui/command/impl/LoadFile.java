@@ -9,13 +9,18 @@ import java.util.Scanner;
 
 public class LoadFile implements Command {
     @Override
-    public void execute(Engine engine) {
+    public boolean execute(Engine engine) {
         Scanner scanner = new Scanner(System.in);
         LoadDto loadDetails;
 
         do {
-            System.out.println("Please enter a file path:");
+            System.out.println("Please enter a file path (or back to return to main menu):");
             String path = scanner.nextLine();
+
+            if (path.equals("back") | path.equals("BACK")) {
+                return false;
+            }
+
             System.out.println("Loading file...");
 
             // Load file and handle the result through LoadDto
@@ -28,7 +33,8 @@ public class LoadFile implements Command {
                 System.out.println(loadDetails.getMessage());
             }
 
-        } while (!loadDetails.isSucceeded());  // Continue looping until the file is loaded successfully
+        } while (!loadDetails.isSucceeded());// Continue looping until the file is loaded successfully
+        return true;
     }
 }
 
