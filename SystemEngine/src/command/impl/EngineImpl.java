@@ -38,11 +38,11 @@ public class EngineImpl implements Engine {
     @Override
     public LoadDto loadFile(String path) {
         File file = new File(path);
-        if (!file.exists()) {
-            return new LoadDto(false, "File not found: " + path);
-        }
         if (!path.toLowerCase().endsWith(".xml")) {
             return new LoadDto(false, "Invalid file type: Only XML files are supported.");
+        }
+        if (!file.exists()) {
+            return new LoadDto(false, "File not found: " + path);
         }
 
         InputStream inputStream;
@@ -95,7 +95,11 @@ public class EngineImpl implements Engine {
 
                 // Evaluate the expression and validate function arguments
                 Expression expression;
-                expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
+                try {
+                    expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
+                } catch (IllegalArgumentException e) {
+                    return new LoadDto(false, "Invalid expression in cell (" + row + ", " + columnChar + "): " + e.getMessage());
+                }
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
                 CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet);
