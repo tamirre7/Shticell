@@ -13,9 +13,11 @@ import spreadsheet.api.Dimension;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
+import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import spreadsheet.util.UpdateResult;
@@ -24,6 +26,7 @@ import dto.LoadDto;
 import dto.ExitDto;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -168,6 +171,17 @@ public class EngineImpl implements Engine {
 
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
+
+        if (cell == null || cell.getOriginalValue() == null) {
+            return new CellDto(
+                    cellIdentifier,                      // The identifier of the cell
+                    "EMPTY",                             // Default original value
+                    new EffectiveValueImpl(CellType.NOT_INIT,"EMPTY"),                             // Default effective value
+                    -1,    // Last modified version (could be current version)
+                    Collections.emptyList(),              // No dependencies
+                    Collections.emptyList()               // No influences
+            );
+        }
 
 
         // Create and return a CellDto
