@@ -1,39 +1,37 @@
 package shticellui.command.impl;
 
-import dto.SaveLoadFileDto;
 import command.api.Engine;
+import dto.SaveLoadFileDto;
 import shticellui.command.api.Command;
 
 import java.util.Scanner;
 
-public class LoadFile implements Command {
+public class LoadSavedFile implements Command {
     @Override
     public boolean execute(Engine engine) {
         Scanner scanner = new Scanner(System.in);
-        SaveLoadFileDto loadDetails;
-
+        SaveLoadFileDto LoadedFile;
         do {
-            System.out.println("Please enter a file path (or back to return to main menu):");
+            System.out.print("Enter the full path of the file to load without extension (or back to return to main menu): ");
             String path = scanner.nextLine();
 
             if (path.equals("back") | path.equals("BACK")) {
                 return false;
             }
 
-            System.out.println("Loading file...");
+            path += ".ser";
 
-            // Load file and handle the result through LoadDto
-            loadDetails = engine.loadFile(path);
+            System.out.println("Loading system state...");
 
-            if (loadDetails.isSucceeded()) {
+            LoadedFile = engine.loadSavedState(path);
+            if (LoadedFile.isSucceeded()) {
                 System.out.println("File loaded successfully!");
             } else {
                 System.out.println("File loading failed!");
-                System.out.println(loadDetails.getMessage());
+                System.out.println(LoadedFile.getMessage());
             }
+        } while (!LoadedFile.isSucceeded());
 
-        } while (!loadDetails.isSucceeded());// Continue looping until the file is loaded successfully
         return true;
     }
 }
-

@@ -22,7 +22,9 @@ public class MainMenu implements Menu {
         System.out.println("3. Display a Single Cell Details");
         System.out.println("4. Update Cell Value");
         System.out.println("5. Display Spreadsheet Versions");
-        System.out.println("6. Exit Application");
+        System.out.println("6. Save System State");
+        System.out.println("7. Load System State");
+        System.out.println("8. Exit Application");
     }
 
     @Override
@@ -46,10 +48,16 @@ public class MainMenu implements Menu {
                     command = new DisplaySheetVersions();
                     break;
                 case 6:
+                    command = new SaveFile();
+                    break;
+                case 7:
+                    command = new LoadSavedFile();
+                    break;
+                case 8:
                     command = new ExitApp();
                     break;
                 default:
-                    System.out.println("Invalid option: Please enter a number between 1 and 6. You have entered:" + option);
+                    System.out.println("Invalid option: Please enter a number between 1 and 8. You have entered:" + option);
                     System.out.println();
                     return;
             }

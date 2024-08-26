@@ -22,7 +22,7 @@ import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import spreadsheet.util.UpdateResult;
 import xml.generated.*;
-import dto.LoadDto;
+import dto.SaveLoadFileDto;
 import dto.ExitDto;
 
 import java.io.*;
@@ -37,13 +37,13 @@ public class EngineImpl implements Engine {
     private Map <Integer, SpreadSheet> sheetVersionMap = new HashMap<>();
 
     @Override
-    public LoadDto loadFile(String path) {
+    public SaveLoadFileDto loadFile(String path) {
         File file = new File(path);
         if (!path.toLowerCase().endsWith(".xml")) {
-            return new LoadDto(false, "Invalid file type: Only XML files are supported.");
+            return new SaveLoadFileDto(false, "Invalid file type: Only XML files are supported.");
         }
         if (!file.exists()) {
-            return new LoadDto(false, "File not found: " + path);
+            return new SaveLoadFileDto(false, "File not found: " + path);
         }
 
         InputStream inputStream;
@@ -63,7 +63,7 @@ public class EngineImpl implements Engine {
             int numCols = stlLayout.getColumns();
 
             if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
-                return new LoadDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
+                return new SaveLoadFileDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
             }
 
             // Create Dimensions object
@@ -83,7 +83,7 @@ public class EngineImpl implements Engine {
                 int row = stlCell.getRow();
                 String columnStr = stlCell.getColumn();
                 if (columnStr.length() != 1) {
-                    return new LoadDto(false, "Invalid cell column: " + columnStr);
+                    return new SaveLoadFileDto(false, "Invalid cell column: " + columnStr);
                 }
                 char columnChar = columnStr.charAt(0);
                 char rowChar = (char) (row + '0');
@@ -98,7 +98,7 @@ public class EngineImpl implements Engine {
                 try {
                     expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
                 } catch (IllegalArgumentException e) {
-                    return new LoadDto(false, "Invalid expression in cell (" + row + ", " + columnChar + "): " + e.getMessage());
+                    return new SaveLoadFileDto(false, "Invalid expression in cell (" + row + ", " + columnChar + "): " + e.getMessage());
                 }
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
@@ -115,13 +115,13 @@ public class EngineImpl implements Engine {
             // Update the current sheet and version map
             this.currentSheet = spreadSheet;
             sheetVersionMap.put(1, currentSheet);
-            return new LoadDto(true, "File loaded successfully.");
+            return new SaveLoadFileDto(true, "File loaded successfully.");
         } catch (FileNotFoundException e) {
-            return new LoadDto(false, "File not found: " + path);
+            return new SaveLoadFileDto(false, "File not found: " + path);
         } catch (JAXBException e) {
-            return new LoadDto(false, "XML parsing error: " + e.getMessage());
+            return new SaveLoadFileDto(false, "XML parsing error: " + e.getMessage());
         } catch (Exception e) {
-            return new LoadDto(false, "An unexpected error occurred: " + e.getMessage());
+            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -166,8 +166,6 @@ public class EngineImpl implements Engine {
 
         currentSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-
-
 
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
@@ -296,6 +294,29 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(sheet.getName(), sheet.getVersion(), cellDtos, sheet.getSheetDimentions(), currentSheet.getAmountOfCellsChangedInVersion());
+    }
+
+    public SaveLoadFileDto saveState(String path)
+    {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
+            oos.writeObject(currentSheet);
+            oos.writeObject(sheetVersionMap);
+        } catch (IOException e) {
+            throw new RuntimeException("Error saving system state: " + e.getMessage());
+        }
+        return new SaveLoadFileDto(true,"File saved successfully");
+
+    }
+    public SaveLoadFileDto loadSavedState(String path)
+    {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
+            currentSheet = (SpreadSheet) ois.readObject();
+            sheetVersionMap = (Map<Integer, SpreadSheet>) ois.readObject();
+            System.out.println("System state loaded successfully.");
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException("Error loading system state: " + e.getMessage());
+        }
+        return new SaveLoadFileDto(true,"File loaded successfully");
     }
 
 

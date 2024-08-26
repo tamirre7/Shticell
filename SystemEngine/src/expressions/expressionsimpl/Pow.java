@@ -14,11 +14,13 @@ public class Pow extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
-        double value = Math.pow(
-                arg1.extractValueWithExpectation(Double.class),
-                arg2.extractValueWithExpectation(Double.class)
-        );
-        return new EffectiveValueImpl(CellType.NUMERIC, value);
+        Double value1 = arg1.extractValueWithExpectation(Double.class);
+        Double value2 = arg2.extractValueWithExpectation(Double.class);
+        if (value1 == null || value2 == null) {
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+        }
+        double res = Math.pow(value1, value2);
+        return new EffectiveValueImpl(CellType.NUMERIC, res);
     }
 
     @Override

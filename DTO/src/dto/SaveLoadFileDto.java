@@ -1,11 +1,11 @@
 package dto;
 
-public class LoadDto {
+public class SaveLoadFileDto {
     private final boolean succeeded;
     private final String message;
 
     // Constructor
-    public LoadDto(boolean succeeded, String message) {
+    public SaveLoadFileDto(boolean succeeded, String message) {
         this.succeeded = succeeded;
         this.message = message;
     }

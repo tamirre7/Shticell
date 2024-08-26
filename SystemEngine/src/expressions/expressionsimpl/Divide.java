@@ -14,8 +14,12 @@ public class Divide extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
-        double divisor = arg2.extractValueWithExpectation(Double.class);
-        double result = divisor == 0 ? Double.NaN : arg1.extractValueWithExpectation(Double.class) / divisor;
+        Double divisor = arg2.extractValueWithExpectation(Double.class);
+        Double num = arg1.extractValueWithExpectation(Double.class);
+        if (divisor == null || num == null || divisor == 0) {
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+        }
+        double result =  num / divisor;
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
 

@@ -18,8 +18,8 @@ public class Plus extends BinaryExpression {
         Double value1 = arg1.extractValueWithExpectation(Double.class);
         Double value2 = arg2.extractValueWithExpectation(Double.class);
 
-        if (value1 == null || value2 == null) {
-            throw new IllegalArgumentException("Plus operation requires numeric values.");
+        if (arg1 == null || arg2 == null) {
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
         }
 
         // Perform addition

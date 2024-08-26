@@ -14,8 +14,13 @@ public class Concat extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
-        String value = arg1.extractValueWithExpectation(String.class) + arg2.extractValueWithExpectation(String.class);
-        return new EffectiveValueImpl(CellType.STRING, value);
+        String value1 = arg1.extractValueWithExpectation(String.class);
+        String value2 = arg2.extractValueWithExpectation(String.class);
+        if (value1 == null || value2 == null) {
+            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
+        }
+        String res = value1 + value2;
+        return new EffectiveValueImpl(CellType.STRING, res);
     }
 
     @Override
