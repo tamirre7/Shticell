@@ -3,6 +3,7 @@ package shticellui.print.impl;
 import dto.CellDto;
 import dto.SheetDto;
 import shticellui.print.api.Printable;
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;

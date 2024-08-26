@@ -31,7 +31,7 @@ public class DisplayCellValue implements Command {
                 CellPrint printableCell = new CellPrint(cellDto);
                 printableCell.print();
             } catch (IllegalArgumentException e) {
-                System.out.println("Invalid cell ID. Please try again.");
+                System.out.println(e.getMessage());
             }
         }
         return true;

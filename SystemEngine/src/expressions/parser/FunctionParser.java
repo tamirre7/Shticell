@@ -8,6 +8,7 @@ import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -59,7 +60,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for PLUS function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for PLUS function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -80,7 +81,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for MINUS function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for MINUS function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -102,7 +103,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for TIMES function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for TIMES function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -125,7 +126,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for DIVIDE function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for DIVIDE function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -147,7 +148,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for MOD function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for MOD function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -212,7 +213,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)) {
-                throw new IllegalArgumentException("Invalid argument types for CONCAT function. Expected NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for CONCAT function. Expected 2 Strings, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -235,7 +236,7 @@ public enum FunctionParser {
 
             // more validations on the expected argument types
             if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
-                throw new IllegalArgumentException("Invalid argument types for SUB function. Expected STRING and 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + middle.getFunctionResultType(ReadOnlySheet) + "and" + right.getFunctionResultType(ReadOnlySheet));
+                throw new IllegalArgumentException("Invalid argument types for SUB function. Expected 1 STRING and 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + middle.getFunctionResultType(ReadOnlySheet) + "and" + right.getFunctionResultType(ReadOnlySheet));
             }
 
             // all is good. create the relevant function instance
@@ -254,7 +255,7 @@ public enum FunctionParser {
             // structure is good. parse arguments
             String cellId = arguments.getFirst().toUpperCase();
 
-            CellIdentifier cellIdentifier = new CellIdentifierImpl(cellId);;
+            CellIdentifier cellIdentifier = new CellIdentifierImpl(cellId);
 
             // create the relevant Ref function instance
             return new Ref(cellIdentifier);
@@ -270,13 +271,21 @@ public enum FunctionParser {
 
             String functionContent = input.substring(1, input.length() - 1);
             List<String> topLevelParts = parseMainParts(functionContent);
-
-
             String functionName = topLevelParts.getFirst().toUpperCase();
-
-            //remove the first element from the array
             topLevelParts.removeFirst();
-            return FunctionParser.valueOf(functionName).parse(topLevelParts, ReadOnlySheet);
+
+            try {
+                // Try to get the function parser for the given function name
+                FunctionParser functionParser = FunctionParser.valueOf(functionName);
+                return functionParser.parse(topLevelParts, ReadOnlySheet);
+            } catch (IllegalArgumentException e) {
+                // Check if the exception was due to an unknown function name
+                if (Arrays.stream(FunctionParser.values()).noneMatch(f -> f.name().equals(functionName))) {
+                    throw new IllegalArgumentException("Unknown function: " + functionName);
+                } else {
+                    throw e; // Rethrow if the exception is not due to an unknown function
+                }
+            }
         }
 
         // handle identity expression

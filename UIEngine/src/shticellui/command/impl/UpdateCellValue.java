@@ -27,14 +27,15 @@ public class UpdateCellValue implements Command {
             if (cellID.equals("BACK")) {
                 return false;
             }
-
             try {
                 cellDto = engine.displayCellValue(cellID);
                 CellPrint printableCell = new CellPrint(cellDto);
-                printableCell.printForUpdateFunc(); // Method to print cell details for updating
-            } catch (IllegalArgumentException e) {
-                System.out.println("Invalid cell ID. Please try again.");
+                printableCell.printForUpdateFunc();
             }
+            catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+
         }
 
         // Step 2: Loop until a valid new value is entered
@@ -47,7 +48,7 @@ public class UpdateCellValue implements Command {
                 // Attempt to update the cell value
                 engine.updateCell(cellID, newValue);
                 valueUpdated = true; // Exit loop if no exception is thrown
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 // Handle exceptions related to invalid values or dependencies
                 System.out.println("Error updating cell value: " + e.getMessage());
                 System.out.println("Please try again.");

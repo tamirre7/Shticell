@@ -4,7 +4,6 @@ import command.api.Engine;
 import dto.CellDto;
 import dto.SheetDto;
 import dto.VerDto;
-import exceptions.InvalidExpressionException;
 import expressions.api.Expression;
 
 import jakarta.xml.bind.JAXBContext;
@@ -19,14 +18,13 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
+import spreadsheet.util.UpdateResult;
 import xml.generated.*;
 import dto.LoadDto;
 import dto.ExitDto;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static expressions.parser.FunctionParser.parseExpression;
@@ -62,7 +60,7 @@ public class EngineImpl implements Engine {
             int numCols = stlLayout.getColumns();
 
             if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
-                return new LoadDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20.");
+                return new LoadDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
             }
 
             // Create Dimensions object
@@ -85,13 +83,12 @@ public class EngineImpl implements Engine {
                     return new LoadDto(false, "Invalid cell column: " + columnStr);
                 }
                 char columnChar = columnStr.charAt(0);
-                int column = columnChar - 'A';
+                char rowChar = (char) (row + '0');
+                String cellID = "" + columnChar + rowChar;
 
-                if (row < 0 || row >= numRows || column < 0 || column >= numCols) {
-                    return new LoadDto(false, "Invalid cell position: (" + row + ", " + columnChar + ")");
-                }
+                spreadSheet.isValidCellID(cellID);
+                CellIdentifierImpl cellId = new CellIdentifierImpl(cellID);
 
-                CellIdentifierImpl cellId = new CellIdentifierImpl(row, columnChar);
 
                 // Evaluate the expression and validate function arguments
                 Expression expression;
@@ -164,9 +161,10 @@ public class EngineImpl implements Engine {
             throw new IllegalStateException("Current sheet is not available");
         }
 
+        currentSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
 
-        currentSheet.isValidCellID(cellIdentifier);
+
 
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
@@ -184,7 +182,7 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public CellDto updateCell(String cellid, String originalValue) {
+    public void updateCell(String cellid, String originalValue) {
 
         if (originalValue == null) {
             throw new IllegalArgumentException("Original value must be entered (can also be empty)");
@@ -195,40 +193,29 @@ public class EngineImpl implements Engine {
             throw new IllegalArgumentException("Cell ID cannot be null or empty");
         }
 
-
+        currentSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-        currentSheet.isValidCellID(cellIdentifier);
 
-        SpreadSheet updatedSheet;
-        try {
-            updatedSheet = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue);
-        } catch (Exception e) {
-            // Handle exceptions from the update process
-            throw new RuntimeException("Failed to update cell value: " + e.getMessage(), e);
-        }
+        UpdateResult updateRes;
+        SpreadSheet updateSpreadSheet;
+        updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue);
+         if(updateRes.isSuccess())
+         {
+             updateSpreadSheet = updateRes.getSheet();
+             sheetVersionMap.put(updateSpreadSheet.getVersion(), updateSpreadSheet);
+             currentSheet = updateSpreadSheet;
+         }
+         else {
+             throw new RuntimeException(updateRes.getErrorMessage());
+         }
 
-        if (!updatedSheet.equals(currentSheet)) {
-            sheetVersionMap.put(updatedSheet.getVersion(), updatedSheet);
-            currentSheet = updatedSheet;
-        }
 
         // Retrieve the cell from the currentSheet
         Cell cell = currentSheet.getCell(cellIdentifier);
         if (cell == null) {
             throw new IllegalStateException("Cell not found after update");
         }
-
-        // Create and return a CellDto
-        return new CellDto(
-                cell.getIdentifier(),
-                cell.getOriginalValue(),
-                cell.getEffectiveValue(),
-                cell.getLastModifiedVersion(),
-                cell.getDependencies(),
-                cell.getInfluences()
-        );
     }
-
 
     @Override
     public VerDto displayVersions() {

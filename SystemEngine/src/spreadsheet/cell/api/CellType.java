@@ -3,7 +3,8 @@ package spreadsheet.cell.api;
 public enum CellType {
     NUMERIC(Double.class) ,
     STRING(String.class) ,
-    BOOLEAN(Boolean.class) ;
+    BOOLEAN(Boolean.class),
+    INVALID_VALUE(Object.class);
 
     private Class<?> type;
 

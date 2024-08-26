@@ -9,6 +9,7 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
+import spreadsheet.util.UpdateResult;
 
 import java.io.*;
 import java.util.*;
@@ -37,16 +38,30 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public boolean isValidCellID(CellIdentifier cellID) {
-        if (cellID.getRow() < 1 ||
-                cellID.getRow() > this.sheetDimension.getNumRows())
-            throw new IllegalArgumentException("Invalid cell identifier - ROW out of range : Expected number between 1-" + this.sheetDimension.getNumRows() + " but got " + cellID.getRow());
+    public boolean isValidCellID(String cellID) {
+        // Regular expression to match one uppercase letter followed by one or more digits
+        String regex = "^([A-Z])([0-9]+)$";
 
-        if (cellID.getCol() < 'A' ||
-                cellID.getCol() > this.sheetDimension.getNumCols() + 'A')
-            throw new IllegalArgumentException("Invalid cell identifier - COL out of range: Expected character between A - " + this.sheetDimension.getNumCols() + 'A' + " but got " + cellID.getCol());
+        // Check if the input matches the pattern1
+        if (!cellID.matches(regex)) {
+            throw new IllegalArgumentException("Invalid cell identifier format. Expected format: A1, B2, etc and recived:" + cellID);
+        }
+
+        // Extract the column (first character) and row (remaining part)
+        char col = cellID.charAt(0);
+        int row = Integer.parseInt(cellID.substring(1));
+
+        // Validate the row and column ranges
+        if (row < 1 || row > this.sheetDimension.getNumRows()
+                || col < 'A' || col > this.sheetDimension.getNumCols() + 'A') {
+            throw new IllegalArgumentException("Invalid cell identifier - Row: Expected number between 1-"
+                    + this.sheetDimension.getNumRows() + " and got " + row
+                    + "\n" + "Col: Expected char between A - "
+                    + (char) (this.sheetDimension.getNumCols() - 1 + 'A') + " and got " + col);
+        }
 
         return true;
+
     }
 
     @Override
@@ -89,7 +104,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         activeCells.remove(identifier);
     }
     @Override
-    public SpreadSheet updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
+    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
         SpreadSheetImpl newSheetVersion = copySheet();
         Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + 1, newSheetVersion);
         newSheetVersion.activeCells.put(cellId, newCell);
@@ -108,10 +123,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
              newSheetVersion.setAmountOfCellsChangedInVersion(cellsThatHaveChanged.size());
              newSheetVersion.updateDependenciesAndInfluences();
 
-        return newSheetVersion;
+        return new UpdateResult(newSheetVersion,null);
         } catch (Exception e) {
-            // deal with the runtime error that was discovered as part of invocation
-            return this;
+            return new UpdateResult(this, e.getMessage());
         }
     }
 

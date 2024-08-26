@@ -21,7 +21,7 @@ public class Sub extends TernaryExpression {
         if (sourceStr == null || startIdx == null || endIdx == null ||
                 startIdx < 0 || endIdx >= sourceStr.length() || startIdx > endIdx ||
                 !isInteger(startIdx) || !isInteger(endIdx)) {
-            return new EffectiveValueImpl(CellType.STRING, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
         }
 
         int start = (int) Math.floor(startIdx);

@@ -1,6 +1,8 @@
 package spreadsheet.cell.impl;
 
+import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellIdentifier;
+import spreadsheet.sheetimpl.SpreadSheetImpl;
 
 import java.io.Serializable;
 
@@ -17,7 +19,7 @@ public class CellIdentifierImpl implements CellIdentifier, Serializable
     }
 
     // Method to create a CellIdentifierImpl from a string
-    public  CellIdentifierImpl(String cellId) {
+    public  CellIdentifierImpl(String cellId ) {
         if (cellId == null || cellId.isEmpty()) {
             throw new IllegalArgumentException("Cell ID cannot be null or empty");
         }
@@ -33,6 +35,7 @@ public class CellIdentifierImpl implements CellIdentifier, Serializable
             // Handle exceptions related to invalid row number or column letter
             throw new IllegalArgumentException("Invalid cell identifier: " + cellId, e);
         }
+
 
         this.row = row;
         this.col = col;

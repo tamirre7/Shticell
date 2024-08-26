@@ -10,7 +10,7 @@ public interface ReadOnlySpreadSheet {
     EffectiveValue getCellEffectiveValue(CellIdentifier identifier);
     String getName();
     int getVersion();
-    boolean isValidCellID(CellIdentifier cellID);
+    boolean isValidCellID(String cellID);
     Dimension getSheetDimentions();
     Map<CellIdentifier, Cell> getActiveCells();
     Cell getCell(CellIdentifier identifier);
