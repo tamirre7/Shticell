@@ -14,10 +14,7 @@ public class Sub extends TernaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue source, EffectiveValue startIndex, EffectiveValue endIndex) {
-        if (source == null && startIndex == null && endIndex == null ||
-                source.getCellType() == CellType.INVALID_VALUE
-        || startIndex.getCellType() == CellType.INVALID_VALUE ||
-                endIndex.getCellType() == CellType.INVALID_VALUE) {
+        if (source == null && startIndex == null && endIndex == null) {
             return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
         }
         String sourceStr = source.extractValueWithExpectation(String.class);

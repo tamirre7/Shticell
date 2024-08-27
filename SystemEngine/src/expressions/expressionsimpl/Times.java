@@ -14,7 +14,7 @@ public class Times extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
-        if (arg1 == null || arg2 == null || arg1.getCellType() == CellType.INVALID_VALUE || arg2.getCellType() == CellType.INVALID_VALUE) {
+        if (arg1 == null || arg2 == null) {
             return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
         }
         Double value1 = arg1.extractValueWithExpectation(Double.class);

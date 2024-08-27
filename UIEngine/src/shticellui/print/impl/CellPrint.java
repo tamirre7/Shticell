@@ -15,7 +15,6 @@ public class CellPrint implements Printable {
     public void print() {
         String effectiveValue = cell.getEffectiveValue().getCellType() == CellType.NOT_INIT ? "EMPTY" : cell.getEffectiveValue().getValue().toString();
         String originalValue = cell.getEffectiveValue().getCellType() == CellType.NOT_INIT ? "EMPTY" : cell.getOriginalValue();
-
         System.out.println("Cell: identifier: " + cell.getCellId());
         System.out.println("OriginalValue = " + originalValue);
         System.out.println("EffectiveValue = " + effectiveValue);
@@ -28,7 +27,6 @@ public class CellPrint implements Printable {
     {
         String effectiveValue = cell.getEffectiveValue().getCellType() == CellType.NOT_INIT ? "EMPTY" : cell.getEffectiveValue().getValue().toString();
         String originalValue = cell.getEffectiveValue().getCellType() == CellType.NOT_INIT ? "EMPTY" : cell.getOriginalValue();
-
         System.out.println("Cell identifier: " + cell.getCellId());
         System.out.println("OriginalValue = " + originalValue);
         System.out.println("EffectiveValue = " + effectiveValue);

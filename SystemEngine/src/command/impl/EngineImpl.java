@@ -98,7 +98,7 @@ public class EngineImpl implements Engine {
                 try {
                     expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
                 } catch (IllegalArgumentException e) {
-                    return new SaveLoadFileDto(false, "Invalid expression in cell (" + row + ", " + columnChar + "): " + e.getMessage());
+                    return new SaveLoadFileDto(false, "Invalid expression in cell (" + columnChar + "," + row + "): " + e.getMessage());
                 }
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
@@ -114,6 +114,7 @@ public class EngineImpl implements Engine {
 
             // Update the current sheet and version map
             this.currentSheet = spreadSheet;
+            sheetVersionMap = new HashMap<>();
             sheetVersionMap.put(1, currentSheet);
             return new SaveLoadFileDto(true, "File loaded successfully.");
         } catch (FileNotFoundException e) {
@@ -175,7 +176,7 @@ public class EngineImpl implements Engine {
                     cellIdentifier,                      // The identifier of the cell
                     "EMPTY",                             // Default original value
                     new EffectiveValueImpl(CellType.NOT_INIT,"EMPTY"),                             // Default effective value
-                    -1,    // Last modified version (could be current version)
+                    0,    // Last modified version (could be current version)
                     Collections.emptyList(),              // No dependencies
                     Collections.emptyList()               // No influences
             );

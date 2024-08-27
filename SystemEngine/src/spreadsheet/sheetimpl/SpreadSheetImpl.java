@@ -123,6 +123,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
              cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
              newSheetVersion.setAmountOfCellsChangedInVersion(cellsThatHaveChanged.size());
              newSheetVersion.updateDependenciesAndInfluences();
+             for (Cell cell : newSheetVersion.activeCells.values()) {
+                 cell.calculateEffectiveValue();
+             }
 
         return new UpdateResult(newSheetVersion,null);
         } catch (Exception e) {
@@ -154,6 +157,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                     // Add current cell to the influences of the referenced cell
                     cell.getDependencies().add(referencedCell.getIdentifier());
                 }
+
             }
         }
 

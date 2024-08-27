@@ -28,6 +28,8 @@ public class Ref implements Expression {
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
         if (cellEffectiveVal == null)
             return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
+        if (cellEffectiveVal.getCellType() == CellType.NOT_INIT)
+            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
         return spreadSheet.getCellEffectiveValue(cellIdentifier);
     }
 

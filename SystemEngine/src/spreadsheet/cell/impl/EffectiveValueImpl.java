@@ -27,6 +27,8 @@ public class EffectiveValueImpl implements EffectiveValue, Serializable {
 
     @Override
     public <T> T extractValueWithExpectation(Class<T> type) {
+        if (cellType == CellType.NOT_INIT || cellType == CellType.INVALID_VALUE)
+            return null;
         if (cellType.isAssignableFrom(type)) {
             return type.cast(value);
         }
