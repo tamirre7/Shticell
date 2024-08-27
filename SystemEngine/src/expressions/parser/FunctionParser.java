@@ -23,6 +23,8 @@ public enum FunctionParser {
 
             // all is good. create the relevant function instance
             String actualValue = arguments.getFirst();
+            if (actualValue.length() == 0)
+                return new IdentityExpression("", CellType.NOT_INIT);
             if (isBoolean(actualValue)) {
                 return new IdentityExpression(Boolean.parseBoolean(actualValue), CellType.BOOLEAN);
             } else if (isNumeric(actualValue)) {
@@ -33,7 +35,7 @@ public enum FunctionParser {
         }
 
         private boolean isBoolean(String value) {
-            return "true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value);
+            return "TRUE".equalsIgnoreCase(value) || "FALSE".equalsIgnoreCase(value);
         }
 
 

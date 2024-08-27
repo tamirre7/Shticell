@@ -105,7 +105,8 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
     @Override
     public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
-        SpreadSheetImpl newSheetVersion = copySheet();
+        SpreadSheetImpl newSheetVersion = this.copySheet();
+        newSheetVersion.updateDependenciesAndInfluences();
         Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + 1, newSheetVersion);
         newSheetVersion.activeCells.put(cellId, newCell);
 
