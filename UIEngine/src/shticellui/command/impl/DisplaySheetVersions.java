@@ -13,7 +13,13 @@ import java.util.Scanner;
 public class DisplaySheetVersions implements Command {
     @Override
     public boolean execute(Engine engine) {
-        engine.checkIfFileLoaded();
+        try {
+            engine.checkIfFileLoaded();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+            return false; // Return to main menu if no file is loaded
+        }
+
         VerDto versions = engine.displayVersions();
         Printable versionsPrintable = new VersionPrint(versions);
         versionsPrintable.print();

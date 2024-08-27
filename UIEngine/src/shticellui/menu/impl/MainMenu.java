@@ -92,7 +92,7 @@ public class MainMenu implements Menu {
             }
             option = scanner.nextInt();
 
-            if (option == 6)  // Exit option
+            if (option == 8)  // Exit option
                 running = false;
             handleSelection(option);
         }

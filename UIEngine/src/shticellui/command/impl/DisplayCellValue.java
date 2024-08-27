@@ -14,7 +14,13 @@ public class DisplayCellValue implements Command {
         String cellID;
         CellDto cellDto = null;
 
-        engine.checkIfFileLoaded();
+        try {
+            engine.checkIfFileLoaded();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+            return false; // Return to main menu if no file is loaded
+        }
+
 
         // Step 1: Loop until a valid cell ID is entered
         while (cellDto == null) {

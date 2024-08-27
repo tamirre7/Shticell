@@ -9,7 +9,13 @@ import shticellui.print.impl.SpreadSheetPrint;
 public class DisplayCurrentSheet implements Command {
     @Override
     public boolean execute(Engine engine) {
-        engine.checkIfFileLoaded();
+        try {
+            engine.checkIfFileLoaded();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+            return false; // Return to main menu if no file is loaded
+        }
+
         SheetDto sheet = engine.displayCurrentSpreadsheet();
         Printable sheetToPrint = new SpreadSheetPrint(sheet);
         sheetToPrint.print();

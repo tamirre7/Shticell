@@ -301,8 +301,12 @@ public class EngineImpl implements Engine {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(currentSheet);
             oos.writeObject(sheetVersionMap);
+        }  catch (FileNotFoundException e) {
+            return new SaveLoadFileDto(false, "File not found: " + path);
         } catch (IOException e) {
-            throw new RuntimeException("Error saving system state: " + e.getMessage());
+            return new SaveLoadFileDto(false, "IO error while saving: " + e.getMessage());
+        } catch (Exception e) {
+            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
         return new SaveLoadFileDto(true,"File saved successfully");
 
@@ -313,8 +317,14 @@ public class EngineImpl implements Engine {
             currentSheet = (SpreadSheet) ois.readObject();
             sheetVersionMap = (Map<Integer, SpreadSheet>) ois.readObject();
             System.out.println("System state loaded successfully.");
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Error loading system state: " + e.getMessage());
+        } catch (FileNotFoundException e) {
+            return new SaveLoadFileDto(false, "File not found: " + path);
+        } catch (IOException e) {
+            return new SaveLoadFileDto(false, "IO error while loading: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            return new SaveLoadFileDto(false, "Class not found during loading: " + e.getMessage());
+        } catch (Exception e) {
+            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
         return new SaveLoadFileDto(true,"File loaded successfully");
     }
