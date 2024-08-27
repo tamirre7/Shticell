@@ -63,7 +63,7 @@ public class MainMenu implements Menu {
             }
 
             boolean continueExecution = command.execute(engine);
-            if (!continueExecution) {
+            if (!continueExecution && !(command instanceof ExitApp)) {
                 System.out.println("Returning to main menu...");
             }
         } catch (IllegalStateException | IllegalArgumentException e) {

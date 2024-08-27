@@ -31,6 +31,8 @@ public class Ref implements Expression {
     @Override
     public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
+        if (cellEffectiveVal == null)
+            return  CellType.INVALID_VALUE;
         return cellEffectiveVal.getCellType();
     }
 }

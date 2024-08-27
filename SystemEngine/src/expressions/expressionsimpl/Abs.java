@@ -14,9 +14,10 @@ public class Abs extends UnaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg) {
-        Double value = Math.abs(arg.extractValueWithExpectation(Double.class));
-        if (value == null)
+        if (arg == null) {
             return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+        }
+        Double value = Math.abs(arg.extractValueWithExpectation(Double.class));
         return new EffectiveValueImpl(CellType.NUMERIC, value);
     }
 

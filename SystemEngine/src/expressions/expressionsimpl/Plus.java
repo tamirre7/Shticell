@@ -14,13 +14,14 @@ public class Plus extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
+        if (arg1 == null || arg2 == null) {
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+        }
         // Ensure both arguments are numeric
         Double value1 = arg1.extractValueWithExpectation(Double.class);
         Double value2 = arg2.extractValueWithExpectation(Double.class);
 
-        if (arg1 == null || arg2 == null) {
-            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
-        }
+
 
         // Perform addition
         double result = value1 + value2;

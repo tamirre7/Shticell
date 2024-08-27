@@ -59,7 +59,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))) {
                 throw new IllegalArgumentException("Invalid argument types for PLUS function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -80,7 +83,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))) {
                 throw new IllegalArgumentException("Invalid argument types for MINUS function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -102,7 +108,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))){
                 throw new IllegalArgumentException("Invalid argument types for TIMES function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -125,7 +134,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))) {
                 throw new IllegalArgumentException("Invalid argument types for DIVIDE function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -147,7 +159,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))) {
                 throw new IllegalArgumentException("Invalid argument types for MOD function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -169,7 +184,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if ((!left.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
+                    || (!right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))) {
                 throw new IllegalArgumentException("Invalid argument types for POW function. Expected 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -190,7 +208,7 @@ public enum FunctionParser {
             Expression exp = parseExpression(arguments.getFirst(), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!exp.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if (!exp.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) && !exp.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)) {
                 throw new IllegalArgumentException("Invalid argument types for ABS function. Expected NUMERIC, but got " + exp.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -212,7 +230,10 @@ public enum FunctionParser {
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)) {
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)
+                    || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)) {
                 throw new IllegalArgumentException("Invalid argument types for CONCAT function. Expected 2 Strings, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + right.getFunctionResultType(ReadOnlySheet));
             }
 
@@ -233,9 +254,17 @@ public enum FunctionParser {
             Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
             Expression middle = parseExpression(arguments.get(1), ReadOnlySheet);
             Expression right = parseExpression(arguments.get(2), ReadOnlySheet);
-
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)
+                    || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE))
             // more validations on the expected argument types
-            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING) || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC) || !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)) {
+            if (!left.getFunctionResultType(ReadOnlySheet).equals(CellType.STRING)
+                    && !left.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)
+                    || !right.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !right.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)
+                    || !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.NUMERIC)
+                    && !middle.getFunctionResultType(ReadOnlySheet).equals(CellType.INVALID_VALUE)) {
                 throw new IllegalArgumentException("Invalid argument types for SUB function. Expected 1 STRING and 2 NUMERIC, but got " + left.getFunctionResultType(ReadOnlySheet) + " and " + middle.getFunctionResultType(ReadOnlySheet) + "and" + right.getFunctionResultType(ReadOnlySheet));
             }
 

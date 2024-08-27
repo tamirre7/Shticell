@@ -14,6 +14,9 @@ public class Divide extends BinaryExpression {
 
     @Override
     protected EffectiveValue evaluate(EffectiveValue arg1, EffectiveValue arg2) {
+        if (arg1 == null || arg2 == null) {
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+        }
         Double divisor = arg2.extractValueWithExpectation(Double.class);
         Double num = arg1.extractValueWithExpectation(Double.class);
         if (divisor == null || num == null || divisor == 0) {
