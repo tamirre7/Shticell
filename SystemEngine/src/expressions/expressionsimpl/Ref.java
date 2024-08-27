@@ -5,6 +5,7 @@ import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.api.CellIdentifier;
+import spreadsheet.cell.impl.EffectiveValueImpl;
 
 public class Ref implements Expression {
 
@@ -24,6 +25,9 @@ public class Ref implements Expression {
                 cellIdentifier.getCol() > spreadSheet.getSheetDimentions().getNumCols() + 'A')
             throw new IllegalArgumentException("Invalid cell identifier - COL out of range: Expected character between A - " + spreadSheet.getSheetDimentions().getNumCols() + 'A' + " but got " + cellIdentifier.getCol());
 
+        EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
+        if (cellEffectiveVal == null)
+            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
         return spreadSheet.getCellEffectiveValue(cellIdentifier);
     }
 

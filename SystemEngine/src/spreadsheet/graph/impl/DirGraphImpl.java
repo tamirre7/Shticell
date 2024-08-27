@@ -23,13 +23,13 @@ public class DirGraphImpl<T> implements DirGraph<T> {
         inDegree.put(to, inDegree.get(to) + 1);
     }
 
-
     public List<T> topologicalSort() {
         List<T> sortedList = new ArrayList<>();
         Queue<T> queue = new LinkedList<>();
+        Map<T, Integer> localInDegree = new HashMap<>(inDegree);
 
-        // Add nodes with zero in-degree to the queue
-        for (Map.Entry<T, Integer> entry : inDegree.entrySet()) {
+
+        for (Map.Entry<T, Integer> entry : localInDegree.entrySet()) {
             if (entry.getValue() == 0) {
                 queue.add(entry.getKey());
             }
@@ -40,16 +40,16 @@ public class DirGraphImpl<T> implements DirGraph<T> {
             sortedList.add(node);
 
             for (T neighbor : adjacencyList.get(node)) {
-                inDegree.put(neighbor, inDegree.get(neighbor) - 1);
-                if (inDegree.get(neighbor) == 0) {
+                localInDegree.put(neighbor, localInDegree.get(neighbor) - 1);
+                if (localInDegree.get(neighbor) == 0) {
                     queue.add(neighbor);
                 }
             }
         }
 
-        // Check for cycles
+
         if (sortedList.size() != adjacencyList.size()) {
-            throw new IllegalStateException("Graph contains a cycle.");
+            throw new IllegalStateException("Cycle Detected!");
         }
 
         return sortedList;

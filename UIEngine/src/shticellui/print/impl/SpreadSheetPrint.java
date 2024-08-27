@@ -3,11 +3,10 @@ package shticellui.print.impl;
 import dto.CellDto;
 import dto.SheetDto;
 import shticellui.print.api.Printable;
-import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
-import spreadsheet.cell.impl.CellImpl;
+
 
 public class SpreadSheetPrint implements Printable {
     private final SheetDto sheet;
@@ -44,17 +43,17 @@ public class SpreadSheetPrint implements Printable {
 
         // Print each row
         for (int row = 1; row <= numRows; row++) {
-            System.out.print(String.format("%02d", row)); // Row number
+            System.out.printf("%02d", row); // Row number
             System.out.print("|");
 
             for (int col = 0; col < numCols; col++) {
                 CellIdentifier cellID = new CellIdentifierImpl(row, (char) ('A' + col));
                 CellDto currentCell = sheet.getCells().get(cellID);
                 if (currentCell == null) {
-                    System.out.print(String.format("%-" + widthCol + "s", ' '));
+                    System.out.printf("%-" + widthCol + "s", ' ');
                 } else {
                     EffectiveValue cellContent = currentCell.getEffectiveValue(); // Retrieve cell content
-                    System.out.print(String.format("%-" + widthCol + "s", cellContent.getValue()));
+                    System.out.printf("%-" + widthCol + "s", cellContent.getValue());
                 }
 
                 if (col < numCols - 1) {

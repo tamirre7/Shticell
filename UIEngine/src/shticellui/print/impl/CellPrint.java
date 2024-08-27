@@ -15,9 +15,9 @@ public class CellPrint implements Printable {
         System.out.println("Cell: identifier: " + cell.getCellId());
         System.out.println("OriginalValue = " + cell.getOriginalValue());
         System.out.println("EffectiveValue = " + cell.getEffectiveValue().getValue().toString());
-        System.out.println("lastModifiedVersion = " + cell.getLastModifiedVersion());
-        System.out.println("dependencies = " + cell.getDependencies());
-        System.out.println("influences = " + cell.getInfluences());
+        System.out.println("LastModifiedVersion = " + cell.getLastModifiedVersion());
+        System.out.println("Depends On = " + cell.getDependencies());
+        System.out.println("Influence On = " + cell.getInfluences());
 
     }
 

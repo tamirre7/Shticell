@@ -44,7 +44,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
         // Check if the input matches the pattern1
         if (!cellID.matches(regex)) {
-            throw new IllegalArgumentException("Invalid cell identifier format. Expected format: A1, B2, etc and recived:" + cellID);
+            throw new IllegalArgumentException("Invalid cell identifier format. Expected format: A1, B2, etc and received:" + cellID);
         }
 
         // Extract the column (first character) and row (remaining part)
@@ -141,7 +141,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         for (Cell cell : activeCells.values()) {
             // Parse the cell's value to find references
             String originalValue = cell.getOriginalValue();
-            List<CellIdentifier> referencedCellIds = extractReferences(originalValue);  // Updated to use extractReferences
+            List<CellIdentifier> referencedCellIds = extractReferences(originalValue);
 
             for (CellIdentifier referencedCellId : referencedCellIds) {
                 Cell referencedCell = activeCells.get(referencedCellId);
@@ -155,7 +155,15 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 }
             }
         }
+
+        // Check for cycles immediately after updating dependencies and influences
+        try {
+            orderCellsForCalculation();  // If this method fails, it means a cycle exists.
+        } catch (IllegalStateException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
     }
+
 
 
     private List<CellIdentifier> extractReferences(String value) {
