@@ -65,8 +65,15 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public EffectiveValue getCellEffectiveValue(CellIdentifier identifier) {
+    public EffectiveValue getCellEffectiveValue(CellIdentifierImpl identifier) {
         Cell cell = activeCells.get(identifier);
+        if(cell == null) {
+            //create new empty cell
+            CellImpl newCell = new CellImpl(identifier, "",0,this);
+            newCell.calculateEffectiveValue();
+            activeCells.put(identifier, newCell);
+            this.updateDependenciesAndInfluences();
+        }
         return cell != null ? cell.getEffectiveValue() : null;
     }
 

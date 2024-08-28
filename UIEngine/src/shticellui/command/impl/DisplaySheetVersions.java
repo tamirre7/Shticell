@@ -23,7 +23,6 @@ public class DisplaySheetVersions implements Command {
         VerDto versions = engine.displayVersions();
         Printable versionsPrintable = new VersionPrint(versions);
         versionsPrintable.print();
-        System.out.println("\n");
 
         while (true) {
             System.out.println("Enter a version number you would like to display (or 'back' to return to main menu):");

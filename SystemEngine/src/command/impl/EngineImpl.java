@@ -157,7 +157,7 @@ public class EngineImpl implements Engine {
 
         // Check if cellid is null or empty
         if (cellid == null || cellid.isEmpty()) {
-            throw new IllegalArgumentException("Cell ID cannot be null or empty");
+            throw new IllegalArgumentException("Cell ID cannot be empty");
         }
 
         // Check if currentSheet is null
@@ -203,7 +203,7 @@ public class EngineImpl implements Engine {
 
         // Check if cellid is null or empty
         if (cellid == null || cellid.isEmpty()) {
-            throw new IllegalArgumentException("Cell ID cannot be null or empty");
+            throw new IllegalArgumentException("Cell ID cannot be empty");
         }
 
         currentSheet.isValidCellID(cellid);
