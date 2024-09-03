@@ -52,4 +52,12 @@ public class EffectiveValueImpl implements EffectiveValue, Serializable {
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        if (value instanceof Boolean) {
+            return ((Boolean) value).toString().toUpperCase();
+        }
+        return value.toString();
+    }
 }

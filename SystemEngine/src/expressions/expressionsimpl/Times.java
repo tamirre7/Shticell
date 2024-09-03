@@ -26,8 +26,4 @@ public class Times extends BinaryExpression {
         double res = value1*value2;
         return new EffectiveValueImpl(CellType.NUMERIC, res);
     }
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
-    }
 }

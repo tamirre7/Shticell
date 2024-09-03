@@ -25,10 +25,4 @@ public class Divide extends BinaryExpression {
         double result =  num / divisor;
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
-    }
-
 }

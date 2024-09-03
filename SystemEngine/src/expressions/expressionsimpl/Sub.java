@@ -38,10 +38,5 @@ public class Sub extends TernaryExpression {
         // Check if the number is an integer
         return number == Math.floor(number);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.STRING;
-    }
 }
 

@@ -28,19 +28,12 @@ public class Ref implements Expression {
 
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
         if (cellEffectiveVal == null)
-            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.NOT_INIT, "");
         if (cellEffectiveVal.getCellType() == CellType.NOT_INIT)
-            return new EffectiveValueImpl(CellType.INVALID_VALUE, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.NOT_INIT, "");
+
         return spreadSheet.getCellEffectiveValue(cellIdentifier);
     }
 
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
-        if (cellEffectiveVal == null)
-            return  CellType.INVALID_VALUE;
-        return cellEffectiveVal.getCellType();
-    }
 }
 

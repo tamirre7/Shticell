@@ -219,6 +219,135 @@ public enum FunctionParser {
             // create the relevant Ref function instance
             return new Ref(cellIdentifier);
         }
+    },
+
+    EQUAL {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for EQUAL function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            return new Equal(left, right);
+        }
+    },
+
+    AND {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for AND function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            return new And(left, right);
+        }
+    },
+
+    BIGGER{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for BIGGER function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            return new Bigger(left, right);
+        }
+    },
+
+    LESS{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for LESS function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            return new Less(left, right);
+        }
+    },
+
+    NOT{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 1) {
+                throw new IllegalArgumentException("Invalid number of arguments for NOT function. Expected 1, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression exp = parseExpression(arguments.get(0), ReadOnlySheet);
+
+            return new Not(exp);
+        }
+    },
+
+    OR{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for OR function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            return new And(left, right);
+        }
+    },
+
+    PERCENT{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 2) {
+                throw new IllegalArgumentException("Invalid number of arguments for PERCENT function. Expected 2, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression part = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression whole = parseExpression(arguments.get(1), ReadOnlySheet);
+
+            // all is good. create the relevant function instance
+            return new Percent(part, whole);
+        }
+    },
+    IF {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            // validations of the function. it should have exactly two arguments
+            if (arguments.size() != 3) {
+                throw new IllegalArgumentException("Invalid number of arguments for IF function. Expected 3, but got " + arguments.size());
+            }
+
+            // structure is good. parse arguments
+            Expression condition = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression thanValue = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression elseValue = parseExpression(arguments.get(2), ReadOnlySheet);
+
+            // all is good. create the relevant function instance
+            return new If(condition, thanValue,elseValue);
+        }
     };
 
 

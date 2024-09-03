@@ -1,25 +1,23 @@
 package dto;
 
 
-import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.impl.CellIdentifierImpl;
+
 
 import java.util.Collections;
 import java.util.List;
 
 
 public class CellDto {
-    CellIdentifierImpl cellIdentifier;
+    String cellIdentifier;
     private final String originalValue;
-    private final EffectiveValue effectiveValue;
+    private final String effectiveValue;
     private final int lastModifiedVersion;
-    private final List<CellIdentifierImpl> dependencies;
-    private final List<CellIdentifierImpl> influences;
+    private final List<String> dependencies;
+    private final List<String> influences;
 
     // Parameterized constructor
-    public CellDto(CellIdentifierImpl cellid, String originalValue, EffectiveValue effectiveValue,
-                   int lastModifiedVersion, List<CellIdentifierImpl> dependencies, List<CellIdentifierImpl> influences) {
+    public CellDto(String cellid, String originalValue, String effectiveValue,
+                   int lastModifiedVersion, List<String> dependencies, List<String> influences) {
         this.cellIdentifier = cellid;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
@@ -28,7 +26,7 @@ public class CellDto {
         this.influences = Collections.unmodifiableList(influences);
     }
 
-    public CellIdentifierImpl getCellId() {
+    public String getCellId() {
         return cellIdentifier;
     }
 
@@ -36,7 +34,7 @@ public class CellDto {
         return originalValue;
     }
 
-    public EffectiveValue getEffectiveValue() {
+    public String getEffectiveValue() {
         return effectiveValue;
     }
 
@@ -44,11 +42,11 @@ public class CellDto {
         return lastModifiedVersion;
     }
 
-    public List<CellIdentifierImpl> getDependencies() {
+    public List<String> getDependencies() {
         return dependencies;
     }
 
-    public List<CellIdentifierImpl> getInfluences() {
+    public List<String> getInfluences() {
         return influences;
     }
 }

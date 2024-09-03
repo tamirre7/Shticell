@@ -25,9 +25,4 @@ public class Concat extends BinaryExpression {
         String res = value1 + value2;
         return new EffectiveValueImpl(CellType.STRING, res);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.STRING;
-    }
 }

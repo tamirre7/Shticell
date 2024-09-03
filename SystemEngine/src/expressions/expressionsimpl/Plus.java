@@ -30,9 +30,4 @@ public class Plus extends BinaryExpression {
         // Return the result wrapped in an EffectiveValue
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
-    }
 }

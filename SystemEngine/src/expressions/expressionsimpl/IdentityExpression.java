@@ -20,9 +20,4 @@ public class IdentityExpression implements Expression {
     public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         return new EffectiveValueImpl(type, value);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return type;
-    }
 }

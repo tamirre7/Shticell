@@ -79,7 +79,6 @@ public class CellImpl implements Cell, Serializable
     public void resetInfluences() {this.influences.clear(); }
 
 
-
     @Override
    public void updateVersion(int version) {
         this.lastModifiedVersion = version;

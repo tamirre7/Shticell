@@ -26,9 +26,7 @@ import dto.SaveLoadFileDto;
 import dto.ExitDto;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static expressions.parser.FunctionParser.parseExpression;
 
@@ -134,21 +132,21 @@ public class EngineImpl implements Engine {
         Dimension dimensions = currentSheet.getSheetDimentions();
 
         // Convert cells from Cell to CellDto
-        Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+        Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
             Cell cell = entry.getValue();
             CellDto cellDto = new CellDto(
-                    cell.getIdentifier(),
+                    cell.getIdentifier().toString(),
                     cell.getOriginalValue(),
-                    cell.getEffectiveValue(),
+                    cell.getEffectiveValue().toString(),
                     cell.getLastModifiedVersion(),
-                    cell.getDependencies(),
-                    cell.getInfluences()
+                    convertToListOfStrings(cell.getDependencies()),
+                    convertToListOfStrings(cell.getInfluences())
             );
-            cellDtos.put(entry.getKey(), cellDto);
+            cellDtos.put(entry.getKey().toString(), cellDto);
         }
 
-        return new SheetDto(name, version, cellDtos, dimensions,currentSheet.getAmountOfCellsChangedInVersion());
+        return new SheetDto(dimensions.getNumCols(),dimensions.getNumRows(),dimensions.getWidthCol(),dimensions.getHeightRow(),name, version, cellDtos,currentSheet.getAmountOfCellsChangedInVersion());
     }
 
 
@@ -173,9 +171,9 @@ public class EngineImpl implements Engine {
 
         if (cell == null || cell.getOriginalValue() == null) {
             return new CellDto(
-                    cellIdentifier,                      // The identifier of the cell
-                    "EMPTY",                             // Default original value
-                    new EffectiveValueImpl(CellType.NOT_INIT,"EMPTY"),                             // Default effective value
+                    cellIdentifier.toString(),                      // The identifier of the cell
+                    "",                             // Default original value
+                   "",                             // Default effective value
                     0,    // Last modified version (could be current version)
                     Collections.emptyList(),              // No dependencies
                     Collections.emptyList()               // No influences
@@ -185,13 +183,21 @@ public class EngineImpl implements Engine {
 
         // Create and return a CellDto
         return new CellDto(
-                cell.getIdentifier(),
+                cell.getIdentifier().toString(),
                 cell.getOriginalValue(),
-                cell.getEffectiveValue(),
+                cell.getEffectiveValue().toString(),
                 cell.getLastModifiedVersion(),
-                cell.getDependencies(),
-                cell.getInfluences()
+                convertToListOfStrings(cell.getDependencies()),
+                convertToListOfStrings(cell.getInfluences())
         );
+    }
+
+    private List<String> convertToListOfStrings(List<CellIdentifierImpl> cellIdentifiers) {
+        List<String> result = new ArrayList<>();
+        for (CellIdentifierImpl cellIdentifier : cellIdentifiers) {
+            result.add(cellIdentifier.toString());
+        }
+        return result;
     }
 
     @Override
@@ -240,26 +246,31 @@ public class EngineImpl implements Engine {
             SpreadSheet spreadSheet = entry.getValue();
 
             // Convert SpreadSheet to SheetDto
-            Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+            // Convert SpreadSheet to SheetDto
+            Map<String, CellDto> cellDtos = new HashMap<>();
 
             for (Map.Entry<CellIdentifier, Cell> cellEntry : spreadSheet.getActiveCells().entrySet()) {
                 Cell cell = cellEntry.getValue();
+                CellIdentifier identifier = cellEntry.getKey();
                 CellDto cellDto = new CellDto(
-                        cell.getIdentifier(),
+                        identifier.toString(),  // Convert CellIdentifier to String
                         cell.getOriginalValue(),
-                        cell.getEffectiveValue(),
+                        cell.getEffectiveValue().toString(),
                         cell.getLastModifiedVersion(),
-                        cell.getDependencies(),
-                        cell.getInfluences()
+                        convertToListOfStrings(cell.getDependencies()),
+                        convertToListOfStrings(cell.getInfluences())
                 );
-                cellDtos.put(cellEntry.getKey(), cellDto);
+                cellDtos.put(identifier.toString(), cellDto);  // Use identifier as a String key
             }
 
-            SheetDto sheetDto = new SheetDto(
+                    SheetDto sheetDto = new SheetDto(
+                    spreadSheet.getSheetDimentions().getNumCols(),
+                    spreadSheet.getSheetDimentions().getNumRows(),
+                    spreadSheet.getSheetDimentions().getWidthCol(),
+                    spreadSheet.getSheetDimentions().getHeightRow(),
                     spreadSheet.getName(),
                     spreadSheet.getVersion(),
                     cellDtos,
-                    spreadSheet.getSheetDimentions(),
                     spreadSheet.getAmountOfCellsChangedInVersion()
             );
 
@@ -279,22 +290,22 @@ public class EngineImpl implements Engine {
         }
 
         // Convert cells from Cell to CellDto
-        Map<CellIdentifier, CellDto> cellDtos = new HashMap<>();
+        Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : sheet.getActiveCells().entrySet()) {
             Cell cell = entry.getValue();
             CellDto cellDto = new CellDto(
-                    cell.getIdentifier(),
+                    cell.getIdentifier().toString(),
                     cell.getOriginalValue(),
-                    cell.getEffectiveValue(),
+                    cell.getEffectiveValue().toString(),
                     cell.getLastModifiedVersion(),
-                    cell.getDependencies(),
-                    cell.getInfluences()
+                    convertToListOfStrings(cell.getDependencies()),
+                    convertToListOfStrings(cell.getInfluences())
             );
-            cellDtos.put(entry.getKey(), cellDto);
+            cellDtos.put(entry.getKey().toString(), cellDto);
         }
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(sheet.getName(), sheet.getVersion(), cellDtos, sheet.getSheetDimentions(), currentSheet.getAmountOfCellsChangedInVersion());
+        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion());
     }
 
     public SaveLoadFileDto saveState(String path)

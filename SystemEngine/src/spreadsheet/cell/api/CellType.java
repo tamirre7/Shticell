@@ -7,6 +7,7 @@ public enum CellType {
     INVALID_VALUE(Object.class),
     NOT_INIT(Object.class);
 
+
     private Class<?> type;
 
     CellType(Class<?> type) {

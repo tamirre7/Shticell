@@ -23,9 +23,4 @@ public class Abs extends UnaryExpression {
         }
         return new EffectiveValueImpl(CellType.NUMERIC, value);
     }
-
-    @Override
-    public CellType getFunctionResultType(ReadOnlySpreadSheet spreadSheet) {
-        return CellType.NUMERIC;
-    }
 }
