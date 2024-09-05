@@ -6,16 +6,19 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="shticellui.loadfilecomp.LoadFileController">
+<HBox prefHeight="30.0" prefWidth="475.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.loadfilecomp.LoadFileController">
    <children>
       <Button fx:id="loadFileButton" mnemonicParsing="false" text="Load File" />
       <Label fx:id="statusLabel" text="Currently Loaded File:">
          <HBox.margin>
-            <Insets left="7.0" top="5.0" />
+            <Insets left="10.0" top="5.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="fileTextField" HBox.hgrow="ALWAYS" />
+      <TextField fx:id="fileTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="262.0" HBox.hgrow="ALWAYS" promptText="Loaded file path">
+         <HBox.margin>
+            <Insets left="3.0" />
+         </HBox.margin>
+      </TextField>
    </children>
    <padding>
       <Insets left="5.0" right="5.0" top="5.0" />

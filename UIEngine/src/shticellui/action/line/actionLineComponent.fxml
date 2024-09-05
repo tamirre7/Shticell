@@ -8,53 +8,48 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.action.line.ActionLineController">
    <children>
-      <TextField fx:id="cellidTF" minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0">
+      <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
          <HBox.margin>
             <Insets left="5.0" top="5.0" />
          </HBox.margin>
       </TextField>
-      <TextField fx:id="originalvalueTF" minWidth="-Infinity" prefHeight="24.0" prefWidth="108.0">
+      <TextField fx:id="originalvalueTF" minWidth="108.0" prefHeight="24.0" promptText="Original Value">
          <HBox.margin>
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </TextField>
-      <Button fx:id="updatevalbtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" text="Update Value">
+      <Button fx:id="updatevalbtn" minHeight="25.0" mnemonicParsing="false" text="Update Value">
          <HBox.margin>
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </Button>
       <Label prefHeight="17.0" prefWidth="126.0" text="Last Modified Version:">
          <HBox.margin>
-            <Insets left="15.0" top="9.0" />
+            <Insets left="15.0" top="8.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="lastmodverTF" prefHeight="26.0" prefWidth="30.0">
+      <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="26.0" prefWidth="54.0" promptText="Version">
          <HBox.margin>
             <Insets top="5.0" />
          </HBox.margin>
       </TextField>
-      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="21.0" prefWidth="110.0">
-         <children>
-            <ChoiceBox fx:id="versionSelector" prefHeight="26.0" prefWidth="124.0">
-               <StackPane.margin>
-                  <Insets top="5.0" />
-               </StackPane.margin>
-            </ChoiceBox>
-            <Label text="Version Selector">
-               <padding>
-                  <Insets right="12.0" />
-               </padding>
-               <StackPane.margin>
-                  <Insets top="5.0" />
-               </StackPane.margin>
-            </Label>
-         </children>
+      <StackPane>
          <HBox.margin>
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
+         <children>
+            <ChoiceBox fx:id="versionSelector" minWidth="124.0" prefHeight="26.0" />
+            <Label text="Version Selector">
+               <StackPane.margin>
+                  <Insets right="15.0" />
+               </StackPane.margin>
+            </Label>
+         </children>
       </StackPane>
    </children>
+   <padding>
+      <Insets left="5.0" right="5.0" top="5.0" />
+   </padding>
 </HBox>
