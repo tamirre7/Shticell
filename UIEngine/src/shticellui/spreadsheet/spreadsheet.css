@@ -1,49 +1,58 @@
+/* Container for the entire spreadsheet */
 .spreadsheet-container {
     -fx-padding: 10 0 0 10; /* top right bottom left */
-    -fx-background-color: white;
+    -fx-background-color: transparent; /* Transparent background for the container */
 }
 
+/* ScrollPane for scrolling the spreadsheet */
 .scroll-pane {
-    -fx-background-color: white;
+    -fx-background-color: transparent; /* Transparent background for the scroll pane */
 }
 
+/* GridPane for the spreadsheet content */
 .grid-pane {
-    -fx-background-color: white;
-    -fx-grid-lines-visible: false; /* You can turn this off for a cleaner look */
-    -fx-border-color: #cccccc;
-    -fx-border-width: 1;
+    -fx-background-color: #ffffff; /* White background color for the area where the spreadsheet content is displayed */
+    -fx-grid-lines-visible: false; /* Turn off grid lines for a cleaner look */
+    -fx-border-color: #cccccc; /* Light gray border around the grid */
+    -fx-border-width: 1; /* Border width */
 }
 
+/* Styles for individual cells */
 .cell {
     -fx-padding: 5;
-    -fx-border-color: #cccccc;
-    -fx-border-width: 0.5;
-    -fx-alignment: center-left;
-    -fx-font-size: 12px;
-    -fx-text-overrun: ellipsis;
+    -fx-border-color: #cccccc; /* Light gray border for cells */
+    -fx-border-width: 0.5; /* Thin border */
+    -fx-alignment: center-left; /* Align text to the left */
+    -fx-font-size: 12px; /* Font size for cell text */
+    -fx-text-overrun: ellipsis; /* Show ellipsis when text overflows */
 }
 
+/* Hover effect for cells */
 .cell:hover {
-    -fx-background-color: #f9f9f9;
-    -fx-border-color: #4a90e2;
+    -fx-background-color: #f9f9f9; /* Light gray background on hover */
+    -fx-border-color: #4a90e2; /* Blue border on hover */
 }
 
+/* Header cells styling */
 .header-cell {
-    -fx-background-color: #f2f2f2;
-    -fx-font-weight: bold;
-    -fx-alignment: center;
+    -fx-background-color: #f2f2f2; /* Light gray background for headers */
+    -fx-font-weight: bold; /* Bold text for headers */
+    -fx-alignment: center; /* Center-align header text */
 }
 
+/* Column and row header styling */
 .column-header, .row-header {
-    -fx-background-color: #e0e0e0;
+    -fx-background-color: #e0e0e0; /* Slightly darker gray background for headers */
 }
 
+/* Styling for selected cells */
 .selected-cell {
-    -fx-background-color: #d0e8ff;
+    -fx-background-color: #d0e8ff; /* Light blue background for selected cells */
 }
 
+/* Styling for editable cells */
 .edit-cell {
-    -fx-background-color: white;
-    -fx-border-color: #4a90e2;
-    -fx-border-width: 2;
+    -fx-background-color: white; /* White background for editable cells */
+    -fx-border-color: #4a90e2; /* Blue border for editable cells */
+    -fx-border-width: 2; /* Thicker border for editable cells */
 }

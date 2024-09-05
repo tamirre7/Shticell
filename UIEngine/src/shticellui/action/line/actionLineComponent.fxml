@@ -20,33 +20,33 @@
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </TextField>
-      <Button fx:id="updatevalbtn" minHeight="25.0" mnemonicParsing="false" text="Update Value">
+      <Button fx:id="updatevalbtn" minHeight="25.0" minWidth="98.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" text="Update Value">
          <HBox.margin>
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </Button>
       <Label prefHeight="17.0" prefWidth="126.0" text="Last Modified Version:">
          <HBox.margin>
-            <Insets left="15.0" top="8.0" />
+            <Insets left="15.0" top="9.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="26.0" prefWidth="54.0" promptText="Version">
+      <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="30.0" prefWidth="61.0" promptText="Version">
          <HBox.margin>
             <Insets top="5.0" />
          </HBox.margin>
       </TextField>
-      <StackPane>
-         <HBox.margin>
-            <Insets left="15.0" top="5.0" />
-         </HBox.margin>
+      <StackPane prefHeight="26.0" prefWidth="124.0">
          <children>
             <ChoiceBox fx:id="versionSelector" minWidth="124.0" prefHeight="26.0" />
-            <Label text="Version Selector">
+            <Label alignment="CENTER" text="Version Selector">
                <StackPane.margin>
                   <Insets right="15.0" />
                </StackPane.margin>
             </Label>
          </children>
+         <HBox.margin>
+            <Insets left="15.0" top="5.0" />
+         </HBox.margin>
       </StackPane>
    </children>
    <padding>
