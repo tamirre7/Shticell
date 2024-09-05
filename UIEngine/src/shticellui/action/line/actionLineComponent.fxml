@@ -5,53 +5,38 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane prefHeight="33.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.action.line.ActionLineController">
-   <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.5999755859375" minWidth="10.0" prefWidth="45.4" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0000114440918" minWidth="10.0" prefWidth="133.20000610351562" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.20001983642578" minWidth="10.0" prefWidth="121.99999389648434" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="133.0" minWidth="10.0" prefWidth="124.33331298828125" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.3333740234375" minWidth="10.0" prefWidth="43.60003662109375" />
-      <ColumnConstraints hgrow="SOMETIMES" maxWidth="136.3999633789063" minWidth="10.0" prefWidth="133.19996337890626" />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-   </rowConstraints>
+
+<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TextField fx:id="cellidTF" minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0">
-         <GridPane.margin>
-            <Insets left="15.0" top="10.0" />
-         </GridPane.margin>
+         <HBox.margin>
+            <Insets left="5.0" top="5.0" />
+         </HBox.margin>
       </TextField>
-      <TextField fx:id="originalvalueTF" minWidth="-Infinity" prefHeight="24.0" prefWidth="108.0" GridPane.columnIndex="1">
-         <GridPane.margin>
-            <Insets left="24.0" top="10.0" />
-         </GridPane.margin>
+      <TextField fx:id="originalvalueTF" minWidth="-Infinity" prefHeight="24.0" prefWidth="108.0">
+         <HBox.margin>
+            <Insets left="15.0" top="5.0" />
+         </HBox.margin>
       </TextField>
-      <Button fx:id="updatevalbtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" text="Update Value" GridPane.columnIndex="2">
-         <GridPane.margin>
-            <Insets left="20.0" top="10.0" />
-         </GridPane.margin>
+      <Button fx:id="updatevalbtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" text="Update Value">
+         <HBox.margin>
+            <Insets left="15.0" top="5.0" />
+         </HBox.margin>
       </Button>
-      <Label prefHeight="17.0" prefWidth="126.0" text="Last Modified Version:" GridPane.columnIndex="3">
-         <GridPane.margin>
-            <Insets top="10.0" />
-         </GridPane.margin>
+      <Label prefHeight="17.0" prefWidth="126.0" text="Last Modified Version:">
+         <HBox.margin>
+            <Insets left="15.0" top="9.0" />
+         </HBox.margin>
       </Label>
-      <TextField fx:id="lastmodverTF" GridPane.columnIndex="4">
-         <GridPane.margin>
-            <Insets right="15.0" top="10.0" />
-         </GridPane.margin>
+      <TextField fx:id="lastmodverTF" prefHeight="26.0" prefWidth="30.0">
+         <HBox.margin>
+            <Insets top="5.0" />
+         </HBox.margin>
       </TextField>
-      <StackPane GridPane.columnIndex="5">
-         <GridPane.margin>
-            <Insets right="7.0" top="5.0" />
-         </GridPane.margin>
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="21.0" prefWidth="110.0">
          <children>
             <ChoiceBox fx:id="versionSelector" prefHeight="26.0" prefWidth="124.0">
                <StackPane.margin>
@@ -67,6 +52,9 @@
                </StackPane.margin>
             </Label>
          </children>
+         <HBox.margin>
+            <Insets left="15.0" top="5.0" />
+         </HBox.margin>
       </StackPane>
    </children>
-</GridPane>
+</HBox>

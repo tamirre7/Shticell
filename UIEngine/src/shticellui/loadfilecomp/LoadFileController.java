@@ -26,29 +26,25 @@ public class LoadFileController {
     private Label statusLabel;
 
     @FXML
-    private ProgressBar progressBar;
-
-    @FXML
-    private TextField fileTextField; // Add the TextField
+    private TextField fileTextField;
 
     private SpreadsheetDisplayController spreadsheetDisplayController;
 
     private Engine engine;
     private Stage primaryStage;
     private Stage loadingStage;
+    private ProgressBar loadingProgressBar;
 
     public LoadFileController(Engine engine, Stage primaryStage, SpreadsheetDisplayController spreadsheetDisplayController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
-        this.spreadsheetDisplayController = spreadsheetDisplayController; // Now assigned correctly
+        this.spreadsheetDisplayController = spreadsheetDisplayController;
     }
-
 
     @FXML
     private void initialize() {
         loadFileButton.setOnAction(event -> handleLoadFile());
-        progressBar.setVisible(false);
-        fileTextField.setEditable(false); // Make the TextField non-editable
+        fileTextField.setEditable(false);
     }
 
     private void handleLoadFile() {
@@ -60,25 +56,29 @@ public class LoadFileController {
         if (selectedFile != null) {
             showLoadingPopup();
 
-            try {
-                SaveLoadFileDto result = engine.loadFile(selectedFile.getAbsolutePath());
-                closeLoadingPopup();
+            new Thread(() -> {
+                try {
+                    SaveLoadFileDto result = engine.loadFile(selectedFile.getAbsolutePath());
+                    Platform.runLater(() -> {
+                        closeLoadingPopup();
 
-                if (result.isSucceeded()) {
-                    fileTextField.setText(selectedFile.getAbsolutePath()); // Update the TextField with the file path
-                    SheetDto sheetDto = engine.displayCurrentSpreadsheet();
-
-                    // Pass the SheetDto to the SpreadsheetDisplayController
-                    spreadsheetDisplayController.displaySheet(sheetDto);
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
-                    statusLabel.setText("Failed to load file: " + selectedFile.getName());
+                        if (result.isSucceeded()) {
+                            fileTextField.setText(selectedFile.getAbsolutePath());
+                            SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+                            spreadsheetDisplayController.displaySheet(sheetDto);
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
+                            statusLabel.setText("Failed to load file: " + selectedFile.getName());
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        closeLoadingPopup();
+                        showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
+                        statusLabel.setText("Error loading file:");
+                    });
                 }
-            } catch (Exception e) {
-                closeLoadingPopup();
-                showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
-                statusLabel.setText("Error loading file:");
-            }
+            }).start();
 
         } else {
             showAlert(Alert.AlertType.WARNING, "No File Selected", "Please select an XML file to load.");
@@ -92,7 +92,7 @@ public class LoadFileController {
             loadingStage.initOwner(primaryStage);
 
             Label loadingLabel = new Label("Loading...");
-            ProgressBar loadingProgressBar = new ProgressBar();
+            loadingProgressBar = new ProgressBar();
             loadingProgressBar.setPrefWidth(200);
 
             VBox vbox = new VBox(10, loadingLabel, loadingProgressBar);
@@ -105,12 +105,15 @@ public class LoadFileController {
             loadingStage.setHeight(100);
         }
 
-        Platform.runLater(() -> loadingStage.show());
+        Platform.runLater(() -> {
+            loadingProgressBar.setProgress(-1); // Indeterminate progress
+            loadingStage.show();
+        });
     }
 
     private void closeLoadingPopup() {
         if (loadingStage != null) {
-            Platform.runLater(loadingStage::close);
+            loadingStage.close();
         }
     }
 
