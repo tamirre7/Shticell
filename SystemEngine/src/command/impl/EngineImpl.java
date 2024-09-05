@@ -13,11 +13,9 @@ import spreadsheet.api.Dimension;
 import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
-import spreadsheet.cell.impl.EffectiveValueImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import spreadsheet.util.UpdateResult;
@@ -201,7 +199,7 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void updateCell(String cellid, String originalValue) {
+    public SheetDto updateCell(String cellid, String originalValue) {
 
         if (originalValue == null) {
             throw new IllegalArgumentException("Original value must be entered (can also be empty)");
@@ -234,6 +232,24 @@ public class EngineImpl implements Engine {
         if (cell == null) {
             throw new IllegalStateException("Cell not found after update");
         }
+        // Convert cells from Cell to CellDto
+        Map<String, CellDto> cellDtos = new HashMap<>();
+        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
+            Cell sheetCells = entry.getValue();
+            CellDto cellDto = new CellDto(
+                    sheetCells.getIdentifier().toString(),
+                    sheetCells.getOriginalValue(),
+                    sheetCells.getEffectiveValue().toString(),
+                    sheetCells.getLastModifiedVersion(),
+                    convertToListOfStrings(sheetCells.getDependencies()),
+                    convertToListOfStrings(sheetCells.getInfluences())
+            );
+            cellDtos.put(entry.getKey().toString(), cellDto);
+        }
+
+        // Return a SheetDto with the retrieved SpreadSheet
+        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion());
+
     }
 
     @Override
@@ -347,10 +363,11 @@ public class EngineImpl implements Engine {
         return new ExitDto("Exiting application. Goodbye!");
     }
     @Override
-    public void checkIfFileLoaded(){
+    public boolean isFileLoaded(){
         if (currentSheet == null) {
-            throw new IllegalStateException("Current sheet is not available, please load file first");
+           return false;
         }
+        return true;
     }
 }
 

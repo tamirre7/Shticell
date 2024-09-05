@@ -8,11 +8,11 @@ public interface Engine {
     SaveLoadFileDto loadFile(String path);
     SheetDto displayCurrentSpreadsheet();
     CellDto displayCellValue(String cellid);
-    void updateCell(String cellid, String originalValue);
+    SheetDto updateCell(String cellid, String originalValue);
     VerDto displayVersions();
     SheetDto displaySheetByVersion(int version);
     SaveLoadFileDto saveState(String path);
     SaveLoadFileDto loadSavedState(String path);
-    void checkIfFileLoaded();
+    boolean isFileLoaded();
     ExitDto exitSystem();
 }

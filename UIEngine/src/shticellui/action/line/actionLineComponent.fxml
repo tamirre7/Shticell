@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane prefHeight="33.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane prefHeight="33.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.action.line.ActionLineController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.5999755859375" minWidth="10.0" prefWidth="45.4" />
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="142.0000114440918" minWidth="10.0" prefWidth="133.20000610351562" />
@@ -23,17 +23,17 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <TextField minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0">
+      <TextField fx:id="cellidTF" minWidth="-Infinity" prefHeight="26.0" prefWidth="40.0">
          <GridPane.margin>
             <Insets left="15.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <TextField minWidth="-Infinity" prefHeight="24.0" prefWidth="108.0" GridPane.columnIndex="1">
+      <TextField fx:id="originalvalueTF" minWidth="-Infinity" prefHeight="24.0" prefWidth="108.0" GridPane.columnIndex="1">
          <GridPane.margin>
             <Insets left="24.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" text="Update Value" GridPane.columnIndex="2">
+      <Button fx:id="updatevalbtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" text="Update Value" GridPane.columnIndex="2">
          <GridPane.margin>
             <Insets left="20.0" top="10.0" />
          </GridPane.margin>
@@ -43,7 +43,7 @@
             <Insets top="10.0" />
          </GridPane.margin>
       </Label>
-      <TextField GridPane.columnIndex="4">
+      <TextField fx:id="lastmodverTF" GridPane.columnIndex="4">
          <GridPane.margin>
             <Insets right="15.0" top="10.0" />
          </GridPane.margin>
@@ -53,7 +53,7 @@
             <Insets right="7.0" top="5.0" />
          </GridPane.margin>
          <children>
-            <ChoiceBox prefHeight="26.0" prefWidth="124.0">
+            <ChoiceBox fx:id="versionSelector" prefHeight="26.0" prefWidth="124.0">
                <StackPane.margin>
                   <Insets top="5.0" />
                </StackPane.margin>

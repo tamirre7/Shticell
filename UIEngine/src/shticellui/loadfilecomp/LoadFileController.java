@@ -1,5 +1,6 @@
 package shticellui.loadfilecomp;
 
+import dto.SheetDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import command.api.Engine;
@@ -12,6 +13,7 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
+import shticellui.spreadsheet.SpreadsheetDisplayController;
 
 import java.io.File;
 
@@ -29,14 +31,18 @@ public class LoadFileController {
     @FXML
     private TextField fileTextField; // Add the TextField
 
+    private SpreadsheetDisplayController spreadsheetDisplayController;
+
     private Engine engine;
     private Stage primaryStage;
     private Stage loadingStage;
 
-    public LoadFileController(Engine engine, Stage primaryStage) {
+    public LoadFileController(Engine engine, Stage primaryStage, SpreadsheetDisplayController spreadsheetDisplayController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
+        this.spreadsheetDisplayController = spreadsheetDisplayController; // Now assigned correctly
     }
+
 
     @FXML
     private void initialize() {
@@ -59,8 +65,11 @@ public class LoadFileController {
                 closeLoadingPopup();
 
                 if (result.isSucceeded()) {
-                    showAlert(Alert.AlertType.INFORMATION, "File Loaded", "The file was loaded successfully.");
                     fileTextField.setText(selectedFile.getAbsolutePath()); // Update the TextField with the file path
+                    SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+
+                    // Pass the SheetDto to the SpreadsheetDisplayController
+                    spreadsheetDisplayController.displaySheet(sheetDto);
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
                     statusLabel.setText("Failed to load file: " + selectedFile.getName());
@@ -68,7 +77,7 @@ public class LoadFileController {
             } catch (Exception e) {
                 closeLoadingPopup();
                 showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
-                statusLabel.setText("Error loading file: " + selectedFile.getName());
+                statusLabel.setText("Error loading file:");
             }
 
         } else {

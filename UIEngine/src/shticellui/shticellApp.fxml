@@ -4,12 +4,13 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+            fitToWidth="true" fitToHeight="true">
    <content>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
+      <BorderPane>
          <!-- Top section with VBox containing two GridPanes -->
          <top>
-            <VBox prefHeight="73.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <VBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" BorderPane.alignment="CENTER">
                <!-- First GridPane included -->
                <fx:include source="loadfilecomp/loadFileComponent.fxml" />
                <!-- Second GridPane included -->
@@ -19,13 +20,16 @@
 
          <!-- Left section with the Ranges Component -->
          <left>
-            <fx:include source="range/rangesComponent.fxml" />
+            <VBox prefWidth="121.0" maxWidth="121.0" BorderPane.alignment="TOP_LEFT">
+               <fx:include source="range/rangesComponent.fxml" />
+               <fx:include source="misc/miscComponent.fxml" />
+            </VBox>
          </left>
 
-         <!-- Bottom section with the Misc Component -->
-         <bottom>
-            <fx:include source="misc/miscComponent.fxml" />
-         </bottom>
+         <!-- Center section for the Spreadsheet display -->
+         <center>
+            <fx:include source="spreadsheet/spreadsheetDisplayComponent.fxml" />
+         </center>
       </BorderPane>
    </content>
 </ScrollPane>

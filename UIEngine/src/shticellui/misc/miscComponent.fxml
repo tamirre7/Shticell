@@ -9,42 +9,40 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="123.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="123.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.misc.MiscController">
    <children>
       <Separator prefHeight="8.0" prefWidth="600.0">
          <VBox.margin>
             <Insets left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </Separator>
-      <CheckBox mnemonicParsing="false" text="Animations">
+      <CheckBox fx:id="animationsCheckBox" mnemonicParsing="false" text="Animations">
          <VBox.margin>
             <Insets left="5.0" top="5.0" />
          </VBox.margin>
       </CheckBox>
       <StackPane alignment="CENTER_LEFT">
          <children>
-            <ChoiceBox prefHeight="26.0" prefWidth="87.0">
-               <StackPane.margin>
-                  <Insets left="5.0" />
-               </StackPane.margin>
-            </ChoiceBox>
+            <ChoiceBox fx:id="skinChoiceBox" prefHeight="26.0" prefWidth="87.0" />
             <Label prefHeight="18.0" prefWidth="68.0" text="Change Skin">
                <StackPane.margin>
-                  <Insets left="9.0" />
+                  <Insets left="5.0" />
                </StackPane.margin>
             </Label>
          </children>
          <padding>
             <Insets top="5.0" />
          </padding>
+         <VBox.margin>
+            <Insets left="5.0" />
+         </VBox.margin>
       </StackPane>
-      <Button mnemonicParsing="false" text="Save System State">
+      <Button fx:id="saveButton" mnemonicParsing="false" text="Save System State">
          <VBox.margin>
             <Insets left="5.0" top="5.0" />
          </VBox.margin>
       </Button>
-      <Button mnemonicParsing="false" text="Load System State">
+      <Button fx:id="loadButton" mnemonicParsing="false" text="Load System State">
          <VBox.margin>
             <Insets left="5.0" top="5.0" />
          </VBox.margin>

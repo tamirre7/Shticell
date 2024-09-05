@@ -38,7 +38,7 @@ public class CellDto {
         return effectiveValue;
     }
 
-    public int getLastModifiedVersion() {
+    public Integer getLastModifiedVersion() {
         return lastModifiedVersion;
     }
 

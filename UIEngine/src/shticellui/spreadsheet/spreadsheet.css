@@ -1,0 +1,49 @@
+.spreadsheet-container {
+    -fx-padding: 10 0 0 10; /* top right bottom left */
+    -fx-background-color: white;
+}
+
+.scroll-pane {
+    -fx-background-color: white;
+}
+
+.grid-pane {
+    -fx-background-color: white;
+    -fx-grid-lines-visible: false; /* You can turn this off for a cleaner look */
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+}
+
+.cell {
+    -fx-padding: 5;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 0.5;
+    -fx-alignment: center-left;
+    -fx-font-size: 12px;
+    -fx-text-overrun: ellipsis;
+}
+
+.cell:hover {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #4a90e2;
+}
+
+.header-cell {
+    -fx-background-color: #f2f2f2;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.column-header, .row-header {
+    -fx-background-color: #e0e0e0;
+}
+
+.selected-cell {
+    -fx-background-color: #d0e8ff;
+}
+
+.edit-cell {
+    -fx-background-color: white;
+    -fx-border-color: #4a90e2;
+    -fx-border-width: 2;
+}

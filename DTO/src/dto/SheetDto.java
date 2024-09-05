@@ -47,7 +47,7 @@ public class SheetDto {
 
     public int getAmountOfCellsChangedInVersion() {return amountOfCellsChangedInVersion;}
 
-    public int getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
