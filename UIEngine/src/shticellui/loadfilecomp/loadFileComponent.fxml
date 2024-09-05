@@ -6,7 +6,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="shticellui.loadfilecomp.LoadFileController">
    <children>
       <Button fx:id="loadFileButton" mnemonicParsing="false" text="Load File" />
       <Label fx:id="statusLabel" text="Currently Loaded File:">
