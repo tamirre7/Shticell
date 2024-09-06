@@ -27,13 +27,14 @@ public class ActionLineController {
     private SpreadsheetDisplayController spreadsheetDisplayController;
 
     public ActionLineController() {
-
     }
-    public void setEngine(Engine engine) {this.engine=engine;}
+
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
 
     @FXML
     public void initialize() {
-        // Initialize components, populate version selector if necessary
         updatevalbtn.setOnAction(event -> updateCellValue());
 
         versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -42,8 +43,10 @@ public class ActionLineController {
             }
         });
     }
-    public void setSpreadsheetDisplayController(SpreadsheetDisplayController spreadsheetDisplayController) {this.spreadsheetDisplayController=spreadsheetDisplayController;}
 
+    public void setSpreadsheetDisplayController(SpreadsheetDisplayController spreadsheetDisplayController) {
+        this.spreadsheetDisplayController = spreadsheetDisplayController;
+    }
 
     public void setCellData(CellDto cellDto, String cellId) {
         cellidTF.setText(cellId);
@@ -61,17 +64,19 @@ public class ActionLineController {
 
         if (cellId != null && !cellId.isEmpty() && newValue != null) {
             // Update cell in the engine
-           currentSheet = engine.updateCell(cellId, newValue);
+            currentSheet = engine.updateCell(cellId, newValue);
 
-            spreadsheetDisplayController.displaySheet(currentSheet);
+            // Update all cells in the display
+            spreadsheetDisplayController.updateAllCells(currentSheet.getCells());
+
         }
     }
-
 
     private void loadSpreadsheetVersion(Integer version) {
         // Load the specified version of the spreadsheet
         currentSheet = engine.displaySheetByVersion(version);
         lastmodverTF.setText(version.toString());
+        spreadsheetDisplayController.displaySheet(currentSheet);
     }
 
     public void populateVersionSelector(String[] availableVersions) {

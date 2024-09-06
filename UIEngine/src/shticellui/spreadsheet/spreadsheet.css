@@ -20,21 +20,7 @@
     -fx-border-width: 0 1 1 0; /* right and bottom only */
     -fx-border-color: #cccccc;
     -fx-padding: 5;
-}
-
-/* Add top border to first row */
-.cell:first-row {
-    -fx-border-width: 1 1 1 0;
-}
-
-/* Add left border to first column */
-.cell:first-column {
-    -fx-border-width: 0 1 1 1;
-}
-
-/* Corner cell (top-left) */
-.cell:first-row:first-column {
-    -fx-border-width: 1;
+    -fx-alignment: CENTER; /* Set default alignment to center */
 }
 
 /* Rest of the styles remain the same */
