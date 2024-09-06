@@ -36,7 +36,10 @@ public class SpreadsheetDisplayController {
         scrollPane.setContent(gridPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
-
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        gridPane.setMinWidth(800); // Set minimum width
+        gridPane.setMinHeight(600);
     }
 
     public void setActionLineController(ActionLineController actionLineController) {

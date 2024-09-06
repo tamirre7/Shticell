@@ -19,12 +19,12 @@
                 styleClass="scroll-pane"
                 fitToWidth="true"
                 fitToHeight="true"
+                hbarPolicy="AS_NEEDED"
+                vbarPolicy="AS_NEEDED"
                 AnchorPane.topAnchor="0.0"
                 AnchorPane.rightAnchor="0.0"
                 AnchorPane.bottomAnchor="0.0"
                 AnchorPane.leftAnchor="0.0">
-
-        <!-- GridPane for the spreadsheet content -->
         <GridPane fx:id="gridPane"
                   alignment="TOP_LEFT"
                   styleClass="grid-pane">

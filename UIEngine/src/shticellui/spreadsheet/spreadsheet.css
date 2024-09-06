@@ -7,6 +7,7 @@
 /* ScrollPane for scrolling the spreadsheet */
 .scroll-pane {
     -fx-background-color: transparent; /* Transparent background for the scroll pane */
+    -fx-padding: 0; /* Ensure no extra padding around the scroll pane */
 }
 
 /* GridPane for the spreadsheet content */
@@ -22,7 +23,7 @@
     -fx-padding: 5;
     -fx-border-color: #cccccc; /* Light gray border for cells */
     -fx-border-width: 0.5; /* Thin border */
-    -fx-alignment: center-left; /* Align text to the left */
+    -fx-alignment: CENTER; /* Center-align text both horizontally and vertically */
     -fx-font-size: 12px; /* Font size for cell text */
     -fx-text-overrun: ellipsis; /* Show ellipsis when text overflows */
 }
@@ -37,7 +38,7 @@
 .header-cell {
     -fx-background-color: #f2f2f2; /* Light gray background for headers */
     -fx-font-weight: bold; /* Bold text for headers */
-    -fx-alignment: center; /* Center-align header text */
+    -fx-alignment: CENTER; /* Center-align header text */
 }
 
 /* Column and row header styling */
