@@ -14,7 +14,6 @@
             AnchorPane.bottomAnchor="0.0"
             AnchorPane.leftAnchor="0.0">
 
-    <!-- ScrollPane for scrolling the spreadsheet -->
     <ScrollPane fx:id="scrollPane"
                 styleClass="scroll-pane"
                 fitToWidth="true"

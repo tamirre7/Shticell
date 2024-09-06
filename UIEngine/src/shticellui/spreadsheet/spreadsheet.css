@@ -1,59 +1,120 @@
 /* Container for the entire spreadsheet */
 .spreadsheet-container {
     -fx-padding: 10 0 0 10; /* top right bottom left */
-    -fx-background-color: transparent; /* Transparent background for the container */
+    -fx-background-color: transparent;
 }
 
 /* ScrollPane for scrolling the spreadsheet */
 .scroll-pane {
-    -fx-background-color: transparent; /* Transparent background for the scroll pane */
-    -fx-padding: 0; /* Ensure no extra padding around the scroll pane */
+    -fx-background-color: transparent;
+    -fx-padding: 0;
 }
 
 /* GridPane for the spreadsheet content */
 .grid-pane {
-    -fx-background-color: #ffffff; /* White background color for the area where the spreadsheet content is displayed */
-    -fx-grid-lines-visible: false; /* Turn off grid lines for a cleaner look */
-    -fx-border-color: #cccccc; /* Light gray border around the grid */
-    -fx-border-width: 1; /* Border width */
+    -fx-background-color: white;
+    -fx-grid-lines-visible: false; /* Turn off grid lines */
 }
 
-/* Styles for individual cells */
 .cell {
+    -fx-border-width: 0 1 1 0; /* right and bottom only */
+    -fx-border-color: #cccccc;
     -fx-padding: 5;
-    -fx-border-color: #cccccc; /* Light gray border for cells */
-    -fx-border-width: 0.5; /* Thin border */
-    -fx-alignment: CENTER; /* Center-align text both horizontally and vertically */
-    -fx-font-size: 12px; /* Font size for cell text */
-    -fx-text-overrun: ellipsis; /* Show ellipsis when text overflows */
 }
 
+/* Add top border to first row */
+.cell:first-row {
+    -fx-border-width: 1 1 1 0;
+}
+
+/* Add left border to first column */
+.cell:first-column {
+    -fx-border-width: 0 1 1 1;
+}
+
+/* Corner cell (top-left) */
+.cell:first-row:first-column {
+    -fx-border-width: 1;
+}
+
+/* Rest of the styles remain the same */
 /* Hover effect for cells */
 .cell:hover {
-    -fx-background-color: #f9f9f9; /* Light gray background on hover */
-    -fx-border-color: #4a90e2; /* Blue border on hover */
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #4a90e2;
 }
 
 /* Header cells styling */
 .header-cell {
-    -fx-background-color: #f2f2f2; /* Light gray background for headers */
-    -fx-font-weight: bold; /* Bold text for headers */
-    -fx-alignment: CENTER; /* Center-align header text */
+    -fx-background-color: #f2f2f2;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
 }
 
 /* Column and row header styling */
 .column-header, .row-header {
-    -fx-background-color: #e0e0e0; /* Slightly darker gray background for headers */
+    -fx-background-color: #e0e0e0;
 }
 
 /* Styling for selected cells */
 .selected-cell {
-    -fx-background-color: #d0e8ff; /* Light blue background for selected cells */
+    -fx-background-color: #d0e8ff;
 }
 
 /* Styling for editable cells */
 .edit-cell {
-    -fx-background-color: white; /* White background for editable cells */
-    -fx-border-color: #4a90e2; /* Blue border for editable cells */
-    -fx-border-width: 2; /* Thicker border for editable cells */
+    -fx-background-color: white;
+    -fx-border-color: #4a90e2;
+    -fx-border-width: 2;
+}
+
+/* New styles for context menu */
+.context-menu {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+}
+
+.menu-item:focused {
+    -fx-background-color: #4a90e2;
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: white;
+}
+
+/* Styles for dialogs */
+.dialog-pane {
+    -fx-background-color: #f5f5f5;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #4a90e2;
+    -fx-text-fill: white;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #3a7fcf;
+}
+
+/* Styles for color pickers */
+.color-picker {
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+}
+
+.color-picker:hover {
+    -fx-border-color: #4a90e2;
+}
+
+/* Styles for text alignment */
+.cell-align-left {
+    -fx-alignment: CENTER-LEFT;
+}
+
+.cell-align-center {
+    -fx-alignment: CENTER;
+}
+
+.cell-align-right {
+    -fx-alignment: CENTER-RIGHT;
 }
