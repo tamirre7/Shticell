@@ -63,13 +63,7 @@ public class ActionLineController {
             // Update cell in the engine
            currentSheet = engine.updateCell(cellId, newValue);
 
-            // Update the current sheet as well
-            CellDto updatedCell = engine.displayCellValue(cellId);  // Get the updated cell from engine
-
-            // Notify the SpreadsheetDisplayController to update this cell
-            if (spreadsheetDisplayController != null) {
-                spreadsheetDisplayController.refreshCell(cellId, updatedCell);
-            }
+            spreadsheetDisplayController.displaySheet(currentSheet);
         }
     }
 

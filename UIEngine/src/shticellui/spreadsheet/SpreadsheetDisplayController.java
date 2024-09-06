@@ -101,6 +101,11 @@ public class SpreadsheetDisplayController {
         this.numRows = sheetDto.getNumRows();
         this.numCols = sheetDto.getNumCols();
 
+        // Clear the existing content
+        gridPane.getChildren().clear();
+        gridPane.getColumnConstraints().clear();
+        gridPane.getRowConstraints().clear();
+
         setupGridDimensions();
 
         for (int col = 0; col <= numCols; col++) {
