@@ -1,6 +1,7 @@
 package shticellui.action.line;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
@@ -62,15 +63,31 @@ public class ActionLineController {
         String cellId = cellidTF.getText();
         String newValue = originalvalueTF.getText();
 
+
+
         if (cellId != null && !cellId.isEmpty() && newValue != null) {
-            // Update cell in the engine
-            currentSheet = engine.updateCell(cellId, newValue);
+            try {
+                // Update cell in the engine
+                currentSheet = engine.updateCell(cellId, newValue);
 
-            // Update all cells in the display
-            spreadsheetDisplayController.updateAllCells(currentSheet.getCells());
-
+                // Update all cells in the display
+                spreadsheetDisplayController.updateAllCells(currentSheet.getCells());
+            } catch (RuntimeException e) {
+                showErrorAlert("Error Updating Cell", e.getMessage());
+            }
+        } else {
+            showErrorAlert("Invalid Input", "Cell ID and value must not be empty.");
         }
     }
+
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 
     private void loadSpreadsheetVersion(Integer version) {
         // Load the specified version of the spreadsheet
