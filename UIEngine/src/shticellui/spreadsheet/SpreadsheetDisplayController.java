@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shticellui.action.line.ActionLineController;
-
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +22,7 @@ public class SpreadsheetDisplayController {
     private int numCols;
     private Map<String, Label> cellLabels = new HashMap<>();
     private Map<String, String> cellStyles = new HashMap<>();
+    private String lastSelectedCell = null;
 
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
@@ -123,10 +124,13 @@ public class SpreadsheetDisplayController {
     }
 
     private void handleCellClick(String cellId) {
+        clearPreviousHighlights();
         CellDto cellDto = engine.displayCellValue(cellId);
+        highlightDependenciesAndInfluences(cellDto);
         if (actionLineController != null) {
             actionLineController.setCellData(cellDto, cellId);
         }
+        lastSelectedCell = cellId;
     }
 
     private void setupCellContextMenu(Label cellLabel, String cellId) {
@@ -283,5 +287,38 @@ public class SpreadsheetDisplayController {
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    private void clearPreviousHighlights() {
+        if (lastSelectedCell != null) {
+            CellDto lastCellDto = engine.displayCellValue(lastSelectedCell);
+            clearHighlights(lastCellDto.getDependencies());
+            clearHighlights(lastCellDto.getInfluences());
+        }
+    }
+
+    private void clearHighlights(List<String> cellIds) {
+        for (String cellId : cellIds) {
+            Label cellLabel = cellLabels.get(cellId);
+            if (cellLabel != null) {
+                cellLabel.setStyle(cellStyles.getOrDefault(cellId, ""));
+            }
+        }
+    }
+
+    private void highlightDependenciesAndInfluences(CellDto cellDto) {
+        highlightCells(cellDto.getDependencies(), "lightblue"); // Light blue with 50% opacity
+        highlightCells(cellDto.getInfluences(), "lightgreen"); // Light green with 50% opacity
+    }
+
+    private void highlightCells(List<String> cellIds, String color) {
+        for (String cellId : cellIds) {
+            Label cellLabel = cellLabels.get(cellId);
+            if (cellLabel != null) {
+                String currentStyle = cellStyles.getOrDefault(cellId, "");
+                String newStyle = currentStyle + "-fx-background-color: " + color + ";";
+                cellLabel.setStyle(newStyle);
+            }
+        }
     }
 }

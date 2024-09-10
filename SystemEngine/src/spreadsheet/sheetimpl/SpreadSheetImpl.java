@@ -9,6 +9,8 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
+import spreadsheet.range.api.Range;
+import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.util.UpdateResult;
 
 import java.io.*;
@@ -22,12 +24,15 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     private int version;
     private Map<CellIdentifier, Cell> activeCells;
     int amountOfCellsChangedInVersion;
+    private Map<String, RangeImpl> ranges = new HashMap<>();
+
 
     public SpreadSheetImpl(String name, int version, Dimension sheetDimension) {
         this.name = name;
         this.version = version;
         this.activeCells = new HashMap<>();
         this.sheetDimension = sheetDimension;
+        this.ranges = new HashMap<>();
     }
 
     @Override
@@ -278,6 +283,44 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
 
 
+    public boolean isRangeWithinBounds(CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
+        return isCellWithinBounds(topLeft) && isCellWithinBounds(bottomRight);
+    }
+
+    private boolean isCellWithinBounds(CellIdentifierImpl cell) {
+        int row = cell.getRow();
+        char col = cell.getCol();
+        return row >= 1 && row <= sheetDimension.getNumRows()
+                && col >= 'A' && col < ('A' + sheetDimension.getNumCols());
+    }
+
+    public void addRange(String name, Cell topLeft, Cell bottomRight) throws IllegalArgumentException {
+        if (ranges.containsKey(name)) {
+            throw new IllegalArgumentException("Range name already exists");
+        }
+        if (!isRangeWithinBounds(topLeft.getIdentifier(), bottomRight.getIdentifier())) {
+            throw new IllegalArgumentException("Range is out of bounds");
+        }
+        ranges.put(name, new RangeImpl (name, topLeft, bottomRight));
+    }
+
+    public void removeRange(String name) throws IllegalArgumentException {
+        if (!ranges.containsKey(name)) {
+            throw new IllegalArgumentException("Range not found");
+        }
+        ranges.remove(name);
+    }
+
+    public RangeImpl getRange(String name) throws IllegalArgumentException {
+        if (!ranges.containsKey(name)) {
+            throw new IllegalArgumentException("Range not found");
+        }
+        return ranges.get(name);
+    }
+
+    public List<RangeImpl> getAllRanges() {
+        return new ArrayList<>(ranges.values());
+    }
 }
 
 

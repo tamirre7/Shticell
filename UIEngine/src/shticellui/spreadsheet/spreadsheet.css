@@ -104,3 +104,11 @@
 .cell-align-right {
     -fx-alignment: CENTER-RIGHT;
 }
+
+.cell-highlight-dependency {
+    -fx-background-color: lightblue;
+}
+
+.cell-highlight-influence {
+    -fx-background-color: lightgreen;
+}

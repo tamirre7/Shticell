@@ -58,6 +58,9 @@ public class LoadFileController {
 
             new Thread(() -> {
                 try {
+                    // Simulate loading with a delay
+                    updateProgressBar();
+
                     SaveLoadFileDto result = engine.loadFile(selectedFile.getAbsolutePath());
                     Platform.runLater(() -> {
                         closeLoadingPopup();
@@ -85,6 +88,24 @@ public class LoadFileController {
         }
     }
 
+    private void updateProgressBar() {
+        try {
+            // Initially set progress to 0%
+            Platform.runLater(() -> loadingProgressBar.setProgress(0.0));
+
+            // Wait for 500ms and set progress to 50%
+            Thread.sleep(500);
+            Platform.runLater(() -> loadingProgressBar.setProgress(0.5));
+
+            // Wait for another 1000ms and set progress to 100%
+            Thread.sleep(1000);
+            Platform.runLater(() -> loadingProgressBar.setProgress(1.0));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void showLoadingPopup() {
         if (loadingStage == null) {
             loadingStage = new Stage();
@@ -106,14 +127,14 @@ public class LoadFileController {
         }
 
         Platform.runLater(() -> {
-            loadingProgressBar.setProgress(-1); // Indeterminate progress
-            loadingStage.show();
+            loadingProgressBar.setProgress(0);  // Start progress at 0
+            loadingStage.show();  // Show the popup
         });
     }
 
     private void closeLoadingPopup() {
         if (loadingStage != null) {
-            loadingStage.close();
+            Platform.runLater(() -> loadingStage.close());
         }
     }
 
