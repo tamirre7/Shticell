@@ -6,6 +6,7 @@ import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.range.impl.RangeImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -312,7 +313,7 @@ public enum FunctionParser {
             Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
             Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
 
-            return new And(left, right);
+            return new Or(left, right);
         }
     },
 
@@ -347,6 +348,32 @@ public enum FunctionParser {
 
             // all is good. create the relevant function instance
             return new If(condition, thanValue,elseValue);
+        }
+    },
+    SUM {
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            if (arguments.size() != 1) {
+                throw new IllegalArgumentException("Invalid number of arguments for SUM function. Expected 1, but got " + arguments.size());
+            }
+
+            String rangeName = arguments.get(0);
+            RangeImpl range = ReadOnlySheet.getRanges().get(rangeName);
+
+            return new Sum(range);
+        }
+    },
+    AVERAGE{
+        @Override
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+            if (arguments.size() != 1) {
+                throw new IllegalArgumentException("Invalid number of arguments for AVERAGE function. Expected 1, but got " + arguments.size());
+            }
+
+            String rangeName = arguments.get(0);
+            RangeImpl range = ReadOnlySheet.getRanges().get(rangeName);
+
+            return new Average(range);
         }
     };
 

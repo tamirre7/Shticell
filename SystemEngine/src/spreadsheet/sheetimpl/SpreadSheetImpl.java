@@ -287,39 +287,42 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return isCellWithinBounds(topLeft) && isCellWithinBounds(bottomRight);
     }
 
-    private boolean isCellWithinBounds(CellIdentifierImpl cell) {
+    public boolean isCellWithinBounds(CellIdentifierImpl cell) {
         int row = cell.getRow();
         char col = cell.getCol();
         return row >= 1 && row <= sheetDimension.getNumRows()
                 && col >= 'A' && col < ('A' + sheetDimension.getNumCols());
     }
 
-    public void addRange(String name, Cell topLeft, Cell bottomRight) throws IllegalArgumentException {
+    public void addRange(String name, Cell topLeft, Cell bottomRight) {
         if (ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range name already exists");
         }
         if (!isRangeWithinBounds(topLeft.getIdentifier(), bottomRight.getIdentifier())) {
             throw new IllegalArgumentException("Range is out of bounds");
         }
-        ranges.put(name, new RangeImpl (name, topLeft, bottomRight));
+        ranges.put(name, new RangeImpl (name, topLeft.getIdentifier(), bottomRight.getIdentifier(),sheetDimension));
     }
 
-    public void removeRange(String name) throws IllegalArgumentException {
+    public void removeRange(String name) {
         if (!ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range not found");
         }
+        if (ranges.get(name).isActive())
+            throw new IllegalArgumentException("Range in use cannot be removed");
+
         ranges.remove(name);
     }
 
-    public RangeImpl getRange(String name) throws IllegalArgumentException {
+    public RangeImpl getRange(String name) {
         if (!ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range not found");
         }
         return ranges.get(name);
     }
 
-    public List<RangeImpl> getAllRanges() {
-        return new ArrayList<>(ranges.values());
+    public Map<String, RangeImpl> getRanges()  {
+        return ranges;
     }
 }
 

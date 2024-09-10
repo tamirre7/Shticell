@@ -1,5 +1,6 @@
 package spreadsheet.api;
 
+import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.util.UpdateResult;
@@ -11,5 +12,8 @@ public interface UpdateSheet {
     UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) ;
     void updateDependenciesAndInfluences();
     void setAmountOfCellsChangedInVersion(int amountOfCellsChangedInVersion);
+    void removeRange(String name);
+    void addRange(String name, Cell topLeft, Cell bottomRight);
 
-    }
+
+}
