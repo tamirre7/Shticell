@@ -44,6 +44,7 @@ public class Average implements Expression {
             }
         }
         double average = sum / range.getCellsInRange().size();
+        range.setActive(true);
         // Return the result wrapped in an EffectiveValue
         return new EffectiveValueImpl(CellType.NUMERIC, average);
     }

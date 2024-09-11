@@ -11,6 +11,7 @@ import shticellui.action.line.ActionLineController;
 import shticellui.loadfilecomp.LoadFileController;
 import shticellui.misc.MiscController;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
+import shticellui.range.RangeController;
 
 import java.io.IOException;
 
@@ -26,8 +27,10 @@ public class MyApp extends Application {
         // Load the FXML file
         FXMLLoader loader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
 
-        // Create a SpreadsheetDisplayController (shared with LoadFileController)
+        // Create shared controllers
         SpreadsheetDisplayController spreadsheetDisplayController = new SpreadsheetDisplayController(engine);
+        RangeController rangeController = new RangeController(engine);
+        rangeController.setSpreadsheetDisplayController(spreadsheetDisplayController);
 
         // Set the controller factory to inject the engine and controllers
         loader.setControllerFactory(param -> {
@@ -42,7 +45,10 @@ public class MyApp extends Application {
             } else if (param == MiscController.class) {
                 return new MiscController(engine, primaryStage);
             } else if (param == SpreadsheetDisplayController.class) {
-                return spreadsheetDisplayController; // Shared controller for spreadsheet display
+                spreadsheetDisplayController.setRangeController(rangeController);
+                return spreadsheetDisplayController;
+            } else if (param == RangeController.class) {
+                return rangeController;
             } else {
                 try {
                     return param.getDeclaredConstructor().newInstance();

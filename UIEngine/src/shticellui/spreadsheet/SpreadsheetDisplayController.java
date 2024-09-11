@@ -8,9 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shticellui.action.line.ActionLineController;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import shticellui.range.RangeController;
+
+import java.util.*;
 
 public class SpreadsheetDisplayController {
 
@@ -23,7 +23,9 @@ public class SpreadsheetDisplayController {
     private Map<String, Label> cellLabels = new HashMap<>();
     private Map<String, String> cellStyles = new HashMap<>();
     private String lastSelectedCell = null;
-
+    private RangeController rangeController;
+    private Set<String> currentlyHighlightedCells = new HashSet<>();
+    private static final String BORDER_COLOR = "#4a86e8";
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
     }
@@ -42,10 +44,13 @@ public class SpreadsheetDisplayController {
     public void setActionLineController(ActionLineController actionLineController) {
         this.actionLineController = actionLineController;
     }
+    public void setRangeController(RangeController rangeController) {this.rangeController = rangeController;}
 
     public void displaySheet(SheetDto sheetDto) {
         this.numRows = sheetDto.getNumRows();
         this.numCols = sheetDto.getNumCols();
+
+        rangeController.displayRanges(sheetDto.getSheetRanges());
 
         if (gridPane.getChildren().isEmpty()) {
             setupGridDimensions();
@@ -121,6 +126,45 @@ public class SpreadsheetDisplayController {
         } else if (col > 0 || row > 0) {
             setupHeaderContextMenu(cellLabel, col > 0 ? col : row, col > 0);
         }
+    }
+
+    public void highlightRange(String topLeft, String bottomRight) {
+        clearPreviousRangeHighlight();
+
+        int startCol = topLeft.charAt(0) - 'A' + 1;
+        int startRow = Integer.parseInt(topLeft.substring(1));
+        int endCol = bottomRight.charAt(0) - 'A' + 1;
+        int endRow = Integer.parseInt(bottomRight.substring(1));
+
+        for (int col = startCol; col <= endCol; col++) {
+            for (int row = startRow; row <= endRow; row++) {
+                String cellId = "" + (char)('A' + col - 1) + row;
+                Label cellLabel = cellLabels.get(cellId);
+                if (cellLabel != null) {
+                    // Check if the cell is already highlighted
+                    if (!cellStyles.containsKey(cellId) || !cellStyles.get(cellId).contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
+                        String currentStyle = cellStyles.getOrDefault(cellId, "");
+                        String newStyle = currentStyle + "-fx-border-color: blue; -fx-border-width: 1px; ";
+                        cellLabel.setStyle(newStyle);
+                        cellStyles.put(cellId, newStyle);
+                        currentlyHighlightedCells.add(cellId);
+                    }
+                }
+            }
+        }
+    }
+
+    private void clearPreviousRangeHighlight() {
+        for (String cellId : currentlyHighlightedCells) {
+            Label cellLabel = cellLabels.get(cellId);
+            if (cellLabel != null) {
+                String style = cellStyles.getOrDefault(cellId, "");
+                style = style.replaceAll("-fx-border-color: blue; -fx-border-width: 1px; ", "");
+                cellLabel.setStyle(style);
+                cellStyles.put(cellId, style);
+            }
+        }
+        currentlyHighlightedCells.clear();
     }
 
     private void handleCellClick(String cellId) {

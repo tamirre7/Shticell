@@ -182,49 +182,57 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
 
-
     private List<CellIdentifier> extractReferences(String value) {
         List<CellIdentifier> references = new ArrayList<>();
         int i = 0;
-        String upperValue = value.toUpperCase();
 
-        while (i < upperValue.length()) {
-            // Find the start of a REF command
-            int start = upperValue.indexOf("{REF,", i);
+        while (i < value.length()) {
+            // Find the start of a REF, SUM, or AVERAGE command
+            int start = value.indexOf("{", i);
 
-            // If no more REF commands are found, break the loop
+            // If no more commands are found, break the loop
             if (start == -1) {
-               break;
+                break;
             }
 
-            // Move the index to where the cell ID should start
-            int cellIdStart = start + 5; // Move past "{REF,"
+            // Extract the command in uppercase (but not the whole value)
+            String upperCommandPart = value.substring(start).toUpperCase();
 
-            // Skip any whitespace after "{REF,"
-            while (cellIdStart < upperValue.length() && upperValue.charAt(cellIdStart) == ' ') {
-                cellIdStart++;
+            if (upperCommandPart.startsWith("{REF,")) {
+                // Handle REF command (direct cell reference)
+                int cellIdStart = start + 5; // Move past "{REF,"
+                int cellIdEnd = findCellIdEnd(value, cellIdStart);
+                if (cellIdEnd > cellIdStart) {
+                    String cellId = value.substring(cellIdStart, cellIdEnd).trim();  // Don't uppercase this part
+                    references.add(new CellIdentifierImpl(cellId));
+                }
+                i = cellIdEnd;
+            } else if (upperCommandPart.startsWith("{SUM,") || upperCommandPart.startsWith("{AVERAGE,")) {
+                // Handle SUM or AVERAGE command with a range name
+                int rangeNameStart = start + (upperCommandPart.startsWith("{SUM,") ? 5 : 9); // Move past "{SUM," or "{AVERAGE,"
+                int rangeNameEnd = findCellIdEnd(value, rangeNameStart);
+                if (rangeNameEnd > rangeNameStart) {
+                    String rangeName = value.substring(rangeNameStart, rangeNameEnd).trim(); // Keep original case for the range name
+                    RangeImpl range = this.getRange(rangeName); // Fetch range by its name
+                    references.addAll(range.getCellsInRange()); // Add all cells in range
+                }
+                i = rangeNameEnd;
+            } else {
+                i = start + 1; // Skip invalid command
             }
-
-            // Find the end of the cell ID (it's before the next comma or closing brace)
-            int cellIdEnd = cellIdStart;
-            while (cellIdEnd < upperValue.length() && upperValue.charAt(cellIdEnd) != ',' && upperValue.charAt(cellIdEnd) != '}') {
-                cellIdEnd++;
-            }
-
-            // Extract and add the cell ID if it's valid
-            if (cellIdEnd > cellIdStart) {
-                String cellId = upperValue.substring(cellIdStart, cellIdEnd).trim();
-                references.add(new CellIdentifierImpl(cellId)); // Assuming CellIdentifierImpl has this constructor
-            }
-
-            // Move the index to continue searching
-            i = cellIdEnd;
         }
 
         return references;
+
     }
 
-
+    private int findCellIdEnd(String value, int start) {
+        int end = start;
+        while (end < value.length() && value.charAt(end) != ',' && value.charAt(end) != '}') {
+            end++;
+        }
+        return end;
+    }
 
     private List<Cell> orderCellsForCalculation() {
         DirGraph<Cell> graph = new DirGraphImpl<>();
@@ -294,14 +302,14 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 && col >= 'A' && col < ('A' + sheetDimension.getNumCols());
     }
 
-    public void addRange(String name, Cell topLeft, Cell bottomRight) {
+    public void addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
         if (ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range name already exists");
         }
-        if (!isRangeWithinBounds(topLeft.getIdentifier(), bottomRight.getIdentifier())) {
+        if (!isRangeWithinBounds(topLeft, bottomRight)) {
             throw new IllegalArgumentException("Range is out of bounds");
         }
-        ranges.put(name, new RangeImpl (name, topLeft.getIdentifier(), bottomRight.getIdentifier(),sheetDimension));
+        ranges.put(name, new RangeImpl (name, topLeft, bottomRight,sheetDimension));
     }
 
     public void removeRange(String name) {

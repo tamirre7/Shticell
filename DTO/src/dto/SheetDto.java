@@ -18,8 +18,9 @@ public class SheetDto {
     private final int version;
     private final Map<String, CellDto> cells;
     private final int amountOfCellsChangedInVersion;
+    private final Map<String,RangeDto> sheetRanges;
 
-    public SheetDto(int numCols, int numRows, int widthCol, int heightRow, String name, int version, Map<String, CellDto> cells, int cellsAmount) {
+    public SheetDto(int numCols, int numRows, int widthCol, int heightRow, String name, int version, Map<String, CellDto> cells, int cellsAmount, Map<String, RangeDto> sheetRanges) {
         this.name = name;
         this.version = version;
         this.numRows = numRows;
@@ -27,17 +28,18 @@ public class SheetDto {
         this.widthCol = widthCol;
         this.heightRow = heightRow;
         this.amountOfCellsChangedInVersion = cellsAmount;
-        this.cells = new HashMap<>();
-        for (Map.Entry<String, CellDto> entry : cells.entrySet()) {
-            this.cells.put(entry.getKey(), new CellDto(
-                    entry.getValue().getCellId(),
-                    entry.getValue().getOriginalValue(),
-                    entry.getValue().getEffectiveValue(),
-                        entry.getValue().getLastModifiedVersion(),
-                    entry.getValue().getDependencies(),
-                    entry.getValue().getInfluences()
-            ));
-        }
+        this.sheetRanges = sheetRanges;
+        this.cells = cells;
+//        for (Map.Entry<String, CellDto> entry : cells.entrySet()) {
+//            this.cells.put(entry.getKey(), new CellDto(
+//                    entry.getValue().getCellId(),
+//                    entry.getValue().getOriginalValue(),
+//                    entry.getValue().getEffectiveValue(),
+//                    entry.getValue().getLastModifiedVersion(),
+//                    entry.getValue().getDependencies(),
+//                    entry.getValue().getInfluences()
+//            ));
+//        }
     }
 
     // Getters
@@ -60,6 +62,8 @@ public class SheetDto {
     public Map<String, CellDto> getCells() {
         return Collections.unmodifiableMap(cells);
     }
+
+    public Map<String, RangeDto> getSheetRanges() {return Collections.unmodifiableMap(sheetRanges);}
 }
 
 

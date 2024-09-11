@@ -2,7 +2,6 @@ package spreadsheet.range.impl;
 
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.Cell;
-import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ public class RangeImpl {
         this.sheetDimensions=sheetDimentions;
         this.cellsInRange = new ArrayList<>();
         this.InitRangeList();
-        List<CellIdentifierImpl> cellIdentifiers = new ArrayList<>();
     }
 
     public void InitRangeList()
@@ -80,6 +78,10 @@ public class RangeImpl {
 
     public boolean isActive() {
         return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public boolean isCellContains(Cell cell) {

@@ -1,9 +1,7 @@
 package command.impl;
 
 import command.api.Engine;
-import dto.CellDto;
-import dto.SheetDto;
-import dto.VerDto;
+import dto.*;
 import expressions.api.Expression;
 
 import jakarta.xml.bind.JAXBContext;
@@ -16,12 +14,12 @@ import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
+import spreadsheet.range.api.Range;
+import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import spreadsheet.util.UpdateResult;
 import xml.generated.*;
-import dto.SaveLoadFileDto;
-import dto.ExitDto;
 
 import java.io.*;
 import java.util.*;
@@ -73,6 +71,23 @@ public class EngineImpl implements Engine {
             // Create a new SpreadSheet instance with the provided dimensions
             SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(), 1, sheetDimensions);
 
+            STLRanges stlRanges = stlSheet.getSTLRanges();
+            for (STLRange stlRange : stlRanges.getSTLRange()) {
+                String startCell = stlRange.getSTLBoundaries().getFrom();
+                String endCell = stlRange.getSTLBoundaries().getTo();
+                String rangeName = stlRange.getName();
+
+
+                // Validate the start and end cells
+                if (!spreadSheet.isValidCellID(startCell) || !spreadSheet.isValidCellID(endCell)) {
+                    return new SaveLoadFileDto(false, "Invalid range: " + startCell + " to " + endCell);
+                }
+                CellIdentifierImpl startCellId = new CellIdentifierImpl(startCell);
+                CellIdentifierImpl endCellId = new CellIdentifierImpl(endCell);
+
+                spreadSheet.addRange(rangeName, startCellId, endCellId);
+            }
+
             // Iterate over the cells and validate their positions
             STLCells stlCells = stlSheet.getSTLCells();
             for (STLCell stlCell : stlCells.getSTLCell()) {
@@ -103,6 +118,7 @@ public class EngineImpl implements Engine {
 
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
+
             spreadSheet.setAmountOfCellsChangedInVersion(spreadSheet.getActiveCells().size());
 
             // Update dependencies and influences
@@ -144,7 +160,22 @@ public class EngineImpl implements Engine {
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
 
-        return new SheetDto(dimensions.getNumCols(),dimensions.getNumRows(),dimensions.getWidthCol(),dimensions.getHeightRow(),name, version, cellDtos,currentSheet.getAmountOfCellsChangedInVersion());
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
+            RangeImpl range = entry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(range.getCellsInRange()),
+                    range.isActive()
+            );
+            cellsInRangeDto.put(entry.getKey(), rangeDto);
+        }
+
+
+        return new SheetDto(dimensions.getNumCols(),dimensions.getNumRows(),dimensions.getWidthCol(),dimensions.getHeightRow(),name, version, cellDtos,currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
     }
 
 
@@ -247,8 +278,22 @@ public class EngineImpl implements Engine {
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
 
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
+            RangeImpl range = entry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(range.getCellsInRange()),
+                    range.isActive()
+            );
+            cellsInRangeDto.put(entry.getKey(), rangeDto);
+        }
+
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion());
+        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
 
     }
 
@@ -278,6 +323,19 @@ public class EngineImpl implements Engine {
                 );
                 cellDtos.put(identifier.toString(), cellDto);  // Use identifier as a String key
             }
+            // Convert Ranges from Ranges to RangesDto
+            Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+            for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
+                RangeImpl range = rangeEntry.getValue();
+                RangeDto rangeDto = new RangeDto(
+                        range.getName(),
+                        range.getTopLeft().toString(),
+                        range.getBottomRight().toString(),
+                        convertToListOfStrings(range.getCellsInRange()),
+                        range.isActive()
+                );
+                cellsInRangeDto.put(entry.getKey().toString(), rangeDto);
+            }
 
                     SheetDto sheetDto = new SheetDto(
                     spreadSheet.getSheetDimentions().getNumCols(),
@@ -287,7 +345,8 @@ public class EngineImpl implements Engine {
                     spreadSheet.getName(),
                     spreadSheet.getVersion(),
                     cellDtos,
-                    spreadSheet.getAmountOfCellsChangedInVersion()
+                    spreadSheet.getAmountOfCellsChangedInVersion(),
+                    cellsInRangeDto
             );
 
             versionSheetDtoMap.put(version, sheetDto);
@@ -319,9 +378,23 @@ public class EngineImpl implements Engine {
             );
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
+            RangeImpl range = entry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(range.getCellsInRange()),
+                    range.isActive()
+            );
+            cellsInRangeDto.put(entry.getKey(), rangeDto);
+        }
+
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion());
+        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
     }
 
     public SaveLoadFileDto saveState(String path)
@@ -362,6 +435,25 @@ public class EngineImpl implements Engine {
     public ExitDto exitSystem() {
         return new ExitDto("Exiting application. Goodbye!");
     }
+
+    @Override
+    public RangeDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
+        currentSheet.addRange(name,topLeft,bottomRight);
+        RangeImpl addedRange = currentSheet.getRange(name);
+        return new RangeDto(addedRange.getName(),addedRange.getTopLeft().toString(),addedRange.getBottomRight().toString(),convertToListOfStrings(addedRange.getCellsInRange()),addedRange.isActive());
+    }
+
+    @Override
+    public void removeRange(String rangeName) {
+        currentSheet.removeRange(rangeName);
+    }
+
+    @Override
+    public RangeDto getRange(String rangeName) {
+        RangeImpl range = currentSheet.getRange(rangeName);
+        return new RangeDto(range.getName(),range.getTopLeft().toString(),range.getBottomRight().toString(),convertToListOfStrings(range.getCellsInRange()),range.isActive());
+    }
+
     @Override
     public boolean isFileLoaded(){
         if (currentSheet == null) {

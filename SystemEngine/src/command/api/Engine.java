@@ -2,6 +2,7 @@ package command.api;
 
 
 import dto.*;
+import spreadsheet.cell.impl.CellIdentifierImpl;
 
 public interface Engine {
 
@@ -15,4 +16,8 @@ public interface Engine {
     SaveLoadFileDto loadSavedState(String path);
     boolean isFileLoaded();
     ExitDto exitSystem();
+    RangeDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
+    void removeRange(String rangeName);
+
+    RangeDto getRange(String rangeName);
 }

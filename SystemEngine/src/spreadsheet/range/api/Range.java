@@ -1,13 +1,16 @@
 package spreadsheet.range.api;
 import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.impl.CellIdentifierImpl;
 
 public interface Range {
 
     public String getName();
 
-    public Cell getTopLeft();
+    public CellIdentifierImpl getTopLeft();
 
-    public Cell getBottomRight();
+    public CellIdentifierImpl getBottomRight();
 
     public boolean isCellContains(Cell cell);
+
+    void setActive(boolean active);
 }

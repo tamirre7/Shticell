@@ -41,7 +41,7 @@ public class Sum implements Expression {
                 }
             }
         }
-
+        range.setActive(true);
         // Return the result wrapped in an EffectiveValue
         return new EffectiveValueImpl(CellType.NUMERIC, sum);
     }
