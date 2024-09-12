@@ -13,6 +13,7 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
+import shticellui.action.line.ActionLineController;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class LoadFileController {
     private TextField fileTextField;
 
     private SpreadsheetDisplayController spreadsheetDisplayController;
+    private ActionLineController actionLineController;
 
     private Engine engine;
     private Stage primaryStage;
@@ -47,6 +49,10 @@ public class LoadFileController {
         fileTextField.setEditable(false);
     }
 
+    public void setActionLineController(ActionLineController actionLineController) {
+        this.actionLineController = actionLineController;
+    }
+
     private void handleLoadFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
@@ -54,37 +60,39 @@ public class LoadFileController {
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
 
         if (selectedFile != null) {
-            showLoadingPopup();
+            if (selectedFile.getName().endsWith(".xml")) {
+                showLoadingPopup();
 
-            new Thread(() -> {
-                try {
-                    // Simulate loading with a delay
-                    updateProgressBar();
+                new Thread(() -> {
+                    try {
+                        // Simulate loading with a delay
+                        updateProgressBar();
 
-                    SaveLoadFileDto result = engine.loadFile(selectedFile.getAbsolutePath());
-                    Platform.runLater(() -> {
-                        closeLoadingPopup();
+                        SaveLoadFileDto result = engine.loadFile(selectedFile.getAbsolutePath());
+                        Platform.runLater(() -> {
+                            closeLoadingPopup();
 
-                        if (result.isSucceeded()) {
-                            fileTextField.setText(selectedFile.getAbsolutePath());
-                            SheetDto sheetDto = engine.displayCurrentSpreadsheet();
-                            spreadsheetDisplayController.displaySheet(sheetDto);
-                        } else {
-                            showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
-                            statusLabel.setText("Failed to load file: " + selectedFile.getName());
-                        }
-                    });
-                } catch (Exception e) {
-                    Platform.runLater(() -> {
-                        closeLoadingPopup();
-                        showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
-                        statusLabel.setText("Error loading file:");
-                    });
-                }
-            }).start();
-
-        } else {
-            showAlert(Alert.AlertType.WARNING, "No File Selected", "Please select an XML file to load.");
+                            if (result.isSucceeded()) {
+                                fileTextField.setText(selectedFile.getAbsolutePath());
+                                SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+                                actionLineController.populateVersionSelector(engine.getAvailableVersions());
+                                spreadsheetDisplayController.displaySheet(sheetDto);
+                            } else {
+                                showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
+                                statusLabel.setText("Failed to load file: " + selectedFile.getName());
+                            }
+                        });
+                    } catch (Exception e) {
+                        Platform.runLater(() -> {
+                            closeLoadingPopup();
+                            showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
+                            statusLabel.setText("Error loading file:");
+                        });
+                    }
+                }).start();
+            }
+            else
+                showAlert(Alert.AlertType.WARNING, "Error loading File", "Please select an XML file to load.");
         }
     }
 

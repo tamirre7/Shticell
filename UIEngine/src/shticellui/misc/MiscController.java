@@ -27,13 +27,8 @@ public class MiscController {
 
     @FXML
     private void initialize() {
-        System.out.println("MiscController initialized");
-        if (saveButton != null && loadButton != null) {
-            saveButton.setOnAction(event -> handleSaveState());
-            loadButton.setOnAction(event -> handleLoadState());
-        } else {
-            System.out.println("Buttons are not initialized.");
-        }
+        saveButton.setOnAction(event -> handleSaveState());
+        loadButton.setOnAction(event -> handleLoadState());
     }
 
     private void handleSaveState() {

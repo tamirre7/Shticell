@@ -9,6 +9,10 @@ import command.api.Engine;
 import dto.SheetDto;
 import dto.CellDto;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+
+import java.util.Map;
 
 public class ActionLineController {
 
@@ -26,6 +30,7 @@ public class ActionLineController {
     private Engine engine;
     private SheetDto currentSheet;
     private SpreadsheetDisplayController spreadsheetDisplayController;
+    private boolean isViewingOldVersion = false;
 
     public ActionLineController() {
     }
@@ -36,27 +41,46 @@ public class ActionLineController {
 
     @FXML
     public void initialize() {
-        updatevalbtn.setOnAction(event -> updateCellValue());
-
-        versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                loadSpreadsheetVersion(Integer.valueOf(newValue));
+        updatevalbtn.setOnAction(event -> {
+            if (!isViewingOldVersion) {
+                updateCellValue();
+            } else {
+                showErrorAlert("Read-only Mode", "Cannot update cell in a read-only version.");
             }
         });
+        // Listen for version selection changes
+        versionSelector.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (newValue != null) {
+                    loadSpreadsheetVersion(Integer.valueOf(newValue));
+                }
+            }
+        });
+
     }
 
     public void setSpreadsheetDisplayController(SpreadsheetDisplayController spreadsheetDisplayController) {
         this.spreadsheetDisplayController = spreadsheetDisplayController;
     }
+    public void setCurrentSheet(SheetDto currentSheet) {this.currentSheet = currentSheet;}
 
     public void setCellData(CellDto cellDto, String cellId) {
         cellidTF.setText(cellId);
-        originalvalueTF.setText(cellDto != null ? cellDto.getOriginalValue() : "");
-        lastmodverTF.setText(cellDto.getLastModifiedVersion().toString());
-    }
+        if (cellDto != null && isActiveCell(cellDto.getCellId())) {
+            originalvalueTF.setText(cellDto.getOriginalValue());
+            lastmodverTF.setText(cellDto.getLastModifiedVersion().toString());
+        }
+        else {
+            originalvalueTF.setText("");
+            lastmodverTF.setText("");
+        }
 
-    public void setCurrentSheet(SheetDto sheet) {
-        this.currentSheet = sheet;
+    }
+    private boolean isActiveCell(String cellId) {
+        CellDto cell = currentSheet.getCells().get(cellId);
+        Map<String,CellDto>activeCells = currentSheet.getCells();
+        return activeCells.containsKey(cellId);
     }
 
     private void updateCellValue() {
@@ -72,7 +96,12 @@ public class ActionLineController {
 
                 // Update all cells in the display
                 spreadsheetDisplayController.updateAllCells(currentSheet.getCells());
+                String[] availableVersions = engine.getAvailableVersions();
+                populateVersionSelector(availableVersions);
             } catch (RuntimeException e) {
+                showErrorAlert("Error Updating Cell", e.getMessage());
+            }
+            catch (Exception e) {
                 showErrorAlert("Error Updating Cell", e.getMessage());
             }
         } else {
@@ -94,11 +123,25 @@ public class ActionLineController {
         currentSheet = engine.displaySheetByVersion(version);
         lastmodverTF.setText(version.toString());
         spreadsheetDisplayController.displaySheet(currentSheet);
+
+        if (version.equals(engine.getLatestVersion())) {
+            updatevalbtn.setDisable(false);
+            originalvalueTF.setDisable(false);
+        } else {
+            updatevalbtn.setDisable(true);
+            originalvalueTF.setDisable(true);
+        }
     }
 
     public void populateVersionSelector(String[] availableVersions) {
         versionSelector.getItems().clear();
         versionSelector.getItems().addAll(availableVersions);
-        versionSelector.getSelectionModel().selectFirst();
     }
+    public void clearTextFields()
+    {
+        cellidTF.clear();
+        originalvalueTF.clear();
+        lastmodverTF.clear();
+    }
+
 }

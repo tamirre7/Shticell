@@ -4,10 +4,7 @@ import dto.RangeDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 
@@ -47,35 +44,63 @@ public class RangeController {
         rangeNameDialog.setHeaderText("Enter new range name (example: MyRange):");
         Optional<String> rangeNameResult = rangeNameDialog.showAndWait();
 
-        rangeNameResult.ifPresent(rangeName -> {
-            // Prompt for top-left cell identifier
-            TextInputDialog topLeftDialog = new TextInputDialog();
-            topLeftDialog.setTitle("Top-Left Cell");
-            topLeftDialog.setHeaderText("Enter top-left cell (example: A1):");
-            Optional<String> topLeftResult = topLeftDialog.showAndWait();
+        // If the user cancels the range name dialog, stop the process
+        if (!rangeNameResult.isPresent()) {
+            return;
+        }
 
-            // Prompt for bottom-right cell identifier
-            TextInputDialog bottomRightDialog = new TextInputDialog();
-            bottomRightDialog.setTitle("Bottom-Right Cell");
-            bottomRightDialog.setHeaderText("Enter bottom-right cell (example: B2):");
-            Optional<String> bottomRightResult = bottomRightDialog.showAndWait();
+        String rangeName = rangeNameResult.get();
 
-            if (topLeftResult.isPresent() && bottomRightResult.isPresent()) {
-                CellIdentifierImpl topLeft = new CellIdentifierImpl(topLeftResult.get());
-                CellIdentifierImpl bottomRight = new CellIdentifierImpl(bottomRightResult.get());
-                engine.addRange(rangeName, topLeft, bottomRight);
-                rangeItems.add(rangeName);
-            }
-        });
+        // Prompt for top-left cell identifier
+        TextInputDialog topLeftDialog = new TextInputDialog();
+        topLeftDialog.setTitle("Top-Left Cell");
+        topLeftDialog.setHeaderText("Enter top-left cell (example: A1):");
+        Optional<String> topLeftResult = topLeftDialog.showAndWait();
+
+        // If the user cancels the top-left cell dialog, stop the process
+        if (!topLeftResult.isPresent()) {
+            return;
+        }
+
+        String StrTopLeft = topLeftResult.get().toUpperCase();
+
+        // Prompt for bottom-right cell identifier
+        TextInputDialog bottomRightDialog = new TextInputDialog();
+        bottomRightDialog.setTitle("Bottom-Right Cell");
+        bottomRightDialog.setHeaderText("Enter bottom-right cell (example: B2):");
+        Optional<String> bottomRightResult = bottomRightDialog.showAndWait();
+
+        // If the user cancels the bottom-right cell dialog, stop the process
+        if (!bottomRightResult.isPresent()) {
+            return;
+        }
+
+        String StrBottomRight = bottomRightResult.get().toUpperCase();
+
+        try {
+            // If both cells are provided, process the range creation
+            CellIdentifierImpl topLeft = new CellIdentifierImpl(StrTopLeft);
+            CellIdentifierImpl bottomRight = new CellIdentifierImpl(StrBottomRight);
+            engine.addRange(rangeName, topLeft, bottomRight);
+            rangeItems.add(rangeName);
+        } catch (IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING, "Cannot add Range ", e.getMessage());
+        }
     }
+
 
 
     @FXML
     public void handleDeleteRange(){
         String range = rangeListView.getSelectionModel().getSelectedItem();
-        if(range != null) {
-            engine.removeRange(range);
-            rangeItems.remove(range);
+        try {
+            if (range != null) {
+                engine.removeRange(range);
+                rangeItems.remove(range);
+            }
+        }
+        catch(IllegalArgumentException e) {
+            showAlert(Alert.AlertType.WARNING, "Cannot delete Range ", e.getMessage());
         }
 
     }
@@ -90,5 +115,12 @@ public class RangeController {
                 spreadsheetDisplayController.highlightRange(topLeft, bottomRight);
             }
         }
+    }
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

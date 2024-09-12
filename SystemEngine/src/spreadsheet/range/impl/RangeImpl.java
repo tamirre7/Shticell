@@ -3,12 +3,14 @@ package spreadsheet.range.impl;
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.range.api.Range;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class RangeImpl {
+public class RangeImpl implements Range, Serializable {
     private String name;
     private CellIdentifierImpl topLeft;
     private CellIdentifierImpl bottomRight;

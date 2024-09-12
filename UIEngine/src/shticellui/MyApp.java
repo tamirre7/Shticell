@@ -32,16 +32,20 @@ public class MyApp extends Application {
         RangeController rangeController = new RangeController(engine);
         rangeController.setSpreadsheetDisplayController(spreadsheetDisplayController);
 
+        // Create the ActionLineController once and pass it to both the spreadsheet and load controllers
+        ActionLineController actionLineController = new ActionLineController();
+        actionLineController.setEngine(engine);
+        spreadsheetDisplayController.setActionLineController(actionLineController);
+        actionLineController.setSpreadsheetDisplayController(spreadsheetDisplayController);
+
         // Set the controller factory to inject the engine and controllers
         loader.setControllerFactory(param -> {
             if (param == ActionLineController.class) {
-                ActionLineController actionLineController = new ActionLineController();
-                actionLineController.setEngine(engine);
-                spreadsheetDisplayController.setActionLineController(actionLineController);
-                actionLineController.setSpreadsheetDisplayController(spreadsheetDisplayController);
                 return actionLineController;
             } else if (param == LoadFileController.class) {
-                return new LoadFileController(engine, primaryStage, spreadsheetDisplayController);
+                LoadFileController loadFileController = new LoadFileController(engine, primaryStage, spreadsheetDisplayController);
+                loadFileController.setActionLineController(actionLineController); // Directly pass the ActionLineController
+                return loadFileController;
             } else if (param == MiscController.class) {
                 return new MiscController(engine, primaryStage);
             } else if (param == SpreadsheetDisplayController.class) {

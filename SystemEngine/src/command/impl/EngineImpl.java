@@ -259,10 +259,10 @@ public class EngineImpl implements Engine {
 
 
         // Retrieve the cell from the currentSheet
-        Cell cell = currentSheet.getCell(cellIdentifier);
-        if (cell == null) {
-            throw new IllegalStateException("Cell not found after update");
-        }
+//        Cell cell = currentSheet.getCell(cellIdentifier);
+//        if (cell == null) {
+//            throw new IllegalStateException("Cell not found after update");
+//        }
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
@@ -364,6 +364,8 @@ public class EngineImpl implements Engine {
             throw new IllegalArgumentException("No spreadsheet found for the specified version");
         }
 
+
+
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : sheet.getActiveCells().entrySet()) {
@@ -378,19 +380,7 @@ public class EngineImpl implements Engine {
             );
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = entry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(entry.getKey(), rangeDto);
-        }
+
 
 
         // Return a SheetDto with the retrieved SpreadSheet
@@ -452,6 +442,18 @@ public class EngineImpl implements Engine {
     public RangeDto getRange(String rangeName) {
         RangeImpl range = currentSheet.getRange(rangeName);
         return new RangeDto(range.getName(),range.getTopLeft().toString(),range.getBottomRight().toString(),convertToListOfStrings(range.getCellsInRange()),range.isActive());
+    }
+
+    @Override
+    public String[] getAvailableVersions() {
+        return sheetVersionMap.keySet().stream()
+                .map(String::valueOf)  // Convert Integer to String
+                .toArray(String[]::new);
+    }
+
+    @Override
+    public Integer getLatestVersion() {
+        return sheetVersionMap.size();
     }
 
     @Override

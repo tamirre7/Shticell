@@ -20,4 +20,8 @@ public interface Engine {
     void removeRange(String rangeName);
 
     RangeDto getRange(String rangeName);
+
+    String[] getAvailableVersions();
+
+    Integer getLatestVersion();
 }

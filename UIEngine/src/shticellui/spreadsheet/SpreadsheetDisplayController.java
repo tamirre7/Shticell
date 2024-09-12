@@ -47,6 +47,10 @@ public class SpreadsheetDisplayController {
     public void setRangeController(RangeController rangeController) {this.rangeController = rangeController;}
 
     public void displaySheet(SheetDto sheetDto) {
+        clearCells();
+        actionLineController.setCurrentSheet(sheetDto);
+        actionLineController.clearTextFields();
+
         this.numRows = sheetDto.getNumRows();
         this.numCols = sheetDto.getNumCols();
 
@@ -58,6 +62,9 @@ public class SpreadsheetDisplayController {
         }
 
         updateAllCells(sheetDto.getCells());
+    }
+    private void clearCells(){
+        gridPane.getChildren().clear();
     }
 
     private void setupGridDimensions() {
@@ -365,4 +372,5 @@ public class SpreadsheetDisplayController {
             }
         }
     }
+
 }

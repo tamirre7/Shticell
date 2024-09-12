@@ -214,7 +214,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 if (rangeNameEnd > rangeNameStart) {
                     String rangeName = value.substring(rangeNameStart, rangeNameEnd).trim(); // Keep original case for the range name
                     RangeImpl range = this.getRange(rangeName); // Fetch range by its name
-                    references.addAll(range.getCellsInRange()); // Add all cells in range
+                    if (range != null)
+                        references.addAll(range.getCellsInRange());
+                    // Add all cells in range
                 }
                 i = rangeNameEnd;
             } else {
@@ -324,7 +326,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     public RangeImpl getRange(String name) {
         if (!ranges.containsKey(name)) {
-            throw new IllegalArgumentException("Range not found");
+            return null;
         }
         return ranges.get(name);
     }
