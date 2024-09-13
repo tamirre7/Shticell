@@ -3,43 +3,35 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="134.0" prefWidth="123.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.misc.MiscController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.misc.MiscController">
    <children>
-      <Separator prefHeight="8.0" prefWidth="600.0">
+      <Separator prefWidth="600.0">
          <VBox.margin>
             <Insets left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </Separator>
       <CheckBox fx:id="animationsCheckBox" mnemonicParsing="false" text="Animations">
          <VBox.margin>
-            <Insets left="5.0" top="5.0" />
+            <Insets left="5.0" top="10.0" />
          </VBox.margin>
       </CheckBox>
-      <StackPane alignment="CENTER_LEFT">
-         <children>
-            <ChoiceBox fx:id="skinChoiceBox" prefHeight="26.0" prefWidth="87.0" />
-            <Label prefHeight="18.0" prefWidth="68.0" text="Change Skin">
-               <StackPane.margin>
-                  <Insets left="5.0" />
-               </StackPane.margin>
-            </Label>
-         </children>
-         <padding>
-            <Insets top="5.0" />
-         </padding>
+      <VBox spacing="2">
          <VBox.margin>
-            <Insets left="5.0" />
+            <Insets left="5.0" top="10.0" />
          </VBox.margin>
-      </StackPane>
+         <children>
+            <Label text="Change Skin:" />
+            <ComboBox fx:id="skinComboBox" prefHeight="26.0" prefWidth="140.0" promptText="Select skin" styleClass="combo-box" />
+         </children>
+      </VBox>
       <Button fx:id="saveButton" mnemonicParsing="false" text="Save System State">
          <VBox.margin>
-            <Insets left="5.0" top="5.0" />
+            <Insets left="5.0" top="10.0" />
          </VBox.margin>
       </Button>
       <Button fx:id="loadButton" mnemonicParsing="false" text="Load System State">
@@ -47,6 +39,8 @@
             <Insets left="5.0" top="5.0" />
          </VBox.margin>
       </Button>
-      <StackPane alignment="CENTER_LEFT" />
    </children>
+   <padding>
+      <Insets bottom="10.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
 </VBox>

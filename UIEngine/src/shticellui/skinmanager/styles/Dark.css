@@ -1,0 +1,174 @@
+/* Base dark theme for a sleek, modern look */
+.scroll-pane {
+    -fx-background-color: #2e2e2e; /* Dark background for ScrollPane */
+}
+
+.spreadsheet-container {
+    -fx-background-color: #2e2e2e; /* Dark background for container */
+    -fx-padding: 10 0 0 10; /* Padding for layout */
+}
+
+.cell {
+    -fx-background-color: #3a3a3a; /* Slightly lighter cells */
+    -fx-border-color: #4f4f4f; /* Subtle borders for a clean look */
+    -fx-border-width: 0 1 1 0; /* Right and bottom borders only */
+    -fx-padding: 5;
+    -fx-alignment: CENTER;
+}
+
+.cell:hover {
+    -fx-background-color: #555555; /* Hover effect for cells */
+}
+
+.grid-pane {
+    -fx-background-color: #1e1e1e; /* Deep background for grid */
+    -fx-grid-lines-visible: false; /* Turn off grid lines */
+}
+
+.border-pane {
+    -fx-background-color: #2b2b2b; /* Soft dark for border pane */
+}
+
+.top-vbox {
+    -fx-background-color: #444444; /* Slightly lighter for contrast */
+}
+
+.left-vbox {
+    -fx-background-color: #444444; /* Same contrast for left VBox */
+}
+
+/* Button styling for dark mode */
+.button {
+    -fx-background-color: #5a5a5a; /* Darker background for the button */
+    -fx-text-fill: #f1f1f1; /* Light text for contrast */
+    -fx-border-radius: 5; /* Rounded corners */
+    -fx-background-radius: 5;
+}
+
+/* Hover effect for buttons */
+.button:hover {
+    -fx-background-color: #4a90e2; /* Blue background on hover */
+    -fx-text-fill: white; /* Ensure text stays white */
+    -fx-cursor: hand; /* Changes the cursor to a pointer */
+}
+
+/* Active (pressed) effect for buttons */
+.button:pressed {
+    -fx-background-color: #357ABD; /* Darker blue when clicked */
+}
+
+.label {
+    -fx-font-family: "Calibri";
+    -fx-font-size: 12px;
+    -fx-text-fill: #f1f1f1; /* White labels for high contrast */
+}
+
+/* Styling for the ComboBox */
+.combo-box {
+    -fx-background-color: #3a3a3a; /* Dark background for combo box */
+    -fx-border-color: #4f4f4f; /* Border color */
+    -fx-border-width: 1; /* Border width */
+}
+
+/* Styling for ComboBox items */
+.combo-box .list-cell {
+    -fx-background-color: #3a3a3a; /* ComboBox items background */
+    -fx-text-fill: #ffffff; /* White text for clarity */
+}
+
+
+
+/* Styling for the arrow button inside the ComboBox */
+.combo-box .arrow {
+    -fx-background-color: #4a90e2; /* Blue background for the arrow button */
+    -fx-background-radius: 5; /* Rounded corners */
+    -fx-border-color: #4a90e2; /* Blue border for the arrow button */
+}
+
+.ranges-list {
+    -fx-background-color: #2e2e2e; /* Dark background for list */
+}
+
+/* Header cells styling */
+.header-cell {
+    -fx-background-color: #4a4a4a; /* Darker for header cells */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-fill: #f1f1f1; /* Light text for header */
+}
+
+/* Column and row header styling */
+.column-header, .row-header {
+    -fx-background-color: #555555; /* Darker tone for headers */
+    -fx-text-fill: #e0e0e0; /* Light text for clarity */
+}
+
+/* Styling for selected cells */
+.selected-cell {
+    -fx-background-color: #3a7fcf; /* Blue highlight for selected cells */
+}
+
+/* Styling for editable cells */
+.edit-cell {
+    -fx-background-color: #2e2e2e; /* Dark background for editable cells */
+    -fx-border-color: #4a90e2; /* Highlight border */
+    -fx-border-width: 2;
+    -fx-text-fill: #ffffff; /* White text in editable cells */
+}
+
+/* New styles for context menu */
+.context-menu {
+    -fx-background-color: #3a3a3a; /* Dark background for context menu */
+    -fx-border-color: #4f4f4f;
+}
+
+.menu-item:focused {
+    -fx-background-color: #4a90e2; /* Blue background for focused menu item */
+}
+
+.menu-item:focused .label {
+    -fx-text-fill: white; /* White text for focused menu item */
+}
+
+/* Styles for dialogs */
+.dialog-pane {
+    -fx-background-color: #3a3a3a; /* Dark background for dialogs */
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #4a90e2; /* Blue buttons in dialogs */
+    -fx-text-fill: white; /* White text for contrast */
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #3a7fcf; /* Slightly lighter on hover */
+}
+
+/* Styles for color pickers */
+.color-picker {
+    -fx-background-color: #3a3a3a; /* Dark background for color pickers */
+    -fx-border-color: #4f4f4f;
+}
+
+.color-picker:hover {
+    -fx-border-color: #4a90e2; /* Blue border on hover */
+}
+.ranges-list {
+    -fx-background-color: #2e2e2e; /* Dark background for the ListView */
+    -fx-control-inner-background: #2e2e2e; /* Ensure the background of ListView matches */
+    -fx-text-fill: #ffffff; /* White text for the items */
+}
+
+.ranges-list .list-cell {
+    -fx-background-color: #2e2e2e; /* Dark background for each cell */
+    -fx-text-fill: #ffffff; /* White text for each cell */
+}
+
+.ranges-list .list-cell:hover {
+    -fx-background-color: #3a3a3a; /* Slightly lighter hover effect */
+}
+
+.ranges-list .list-cell:selected {
+    -fx-background-color: #4a90e2; /* Highlight selected item */
+    -fx-text-fill: white; /* White text for selected item */
+}

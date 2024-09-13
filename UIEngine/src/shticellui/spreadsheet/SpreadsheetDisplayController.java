@@ -122,8 +122,8 @@ public class SpreadsheetDisplayController {
         }
         cellLabel.setMaxWidth(Double.MAX_VALUE);
         cellLabel.setMaxHeight(Double.MAX_VALUE);
-        GridPane.setHgrow(cellLabel, Priority.ALWAYS);
-        GridPane.setVgrow(cellLabel, Priority.ALWAYS);
+        GridPane.setHgrow(cellLabel, Priority.SOMETIMES);
+        GridPane.setVgrow(cellLabel, Priority.SOMETIMES);
         gridPane.add(cellLabel, col, row);
 
         if (col > 0 && row > 0) {

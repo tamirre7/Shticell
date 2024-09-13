@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="45.0" prefWidth="831.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.action.line.ActionLineController">
+<HBox prefHeight="45.0" prefWidth="897.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.action.line.ActionLineController">
    <children>
       <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
          <HBox.margin>
@@ -27,12 +27,12 @@
       </Button>
       <HBox prefHeight="36.0" prefWidth="215.0">
          <children>
-            <Label text="Cell's Last Modified Version:">
+            <Label prefHeight="18.0" prefWidth="163.0" text="Cell's Last Modified Version:">
                <HBox.margin>
                   <Insets top="9.0" />
                </HBox.margin>
             </Label>
-            <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="26.0" prefWidth="56.0" promptText="Version">
+            <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="26.0" prefWidth="66.0" promptText="Version">
                <HBox.margin>
                   <Insets left="5.0" top="5.0" />
                </HBox.margin>
@@ -47,7 +47,7 @@
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
          <children>
-            <ComboBox fx:id="versionSelector" promptText="Choose version">
+            <ComboBox fx:id="versionSelector" promptText="Choose version" styleClass="combo-box">
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin></ComboBox>

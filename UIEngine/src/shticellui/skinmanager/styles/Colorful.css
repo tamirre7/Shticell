@@ -1,0 +1,129 @@
+/* Spreadsheet container and cells remain unchanged */
+.spreadsheet-container {
+    -fx-background-color: #f5f5f5; /* Light background for container */
+    -fx-padding: 10 0 0 10; /* Padding for layout */
+}
+
+.cell {
+    -fx-background-color: #fff7e6; /* Soft light orange for cells */
+    -fx-border-color: #ffcc80; /* Soft orange borders */
+    -fx-border-width: 0 1 1 0; /* Right and bottom borders only */
+    -fx-padding: 5;
+    -fx-alignment: CENTER;
+}
+
+/* Button styling with light orange color */
+.button {
+    -fx-background-color: #ffcc80; /* Light orange button color */
+    -fx-text-fill: #ffffff; /* White text for contrast */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Hover effect for buttons */
+.button:hover {
+    -fx-background-color: #ffb74d; /* Slightly darker orange on hover */
+    -fx-text-fill: #ffffff;
+    -fx-cursor: hand;
+}
+
+/* Active (pressed) effect for buttons */
+.button:pressed {
+    -fx-background-color: #ffa726; /* Darker orange when clicked */
+}
+
+/* Label styling */
+.label {
+    -fx-font-family: "Calibri";
+    -fx-font-size: 12px;
+    -fx-text-fill: #01579b; /* Dark blue text */
+}
+
+/* Backgrounds in light blue tones */
+.scroll-pane {
+    -fx-background-color: #e0f7fa; /* Light blue for scroll pane */
+}
+
+.grid-pane {
+    -fx-background-color: #e0f7fa; /* Light blue background for grid */
+    -fx-grid-lines-visible: false;
+}
+
+.border-pane {
+    -fx-background-color: #e1f5fe; /* Very light blue for border pane */
+}
+
+.top-vbox, .left-vbox {
+    -fx-background-color: #e1f5fe; /* Very light blue for contrast */
+}
+
+/* ComboBox styling */
+.combo-box {
+    -fx-background-color: #e0f7fa; /* Light blue background for combo box */
+    -fx-border-color: #81d4fa; /* Light blue border */
+    -fx-border-width: 1;
+}
+
+/* Styling for ComboBox items */
+.combo-box .list-cell {
+    -fx-background-color: #e0f7fa; /* Light blue background */
+    -fx-text-fill: #01579b; /* Dark blue text */
+}
+
+.combo-box:hover {
+    -fx-background-color: #81d4fa;
+    -fx-border-color: #4fc3f7;
+    -fx-text-fill: #ffffff;
+}
+
+.ranges-list {
+    -fx-background-color: #e0f7fa; /* Light blue background for ranges */
+}
+
+.header-cell {
+    -fx-background-color: #4fc3f7; /* Blue header cells */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-text-fill: #ffffff; /* White text for contrast */
+}
+
+.column-header, .row-header {
+    -fx-background-color: #81d4fa; /* Light blue for headers */
+    -fx-text-fill: #01579b; /* Dark blue text */
+}
+
+/* Styling for selected cells */
+.selected-cell {
+    -fx-background-color: #039be5; /* Dark blue highlight for selected cells */
+}
+
+/* Styling for editable cells */
+.edit-cell {
+    -fx-background-color: #e1f5fe; /* Very light blue for editable cells */
+    -fx-border-color: #4fc3f7; /* Blue highlight border */
+    -fx-border-width: 2;
+    -fx-text-fill: #01579b; /* Dark blue text */
+}
+
+/* Context menu styling */
+.context-menu {
+    -fx-background-color: #e0f7fa; /* Light blue for context menu */
+}
+
+.menu-item:focused {
+    -fx-background-color: #81d4fa; /* Light blue for focused menu items */
+}
+
+.dialog-pane {
+    -fx-background-color: #e0f7fa; /* Light blue for dialogs */
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #ffcc80; /* Light orange for dialog buttons */
+    -fx-text-fill: white;
+}
+
+.color-picker {
+    -fx-background-color: #e0f7fa; /* Light blue for color picker */
+    -fx-border-color: #81d4fa; /* Light blue border */
+}

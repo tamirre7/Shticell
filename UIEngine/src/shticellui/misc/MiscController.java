@@ -4,8 +4,11 @@ import command.api.Engine;
 import dto.SaveLoadFileDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shticellui.skinmanager.SkinManager;
+
 import java.io.File;
 
 public class MiscController {
@@ -16,17 +19,33 @@ public class MiscController {
     @FXML
     private Button loadButton;
 
+    @FXML
+    private ComboBox<String> skinComboBox;
+    SkinManager skinManager;
+
     private Engine engine;
     private Stage primaryStage;
 
     // Constructor
-    public MiscController(Engine engine, Stage primaryStage) {
+    public MiscController(Engine engine, Stage primaryStage, SkinManager skinManager) {
         this.engine = engine;
         this.primaryStage = primaryStage;
+        this.skinManager = skinManager;
     }
 
     @FXML
     private void initialize() {
+        // Add skin options
+        skinComboBox.getItems().addAll("Default", "Dark", "Colorful");
+        skinComboBox.setValue("Default"); // Set default skin
+
+        skinComboBox.setOnAction(event -> {
+            String selectedSkin = skinComboBox.getValue();
+            if (selectedSkin != null) {
+                applySkin(selectedSkin);
+            }
+        });
+
         saveButton.setOnAction(event -> handleSaveState());
         loadButton.setOnAction(event -> handleLoadState());
     }
@@ -66,6 +85,10 @@ public class MiscController {
                 showAlert("Error", result.getMessage());
             }
         }
+    }
+
+    private void applySkin(String skinFileName) {
+        skinManager.applySkin(primaryStage.getScene(), skinFileName);
     }
 
     private void showAlert(String title, String message) {

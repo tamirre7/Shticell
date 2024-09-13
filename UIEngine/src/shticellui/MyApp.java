@@ -10,6 +10,7 @@ import command.api.Engine;
 import shticellui.action.line.ActionLineController;
 import shticellui.loadfilecomp.LoadFileController;
 import shticellui.misc.MiscController;
+import shticellui.skinmanager.SkinManager;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 import shticellui.range.RangeController;
 
@@ -18,12 +19,13 @@ import java.io.IOException;
 public class MyApp extends Application {
 
     private Engine engine;
+    private SkinManager skinManager;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         // Initialize the engine
         engine = new EngineImpl(); // Replace this with actual engine initialization
-
+        skinManager = new SkinManager();
         // Load the FXML file
         FXMLLoader loader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
 
@@ -47,7 +49,7 @@ public class MyApp extends Application {
                 loadFileController.setActionLineController(actionLineController); // Directly pass the ActionLineController
                 return loadFileController;
             } else if (param == MiscController.class) {
-                return new MiscController(engine, primaryStage);
+                return new MiscController(engine, primaryStage,skinManager);
             } else if (param == SpreadsheetDisplayController.class) {
                 spreadsheetDisplayController.setRangeController(rangeController);
                 return spreadsheetDisplayController;
@@ -67,7 +69,7 @@ public class MyApp extends Application {
 
         // Create the scene
         Scene scene = new Scene(root);
-
+        skinManager.applySkin(scene, "Default");
         // Set the title and scene, then show the stage
         primaryStage.setTitle("Shticell Application");
         primaryStage.setScene(scene);
