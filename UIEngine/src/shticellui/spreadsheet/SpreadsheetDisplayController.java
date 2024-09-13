@@ -161,7 +161,7 @@ public class SpreadsheetDisplayController {
         }
     }
 
-    private void clearPreviousRangeHighlight() {
+    public void clearPreviousRangeHighlight() {
         for (String cellId : currentlyHighlightedCells) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {

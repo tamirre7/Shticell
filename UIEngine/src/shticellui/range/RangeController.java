@@ -16,6 +16,8 @@ public class RangeController {
     private final Engine engine;
     private ObservableList<String> rangeItems = FXCollections.observableArrayList();
     private SpreadsheetDisplayController spreadsheetDisplayController;
+    private String currentlyHighlightedRange = null;
+
 
     public RangeController(Engine engine) {
         this.engine = engine;
@@ -108,11 +110,19 @@ public class RangeController {
     public void handleRangeSelection() {
         String selectedRange = rangeListView.getSelectionModel().getSelectedItem();
         if (selectedRange != null && spreadsheetDisplayController != null) {
-            RangeDto rangeDto = engine.getRange(selectedRange);
-            if (rangeDto != null) {
-                String topLeft = rangeDto.getTopLeft();
-                String bottomRight = rangeDto.getBottomRight();
-                spreadsheetDisplayController.highlightRange(topLeft, bottomRight);
+            if (selectedRange.equals(currentlyHighlightedRange)) {
+                // If the selected range is already highlighted, clear the highlight
+                spreadsheetDisplayController.clearPreviousRangeHighlight();
+                currentlyHighlightedRange = null;
+            } else {
+                // Highlight the newly selected range
+                RangeDto rangeDto = engine.getRange(selectedRange);
+                if (rangeDto != null) {
+                    String topLeft = rangeDto.getTopLeft();
+                    String bottomRight = rangeDto.getBottomRight();
+                    spreadsheetDisplayController.highlightRange(topLeft, bottomRight);
+                    currentlyHighlightedRange = selectedRange;
+                }
             }
         }
     }
