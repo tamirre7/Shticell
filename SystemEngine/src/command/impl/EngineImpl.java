@@ -293,68 +293,12 @@ public class EngineImpl implements Engine {
         }
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
+        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),
+                currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(),
+                currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
 
     }
 
-    @Override
-    public VerDto displayVersions() {
-
-        Map<Integer, SheetDto> versionSheetDtoMap = new HashMap<>();
-
-        for (Map.Entry<Integer, SpreadSheet> entry : sheetVersionMap.entrySet()) {
-            Integer version = entry.getKey();
-            SpreadSheet spreadSheet = entry.getValue();
-
-            // Convert SpreadSheet to SheetDto
-            // Convert SpreadSheet to SheetDto
-            Map<String, CellDto> cellDtos = new HashMap<>();
-
-            for (Map.Entry<CellIdentifier, Cell> cellEntry : spreadSheet.getActiveCells().entrySet()) {
-                Cell cell = cellEntry.getValue();
-                CellIdentifier identifier = cellEntry.getKey();
-                CellDto cellDto = new CellDto(
-                        identifier.toString(),  // Convert CellIdentifier to String
-                        cell.getOriginalValue(),
-                        cell.getEffectiveValue().toString(),
-                        cell.getLastModifiedVersion(),
-                        convertToListOfStrings(cell.getDependencies()),
-                        convertToListOfStrings(cell.getInfluences())
-                );
-                cellDtos.put(identifier.toString(), cellDto);  // Use identifier as a String key
-            }
-            // Convert Ranges from Ranges to RangesDto
-            Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-            for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-                RangeImpl range = rangeEntry.getValue();
-                RangeDto rangeDto = new RangeDto(
-                        range.getName(),
-                        range.getTopLeft().toString(),
-                        range.getBottomRight().toString(),
-                        convertToListOfStrings(range.getCellsInRange()),
-                        range.isActive()
-                );
-                cellsInRangeDto.put(entry.getKey().toString(), rangeDto);
-            }
-
-                    SheetDto sheetDto = new SheetDto(
-                    spreadSheet.getSheetDimentions().getNumCols(),
-                    spreadSheet.getSheetDimentions().getNumRows(),
-                    spreadSheet.getSheetDimentions().getWidthCol(),
-                    spreadSheet.getSheetDimentions().getHeightRow(),
-                    spreadSheet.getName(),
-                    spreadSheet.getVersion(),
-                    cellDtos,
-                    spreadSheet.getAmountOfCellsChangedInVersion(),
-                    cellsInRangeDto
-            );
-
-            versionSheetDtoMap.put(version, sheetDto);
-        }
-
-        // Return the version information wrapped in a VerDto
-        return new VerDto(versionSheetDtoMap);
-    }
 
     @Override
     public SheetDto displaySheetByVersion(int version) {
@@ -363,8 +307,6 @@ public class EngineImpl implements Engine {
         if (sheet == null) {
             throw new IllegalArgumentException("No spreadsheet found for the specified version");
         }
-
-
 
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = new HashMap<>();
@@ -381,10 +323,23 @@ public class EngineImpl implements Engine {
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
 
+        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
+            RangeImpl range = rangeEntry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(range.getCellsInRange()),
+                    range.isActive()
+            );
+            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
+        }
 
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
+        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),
+                sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
     }
 
     public SaveLoadFileDto saveState(String path)
@@ -418,12 +373,6 @@ public class EngineImpl implements Engine {
             return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
         return new SaveLoadFileDto(true,"File loaded successfully");
-    }
-
-
-    @Override
-    public ExitDto exitSystem() {
-        return new ExitDto("Exiting application. Goodbye!");
     }
 
     @Override

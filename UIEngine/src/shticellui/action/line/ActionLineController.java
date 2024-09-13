@@ -88,7 +88,6 @@ public class ActionLineController {
         String newValue = originalvalueTF.getText();
 
 
-
         if (cellId != null && !cellId.isEmpty() && newValue != null) {
             try {
                 // Update cell in the engine
@@ -107,6 +106,7 @@ public class ActionLineController {
         } else {
             showErrorAlert("Invalid Input", "Cell ID and value must not be empty.");
         }
+
     }
 
     private void showErrorAlert(String title, String content) {

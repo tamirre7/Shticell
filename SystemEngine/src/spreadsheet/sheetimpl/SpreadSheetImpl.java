@@ -203,7 +203,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 int cellIdStart = start + 5; // Move past "{REF,"
                 int cellIdEnd = findCellIdEnd(value, cellIdStart);
                 if (cellIdEnd > cellIdStart) {
-                    String cellId = value.substring(cellIdStart, cellIdEnd).trim();  // Don't uppercase this part
+                    String cellId = value.substring(cellIdStart, cellIdEnd).trim().toUpperCase();
                     references.add(new CellIdentifierImpl(cellId));
                 }
                 i = cellIdEnd;

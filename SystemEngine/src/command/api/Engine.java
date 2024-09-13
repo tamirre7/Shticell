@@ -10,18 +10,13 @@ public interface Engine {
     SheetDto displayCurrentSpreadsheet();
     CellDto displayCellValue(String cellid);
     SheetDto updateCell(String cellid, String originalValue);
-    VerDto displayVersions();
     SheetDto displaySheetByVersion(int version);
     SaveLoadFileDto saveState(String path);
     SaveLoadFileDto loadSavedState(String path);
     boolean isFileLoaded();
-    ExitDto exitSystem();
     RangeDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
     void removeRange(String rangeName);
-
     RangeDto getRange(String rangeName);
-
     String[] getAvailableVersions();
-
     Integer getLatestVersion();
 }
