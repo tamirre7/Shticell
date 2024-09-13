@@ -1,10 +1,7 @@
 package shticellui.action.line;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import command.api.Engine;
 import dto.SheetDto;
 import dto.CellDto;
@@ -25,7 +22,7 @@ public class ActionLineController {
     @FXML
     private Button updatevalbtn;
     @FXML
-    private ChoiceBox<String> versionSelector;
+    private ComboBox<String> versionSelector;
 
     private Engine engine;
     private SheetDto currentSheet;
@@ -49,12 +46,9 @@ public class ActionLineController {
             }
         });
         // Listen for version selection changes
-        versionSelector.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (newValue != null) {
-                    loadSpreadsheetVersion(Integer.valueOf(newValue));
-                }
+        versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                loadSpreadsheetVersion(Integer.valueOf(newValue));
             }
         });
 
