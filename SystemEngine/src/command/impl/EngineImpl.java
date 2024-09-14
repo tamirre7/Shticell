@@ -257,12 +257,6 @@ public class EngineImpl implements Engine {
              throw new RuntimeException(updateRes.getErrorMessage());
          }
 
-
-        // Retrieve the cell from the currentSheet
-//        Cell cell = currentSheet.getCell(cellIdentifier);
-//        if (cell == null) {
-//            throw new IllegalStateException("Cell not found after update");
-//        }
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
@@ -412,6 +406,107 @@ public class EngineImpl implements Engine {
         }
         return true;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public SheetDto sortRange(Range range, List<String> colsToSort) {
+        // Get the existing SheetDto from the engine
+        SheetDto sheet = displayCurrentSpreadsheet();
+
+        // Extract the range boundaries (top-left and bottom-right)
+        CellIdentifierImpl topLeft = range.getTopLeft();
+        CellIdentifierImpl bottomRight = range.getBottomRight();
+
+        // Create a list to hold all rows within the range
+        List<List<CellDto>> rowsInRange = new ArrayList<>();
+
+        // Loop through each row in the range
+        for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
+            List<CellDto> rowCells = new ArrayList<>();
+            for (int col = (topLeft.getCol() - 'A'); col <= (bottomRight.getCol()-'A'); col++) {
+                String cellId = createCellId(row, col);  // Create a cell identifier
+
+                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, null, null, 0,new ArrayList<>(),new ArrayList<>())));  // Fetch the cell or empty
+            }
+            rowsInRange.add(rowCells);  // Add the row to the list
+        }
+
+        // Sort the rows based on the provided column order
+        rowsInRange.sort((row1, row2) -> {
+            for (String colToSort : colsToSort) {
+                int colIndex = colToSort.charAt(0) - 'A';  // Convert column letter to index
+                CellDto cell1 = row1.get(colIndex);
+                CellDto cell2 = row2.get(colIndex);
+
+                // Compare based on effective numeric value (assuming numeric values only)
+                Double value1 = parseNumericValue(cell1.getEffectiveValue());
+                Double value2 = parseNumericValue(cell2.getEffectiveValue());
+
+                if (value1 != null && value2 != null) {
+                    int compareResult = value1.compareTo(value2);
+                    if (compareResult != 0) {
+                        return compareResult;  // If not equal, return the result
+                    }
+                }
+            }
+            return 0;  // If all columns are equal, maintain the original order (stable sort)
+        });
+
+        // After sorting, update the cells in the sheet
+        Map<String, CellDto> updatedCells = new HashMap<>(sheet.getCells());
+        for (int rowIndex = 0; rowIndex < rowsInRange.size(); rowIndex++) {
+            List<CellDto> sortedRow = rowsInRange.get(rowIndex);
+            for (int col = 0; col < sortedRow.size(); col++) {
+                String cellId = createCellId(topLeft.getRow() + rowIndex, topLeft.getCol() + col);
+                updatedCells.put(cellId, sortedRow.get(col));
+            }
+        }
+
+        // Create a new SheetDto with the sorted cells
+        return new SheetDto(sheet.getNumCols(), sheet.getNumRows(), sheet.getWidthCol(), sheet.getHeightRow(),
+                sheet.getName(), sheet.getVersion(), updatedCells, sheet.getAmountOfCellsChangedInVersion(), sheet.getSheetRanges());
+    }
+
+    // Helper method to create cell IDs based on row and column numbers
+    private String createCellId(int row, int col) {
+
+        return String.valueOf((char) ('A' + col)) + (row + 1);
+    }
+
+    // Helper method to parse numeric values from cell effective values
+    private Double parseNumericValue(String value) {
+        try {
+            return value != null ? Double.parseDouble(value) : null;
+        } catch (NumberFormatException e) {
+            return null;  // Return null if the value is not numeric
+        }
+    }
+
+
+
+
 }
 
 

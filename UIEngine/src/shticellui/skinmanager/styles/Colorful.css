@@ -19,7 +19,9 @@
     -fx-border-radius: 5;
     -fx-background-radius: 5;
 }
-
+.cell:hover {
+    -fx-background-color:#f0f8ff; /* Light blue background for hover effect */
+}
 /* Hover effect for buttons */
 .button:hover {
     -fx-background-color: #ffb74d; /* Slightly darker orange on hover */

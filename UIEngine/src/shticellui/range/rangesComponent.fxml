@@ -8,22 +8,22 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="198.0" prefWidth="119.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.range.RangeController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="269.0" prefWidth="119.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.range.RangeController">
    <children>
       <Label alignment="TOP_LEFT" text="Ranges">
          <VBox.margin>
-            <Insets left="40.0" />
+            <Insets left="40.0" top="15.0" />
          </VBox.margin>
       </Label>
-      <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+      <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
          <VBox.margin>
             <Insets left="5.0" right="5.0" />
          </VBox.margin>
          <content>
-            <ListView fx:id="rangeListView" onMouseClicked="#handleRangeSelection" styleClass="ranges-list"/>
+            <ListView fx:id="rangeListView" onMouseClicked="#handleRangeSelection" styleClass="ranges-list" />
          </content>
       </ScrollPane>
-      <HBox prefHeight="39.0" prefWidth="107.0">
+      <HBox prefHeight="39.0" prefWidth="119.0">
          <children>
             <Button mnemonicParsing="false" onAction="#handleDeleteRange" text="Delete">
                <HBox.margin>

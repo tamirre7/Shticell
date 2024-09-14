@@ -3,6 +3,9 @@ package command.api;
 
 import dto.*;
 import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.range.api.Range;
+
+import java.util.List;
 
 public interface Engine {
 
@@ -19,4 +22,5 @@ public interface Engine {
     RangeDto getRange(String rangeName);
     String[] getAvailableVersions();
     Integer getLatestVersion();
+    SheetDto sortRange(Range range, List<String>colsToSort);
 }

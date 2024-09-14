@@ -22,29 +22,29 @@ public class Average implements Expression {
             return new EffectiveValueImpl(CellType.INVALID_VALUE,Double.NaN);
         }
         double sum = 0.0;
+        int counter = 0;
         // Iterate over each cell in the range
         for (CellIdentifierImpl cellIdentifier : range.getCellsInRange()) {
-            Cell cell = spreadSheet.getCell(cellIdentifier);
-            if (cellIdentifier != null) {
-                EffectiveValue cellValue = cell.getEffectiveValue();
-
-
+            EffectiveValue cellValue = spreadSheet.getCellEffectiveValue(cellIdentifier);
+            if (cellValue == null){
+                sum += 0;
+            }
+            else {
                 // Extract numeric value
                 Double numericValue = cellValue.extractValueWithExpectation(Double.class);
-
                 if (numericValue != null) {
                     sum += numericValue; // Add to sum if it's a valid number
-                }
-                else {
-                    if (cellValue.getCellType() == CellType.NOT_INIT)
-                        sum += 0;
-                    else
-                        return new EffectiveValueImpl(CellType.INVALID_VALUE,Double.NaN);
+                    counter++;
                 }
             }
         }
-        double average = sum / range.getCellsInRange().size();
         range.setActive(true);
+        double average;
+        if (counter == 0)
+            average = 0;
+        else {
+            average = sum / counter;
+        }
         // Return the result wrapped in an EffectiveValue
         return new EffectiveValueImpl(CellType.NUMERIC, average);
     }

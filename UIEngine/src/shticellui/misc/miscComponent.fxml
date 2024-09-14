@@ -26,15 +26,15 @@
          </VBox.margin>
          <children>
             <Label text="Change Skin:" />
-            <ComboBox fx:id="skinComboBox" prefHeight="26.0" prefWidth="140.0" promptText="Select skin" styleClass="combo-box" />
+            <ComboBox fx:id="skinComboBox" prefHeight="26.0" prefWidth="117.0" promptText="Select skin" styleClass="combo-box" />
          </children>
       </VBox>
-      <Button fx:id="saveButton" mnemonicParsing="false" text="Save System State">
+      <Button fx:id="saveButton" mnemonicParsing="false" prefHeight="28.0" prefWidth="118.0" text="Save System State">
          <VBox.margin>
             <Insets left="5.0" top="10.0" />
          </VBox.margin>
       </Button>
-      <Button fx:id="loadButton" mnemonicParsing="false" text="Load System State">
+      <Button fx:id="loadButton" mnemonicParsing="false" prefHeight="28.0" prefWidth="118.0" text="Load System State">
          <VBox.margin>
             <Insets left="5.0" top="5.0" />
          </VBox.margin>

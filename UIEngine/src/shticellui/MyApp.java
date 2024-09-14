@@ -11,6 +11,7 @@ import shticellui.action.line.ActionLineController;
 import shticellui.loadfilecomp.LoadFileController;
 import shticellui.misc.MiscController;
 import shticellui.skinmanager.SkinManager;
+import shticellui.sortandfilter.SortAndFilterController;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 import shticellui.range.RangeController;
 
@@ -55,6 +56,8 @@ public class MyApp extends Application {
                 return spreadsheetDisplayController;
             } else if (param == RangeController.class) {
                 return rangeController;
+            } else if (param == SortAndFilterController.class) {
+                return new SortAndFilterController(engine, spreadsheetDisplayController);
             } else {
                 try {
                     return param.getDeclaredConstructor().newInstance();

@@ -4,13 +4,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1"
-            fitToWidth="true" fitToHeight="true" styleClass="scroll-pane">
+<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="580.0" prefWidth="899.0" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <BorderPane styleClass="border-pane">
          <!-- Top section with VBox containing two GridPanes -->
          <top>
-            <VBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" BorderPane.alignment="CENTER" styleClass="top-vbox">
+            <VBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" styleClass="top-vbox" BorderPane.alignment="CENTER">
                <!-- First GridPane included -->
                <fx:include source="loadfilecomp/loadFileComponent.fxml" />
                <!-- Second GridPane included -->
@@ -20,7 +19,8 @@
 
          <!-- Left section with the Ranges Component -->
          <left>
-            <VBox prefWidth="121.0" maxWidth="121.0" BorderPane.alignment="TOP_LEFT" styleClass="left-vbox">
+            <VBox maxWidth="121.0" prefWidth="121.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
+               <fx:include source="sortandfilter/sortandflter.fxml" />
                <fx:include source="range/rangesComponent.fxml" />
                <fx:include source="misc/miscComponent.fxml" />
             </VBox>

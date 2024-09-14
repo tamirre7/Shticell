@@ -63,11 +63,11 @@ public class SpreadsheetDisplayController {
 
         updateAllCells(sheetDto.getCells());
     }
-    private void clearCells(){
+    public void clearCells(){
         gridPane.getChildren().clear();
     }
 
-    private void setupGridDimensions() {
+    public void setupGridDimensions() {
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
 

@@ -23,23 +23,18 @@ public class Sum implements Expression {
         double sum = 0.0;
         // Iterate over each cell in the range
         for (CellIdentifierImpl cellIdentifier : range.getCellsInRange()) {
-            Cell cell = spreadSheet.getCell(cellIdentifier);
-            if (cellIdentifier != null) {
-                EffectiveValue cellValue = cell.getEffectiveValue();
-
-                // Extract numeric value
+            EffectiveValue cellValue = spreadSheet.getCellEffectiveValue(cellIdentifier);
+            // Extract numeric value
+            if (cellValue == null){
+                sum += 0;
+            }
+            else {
                 Double numericValue = cellValue.extractValueWithExpectation(Double.class);
-
                 if (numericValue != null) {
                     sum += numericValue; // Add to sum if it's a valid number
                 }
-                else {
-                        if (cellValue.getCellType() == CellType.NOT_INIT)
-                            sum += 0;
-                        else
-                            return new EffectiveValueImpl(CellType.INVALID_VALUE,Double.NaN);
-                }
             }
+
         }
         range.setActive(true);
         // Return the result wrapped in an EffectiveValue

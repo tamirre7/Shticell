@@ -11,10 +11,25 @@
 .spreadsheet-container {
     -fx-padding: 10 0 0 10; /* top right bottom left */
 }
-
+.cell:hover {
+    -fx-background-color:#f5f5f5; /* Light blue background for hover effect */
+    -fx-border-color: #4a90e2; /* Blue border to highlight the cell */
+    -fx-border-width: 1; /* Border width for hover effect */
+    -fx-cursor: hand; /* Change cursor to indicate interaction */
+}
 /* ScrollPane for scrolling the spreadsheet */
 .scroll-pane {
     -fx-padding: 0;
+}
+/* Hover effect for ComboBox items */
+.combo-box .list-cell {
+    -fx-text-fill: black; /* Default text color for list items */
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #f5f5f5; /* Light gray background on hover */
+    -fx-text-fill: black; /* Ensure text remains black */
+    -fx-cursor: hand; /* Change cursor to indicate interaction */
 }
 
 /* GridPane for the spreadsheet content */
