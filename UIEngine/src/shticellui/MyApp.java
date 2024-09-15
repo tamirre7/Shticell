@@ -50,7 +50,7 @@ public class MyApp extends Application {
                 loadFileController.setActionLineController(actionLineController); // Directly pass the ActionLineController
                 return loadFileController;
             } else if (param == MiscController.class) {
-                return new MiscController(engine, primaryStage,skinManager);
+                return new MiscController(engine, primaryStage,skinManager,spreadsheetDisplayController,actionLineController);
             } else if (param == SpreadsheetDisplayController.class) {
                 spreadsheetDisplayController.setRangeController(rangeController);
                 return spreadsheetDisplayController;

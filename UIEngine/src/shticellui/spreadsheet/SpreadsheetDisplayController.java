@@ -25,7 +25,8 @@ public class SpreadsheetDisplayController {
     private String lastSelectedCell = null;
     private RangeController rangeController;
     private Set<String> currentlyHighlightedCells = new HashSet<>();
-    private static final String BORDER_COLOR = "#4a86e8";
+    private SheetDto currentSheet;
+
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
     }
@@ -39,6 +40,10 @@ public class SpreadsheetDisplayController {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         gridPane.setMinWidth(800);
         gridPane.setMinHeight(600);
+    }
+
+    public void setCurrentSheet(SheetDto currentSheet) {
+        this.currentSheet = currentSheet;
     }
 
     public void setActionLineController(ActionLineController actionLineController) {
@@ -108,6 +113,12 @@ public class SpreadsheetDisplayController {
                 setupCell(cellLabel, col, row);
             }
         }
+    }
+
+
+
+    public void displayOriginaSheet() {
+        updateAllCells(currentSheet.getCells());
     }
 
     private void setupCell(Label cellLabel, int col, int row) {

@@ -75,6 +75,7 @@ public class LoadFileController {
                             if (result.isSucceeded()) {
                                 fileTextField.setText(selectedFile.getAbsolutePath());
                                 SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+                                spreadsheetDisplayController.setCurrentSheet(sheetDto);
                                 actionLineController.populateVersionSelector(engine.getAvailableVersions());
                                 spreadsheetDisplayController.displaySheet(sheetDto);
                             } else {

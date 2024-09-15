@@ -5,11 +5,14 @@ import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 import spreadsheet.api.Dimension;
@@ -18,6 +21,7 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +47,7 @@ public class SortAndFilterController {
     @FXML
     public void handleSort() {
         sortAndFilterDialog();
+
         if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "Error", "Please select a valid range and columns.");
             return;
@@ -53,16 +58,21 @@ public class SortAndFilterController {
             SheetDto sortedSheet = engine.sortRange(sortOrFilterRange, columnsToSortOrFilter);
             spreadsheetDisplayController.displaySheet(sortedSheet);
 
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Sort Error", "An error occurred while sorting: " + e.getMessage());
         }
-
-
     }
+
+
 
     @FXML
     public void handleFilter() {
 
+    }
+    @FXML
+    public void handleResetSortFilter() {
+        spreadsheetDisplayController.displayOriginaSheet();
     }
 
 

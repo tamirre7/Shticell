@@ -2,12 +2,15 @@ package shticellui.misc;
 
 import command.api.Engine;
 import dto.SaveLoadFileDto;
+import dto.SheetDto;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import shticellui.action.line.ActionLineController;
 import shticellui.skinmanager.SkinManager;
+import shticellui.spreadsheet.SpreadsheetDisplayController;
 
 import java.io.File;
 
@@ -25,12 +28,16 @@ public class MiscController {
 
     private Engine engine;
     private Stage primaryStage;
+    private SpreadsheetDisplayController spreadsheetDisplayController;
+    private ActionLineController actionLineController;
 
     // Constructor
-    public MiscController(Engine engine, Stage primaryStage, SkinManager skinManager) {
+    public MiscController(Engine engine, Stage primaryStage, SkinManager skinManager, SpreadsheetDisplayController spreadsheetDisplayController, ActionLineController actionLineController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
         this.skinManager = skinManager;
+        this.spreadsheetDisplayController = spreadsheetDisplayController;
+        this.actionLineController = actionLineController;
     }
 
     @FXML
@@ -85,6 +92,10 @@ public class MiscController {
                 showAlert("Error", result.getMessage());
             }
         }
+        SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+        actionLineController.populateVersionSelector(engine.getAvailableVersions());
+        spreadsheetDisplayController.setCurrentSheet(sheetDto);
+        spreadsheetDisplayController.displaySheet(sheetDto);
     }
 
     private void applySkin(String skinFileName) {

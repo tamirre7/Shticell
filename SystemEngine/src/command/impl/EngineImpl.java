@@ -28,7 +28,7 @@ import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
     private SpreadSheet currentSheet = null;
-    private Map <Integer, SpreadSheet> sheetVersionMap = new HashMap<>();
+    private Map<Integer, SpreadSheet> sheetVersionMap = new HashMap<>();
 
     @Override
     public SaveLoadFileDto loadFile(String path) {
@@ -175,7 +175,7 @@ public class EngineImpl implements Engine {
         }
 
 
-        return new SheetDto(dimensions.getNumCols(),dimensions.getNumRows(),dimensions.getWidthCol(),dimensions.getHeightRow(),name, version, cellDtos,currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
+        return new SheetDto(dimensions.getNumCols(), dimensions.getNumRows(), dimensions.getWidthCol(), dimensions.getHeightRow(), name, version, cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
     }
 
 
@@ -202,7 +202,7 @@ public class EngineImpl implements Engine {
             return new CellDto(
                     cellIdentifier.toString(),                      // The identifier of the cell
                     "",                             // Default original value
-                   "",                             // Default effective value
+                    "",                             // Default effective value
                     0,    // Last modified version (could be current version)
                     Collections.emptyList(),              // No dependencies
                     Collections.emptyList()               // No influences
@@ -247,15 +247,13 @@ public class EngineImpl implements Engine {
         UpdateResult updateRes;
         SpreadSheet updateSpreadSheet;
         updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue);
-         if(updateRes.isSuccess())
-         {
-             updateSpreadSheet = updateRes.getSheet();
-             sheetVersionMap.put(updateSpreadSheet.getVersion(), updateSpreadSheet);
-             currentSheet = updateSpreadSheet;
-         }
-         else {
-             throw new RuntimeException(updateRes.getErrorMessage());
-         }
+        if (updateRes.isSuccess()) {
+            updateSpreadSheet = updateRes.getSheet();
+            sheetVersionMap.put(updateSpreadSheet.getVersion(), updateSpreadSheet);
+            currentSheet = updateSpreadSheet;
+        } else {
+            throw new RuntimeException(updateRes.getErrorMessage());
+        }
 
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = new HashMap<>();
@@ -287,9 +285,9 @@ public class EngineImpl implements Engine {
         }
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(),currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(),currentSheet.getSheetDimentions().getHeightRow(),currentSheet.getName(),
-                currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
+        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
+                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(),
+                currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
 
     }
 
@@ -332,27 +330,26 @@ public class EngineImpl implements Engine {
 
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getNumRows(),sheet.getSheetDimentions().getWidthCol(),
-                sheet.getSheetDimentions().getHeightRow(),sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(),cellsInRangeDto);
+        return new SheetDto(sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getWidthCol(),
+                sheet.getSheetDimentions().getHeightRow(), sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
     }
 
-    public SaveLoadFileDto saveState(String path)
-    {
+    public SaveLoadFileDto saveState(String path) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(currentSheet);
             oos.writeObject(sheetVersionMap);
-        }  catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             return new SaveLoadFileDto(false, "File not found: " + path);
         } catch (IOException e) {
             return new SaveLoadFileDto(false, "IO error while saving: " + e.getMessage());
         } catch (Exception e) {
             return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
-        return new SaveLoadFileDto(true,"File saved successfully");
+        return new SaveLoadFileDto(true, "File saved successfully");
 
     }
-    public SaveLoadFileDto loadSavedState(String path)
-    {
+
+    public SaveLoadFileDto loadSavedState(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             currentSheet = (SpreadSheet) ois.readObject();
             sheetVersionMap = (Map<Integer, SpreadSheet>) ois.readObject();
@@ -366,14 +363,14 @@ public class EngineImpl implements Engine {
         } catch (Exception e) {
             return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
-        return new SaveLoadFileDto(true,"File loaded successfully");
+        return new SaveLoadFileDto(true, "File loaded successfully");
     }
 
     @Override
     public RangeDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
-        currentSheet.addRange(name,topLeft,bottomRight);
+        currentSheet.addRange(name, topLeft, bottomRight);
         RangeImpl addedRange = currentSheet.getRange(name);
-        return new RangeDto(addedRange.getName(),addedRange.getTopLeft().toString(),addedRange.getBottomRight().toString(),convertToListOfStrings(addedRange.getCellsInRange()),addedRange.isActive());
+        return new RangeDto(addedRange.getName(), addedRange.getTopLeft().toString(), addedRange.getBottomRight().toString(), convertToListOfStrings(addedRange.getCellsInRange()), addedRange.isActive());
     }
 
     @Override
@@ -384,7 +381,7 @@ public class EngineImpl implements Engine {
     @Override
     public RangeDto getRange(String rangeName) {
         RangeImpl range = currentSheet.getRange(rangeName);
-        return new RangeDto(range.getName(),range.getTopLeft().toString(),range.getBottomRight().toString(),convertToListOfStrings(range.getCellsInRange()),range.isActive());
+        return new RangeDto(range.getName(), range.getTopLeft().toString(), range.getBottomRight().toString(), convertToListOfStrings(range.getCellsInRange()), range.isActive());
     }
 
     @Override
@@ -400,34 +397,12 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public boolean isFileLoaded(){
+    public boolean isFileLoaded() {
         if (currentSheet == null) {
-           return false;
+            return false;
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -445,18 +420,29 @@ public class EngineImpl implements Engine {
         // Loop through each row in the range
         for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
             List<CellDto> rowCells = new ArrayList<>();
-            for (int col = (topLeft.getCol() - 'A'); col <= (bottomRight.getCol()-'A'); col++) {
+            for (int col = (topLeft.getCol() - 'A'); col <= (bottomRight.getCol() - 'A'); col++) {
                 String cellId = createCellId(row, col);  // Create a cell identifier
-
-                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, null, null, 0,new ArrayList<>(),new ArrayList<>())));  // Fetch the cell or empty
+                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, null, null, 0, new ArrayList<>(), new ArrayList<>())));  // Fetch the cell or empty
             }
             rowsInRange.add(rowCells);  // Add the row to the list
         }
 
-        // Sort the rows based on the provided column order
-        rowsInRange.sort((row1, row2) -> {
+        int countOfHeaders = 0;
+
+        // Filter out header rows (non-numeric values in all columnsToSort)
+        List<List<CellDto>> rowsWithoutHeaders = new ArrayList<>();
+        for (List<CellDto> row : rowsInRange) {
+            if (!isHeaderRow(row, colsToSort, topLeft.getCol())) {
+                rowsWithoutHeaders.add(row);// Add only rows that are not headers
+            }
+            else
+                countOfHeaders++;
+        }
+
+        // Sort the remaining rows based on the provided column order
+        rowsWithoutHeaders.sort((row1, row2) -> {
             for (String colToSort : colsToSort) {
-                int colIndex = colToSort.charAt(0) - 'A';  // Convert column letter to index
+                int colIndex = colToSort.charAt(0) - topLeft.getCol();  // Convert column letter to index
                 CellDto cell1 = row1.get(colIndex);
                 CellDto cell2 = row2.get(colIndex);
 
@@ -464,11 +450,14 @@ public class EngineImpl implements Engine {
                 Double value1 = parseNumericValue(cell1.getEffectiveValue());
                 Double value2 = parseNumericValue(cell2.getEffectiveValue());
 
-                if (value1 != null && value2 != null) {
-                    int compareResult = value1.compareTo(value2);
-                    if (compareResult != 0) {
-                        return compareResult;  // If not equal, return the result
-                    }
+                // If one of the values is not numeric, skip this column for sorting
+                if (value1 == null || value2 == null) {
+                    throw new IllegalArgumentException("Column " + colToSort + " contains non-numeric values and cannot be used for sorting.");
+                }
+
+                int compareResult = value1.compareTo(value2);
+                if (compareResult != 0) {
+                    return compareResult;  // If not equal, return the result
                 }
             }
             return 0;  // If all columns are equal, maintain the original order (stable sort)
@@ -476,23 +465,59 @@ public class EngineImpl implements Engine {
 
         // After sorting, update the cells in the sheet
         Map<String, CellDto> updatedCells = new HashMap<>(sheet.getCells());
-        for (int rowIndex = 0; rowIndex < rowsInRange.size(); rowIndex++) {
-            List<CellDto> sortedRow = rowsInRange.get(rowIndex);
+
+        for (int rowIndex = 0; rowIndex < rowsWithoutHeaders.size(); rowIndex++) {
+            List<CellDto> sortedRow = rowsWithoutHeaders.get(rowIndex);
             for (int col = 0; col < sortedRow.size(); col++) {
-                String cellId = createCellId(topLeft.getRow() + rowIndex, topLeft.getCol() + col);
-                updatedCells.put(cellId, sortedRow.get(col));
+                char currentCol = (char) (topLeft.getCol() + col);
+                int currentRow = topLeft.getRow() + rowIndex+countOfHeaders;
+                String cellId = String.valueOf(currentCol) + currentRow;
+                CellDto sortedCell = sortedRow.get(col);
+                // Construct a new CellDto for each sorted cell
+                CellDto cellDto = new CellDto(
+                        sortedCell.getCellId(),
+                        sortedCell.getOriginalValue(),
+                        sortedCell.getEffectiveValue(),
+                        sortedCell.getLastModifiedVersion(),
+                        sortedCell.getDependencies(),  // Assuming this remains the same
+                        sortedCell.getInfluences()      // Assuming this remains the same
+                );
+                updatedCells.put(cellId, cellDto);
             }
         }
 
-        // Create a new SheetDto with the sorted cells
-        return new SheetDto(sheet.getNumCols(), sheet.getNumRows(), sheet.getWidthCol(), sheet.getHeightRow(),
-                sheet.getName(), sheet.getVersion(), updatedCells, sheet.getAmountOfCellsChangedInVersion(), sheet.getSheetRanges());
+// Convert ranges (same as in displaySheetByVersion)
+        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
+            RangeImpl rangeEntryValue = rangeEntry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(rangeEntryValue.getCellsInRange()),
+                    rangeEntryValue.isActive()
+            );
+            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
+        }
+
+// Return the new SheetDto
+        return new SheetDto(
+                sheet.getNumRows(),
+                sheet.getNumRows(),
+                sheet.getWidthCol(),
+                sheet.getHeightRow(),
+                sheet.getName(),
+                sheet.getVersion(),
+                updatedCells,
+                currentSheet.getAmountOfCellsChangedInVersion(),
+                cellsInRangeDto
+        );
+
     }
 
     // Helper method to create cell IDs based on row and column numbers
     private String createCellId(int row, int col) {
-
-        return String.valueOf((char) ('A' + col)) + (row + 1);
+        return String.valueOf((char) ('A' + col)) + (row);
     }
 
     // Helper method to parse numeric values from cell effective values
@@ -504,9 +529,17 @@ public class EngineImpl implements Engine {
         }
     }
 
-
-
+    // Helper method to check if the row contains headers (non-numeric values)
+    private boolean isHeaderRow(List<CellDto> row, List<String> colsToSort, char colOffset) {
+        for (String colToSort : colsToSort) {
+            int colIndex = colToSort.charAt(0) - colOffset ;  // Convert column letter to index
+            String value = row.get(colIndex).getEffectiveValue();
+            if (parseNumericValue(value) != null) {
+                return false;  // If it's numeric, it's not a header row
+            }
+        }
+        return true;  // All values are non-numeric, so it's a header row
+    }
 
 }
-
 
