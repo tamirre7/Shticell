@@ -21,6 +21,8 @@ public class CellImpl implements Cell, Serializable
     private List<CellIdentifierImpl> dependencies;
     private List<CellIdentifierImpl> influences;
     private ReadOnlySpreadSheet sheet;
+    private String style = "";
+    private String alignment = "-fx-alignment: center;";
 
 
     public CellImpl(CellIdentifierImpl identifier, String originalValue,
@@ -101,5 +103,17 @@ public class CellImpl implements Cell, Serializable
     public int hashCode() {
         return identifier.hashCode();
     }
+
+    @Override
+    public void setCellStyle(String style) {this.style = style;}
+
+    @Override
+    public String getCellStyle() {return style;}
+
+    @Override
+    public void setCellAlignment (String alignment) {this.alignment = alignment;}
+
+    @Override
+    public String getCellAlignment() {return alignment;}
 }
 

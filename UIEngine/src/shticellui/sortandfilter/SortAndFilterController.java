@@ -56,7 +56,7 @@ public class SortAndFilterController {
         try {
             // Call the Engine to sort the selected range based on the chosen columns
             SheetDto sortedSheet = engine.sortRange(sortOrFilterRange, columnsToSortOrFilter);
-            spreadsheetDisplayController.displaySheet(sortedSheet);
+            spreadsheetDisplayController.displaySortedSheet(sortedSheet);
 
 
         } catch (Exception e) {

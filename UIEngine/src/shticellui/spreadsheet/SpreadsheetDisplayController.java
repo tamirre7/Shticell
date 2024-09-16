@@ -21,11 +21,12 @@ public class SpreadsheetDisplayController {
     private int numRows;
     private int numCols;
     private Map<String, Label> cellLabels = new HashMap<>();
-    private Map<String, String> cellStyles = new HashMap<>();
+    //private Map<String, String> cellStyles = new HashMap<>();
     private String lastSelectedCell = null;
     private RangeController rangeController;
     private Set<String> currentlyHighlightedCells = new HashSet<>();
     private SheetDto currentSheet;
+    private SheetDto savedSheet;
 
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
@@ -68,9 +69,8 @@ public class SpreadsheetDisplayController {
 
         updateAllCells(sheetDto.getCells());
     }
-    public void clearCells(){
-        gridPane.getChildren().clear();
-    }
+
+    private void clearCells(){gridPane.getChildren().clear();}
 
     public void setupGridDimensions() {
         gridPane.getColumnConstraints().clear();
@@ -115,9 +115,18 @@ public class SpreadsheetDisplayController {
         }
     }
 
+    public void displaySortedSheet(SheetDto sheetDto) {
+        savedSheet = currentSheet;
+        currentSheet = sheetDto;
+        actionLineController.disableEditing();
+        updateAllCells(sheetDto.getCells());
+    }
+
 
 
     public void displayOriginaSheet() {
+        currentSheet = savedSheet;
+        actionLineController.enableEditing();
         updateAllCells(currentSheet.getCells());
     }
 
@@ -160,11 +169,10 @@ public class SpreadsheetDisplayController {
                 Label cellLabel = cellLabels.get(cellId);
                 if (cellLabel != null) {
                     // Check if the cell is already highlighted
-                    if (!cellStyles.containsKey(cellId) || !cellStyles.get(cellId).contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
-                        String currentStyle = cellStyles.getOrDefault(cellId, "");
+                    if (!(currentSheet.getCells().containsKey(cellId)) || !currentSheet.getCells().get(cellId).getStyle().contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
+                        String currentStyle = currentSheet.getCells().get(cellId).getStyle();
                         String newStyle = currentStyle + "-fx-border-color: blue; -fx-border-width: 1px; ";
                         cellLabel.setStyle(newStyle);
-                        cellStyles.put(cellId, newStyle);
                         currentlyHighlightedCells.add(cellId);
                     }
                 }
@@ -176,10 +184,9 @@ public class SpreadsheetDisplayController {
         for (String cellId : currentlyHighlightedCells) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {
-                String style = cellStyles.getOrDefault(cellId, "");
+                String style = currentSheet.getCells().get(cellId).getStyle();
                 style = style.replaceAll("-fx-border-color: blue; -fx-border-width: 1px; ", "");
                 cellLabel.setStyle(style);
-                cellStyles.put(cellId, style);
             }
         }
         currentlyHighlightedCells.clear();
@@ -187,9 +194,10 @@ public class SpreadsheetDisplayController {
 
     private void handleCellClick(String cellId) {
         clearPreviousHighlights();
-        CellDto cellDto = engine.displayCellValue(cellId);
-        highlightDependenciesAndInfluences(cellDto);
+        CellDto cellDto = currentSheet.getCells().get(cellId);
+        if (cellDto != null) {highlightDependenciesAndInfluences(cellDto);}
         if (actionLineController != null) {
+            actionLineController.setCurrentSheet(currentSheet);
             actionLineController.setCellData(cellDto, cellId);
         }
         lastSelectedCell = cellId;
@@ -228,7 +236,7 @@ public class SpreadsheetDisplayController {
     }
 
     private void applyStyle(Label cellLabel, String cellId) {
-        String style = cellStyles.get(cellId);
+        String style = currentSheet.getCells().get(cellId).getStyle();
         if (style != null) {
             cellLabel.setStyle(style);
         }
@@ -256,24 +264,29 @@ public class SpreadsheetDisplayController {
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-
+        if (currentSheet.getCells().get(cellId) == null) {
+            SheetDto updatedSheet = engine.addCell(cellId);
+            currentSheet = updatedSheet;
+        }
         backgroundColorPicker.setOnAction(event -> {
-            String newStyle = cellStyles.getOrDefault(cellId, "") +
+            String newStyle = currentSheet.getCells().get(cellId).getStyle() +
                     "-fx-background-color: " + toRgbString(backgroundColorPicker.getValue()) + ";";
-            cellStyles.put(cellId, newStyle);
+            SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+            currentSheet = styledSheet;
             applyStyle(cellLabel, cellId);
         });
 
         textColorPicker.setOnAction(event -> {
-            String newStyle = cellStyles.getOrDefault(cellId, "") +
+            String newStyle = currentSheet.getCells().get(cellId).getStyle() +
                     "-fx-text-fill: " + toRgbString(textColorPicker.getValue()) + ";";
-            cellStyles.put(cellId, newStyle);
+            SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+            currentSheet = styledSheet;
             applyStyle(cellLabel, cellId);
         });
 
         resetButton.setOnAction(event -> {
-            cellStyles.remove(cellId);
-            cellLabel.setStyle("");
+            SheetDto styledSheet = engine.setCellStyle(cellId, "");
+            currentSheet = styledSheet;
         });
 
         dialog.showAndWait();
@@ -315,20 +328,43 @@ public class SpreadsheetDisplayController {
             if (isColumn) {
                 for (int row = 1; row <= numRows; row++) {
                     String cellId = "" + (char)('A' + index - 1) + row;
-                    Label cell = cellLabels.get(cellId);
-                    if (cell != null) {
-                        String newStyle = cellStyles.getOrDefault(cellId, "") + alignment;
-                        cellStyles.put(cellId, newStyle);
+                    CellDto cellDto = currentSheet.getCells().get(cellId);
+                    if (cellDto != null) {
+                        String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
+                        SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+                        currentSheet = styledSheet;
+                        Label cell = cellLabels.get(cellId);
+                        applyStyle(cell, cellId);
+                    }
+                    else {
+                       SheetDto updatedSheet = engine.addCell(cellId);
+                       currentSheet = updatedSheet;
+                        String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
+                        SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+                        currentSheet = styledSheet;
+                        Label cell = cellLabels.get(cellId);
                         applyStyle(cell, cellId);
                     }
                 }
             } else {
                 for (int col = 1; col <= numCols; col++) {
                     String cellId = "" + (char)('A' + col - 1) + index;
-                    Label cell = cellLabels.get(cellId);
-                    if (cell != null) {
-                        String newStyle = cellStyles.getOrDefault(cellId, "") + alignment;
-                        cellStyles.put(cellId, newStyle);
+                    CellDto cellDto = currentSheet.getCells().get(cellId);
+                    if (cellDto != null) {
+                        String newStyle = cellDto.getStyle() + alignment;
+                        SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+                        currentSheet = styledSheet;
+                        Label cell = cellLabels.get(cellId);
+                        applyStyle(cell, cellId);
+                    }
+                    else {
+                        SheetDto updatedSheet = engine.addCell(cellId);
+                        currentSheet = updatedSheet;
+                        cellDto = currentSheet.getCells().get(cellId);
+                        String newStyle = cellDto.getStyle() + alignment;
+                        SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
+                        currentSheet = styledSheet;
+                        Label cell = cellLabels.get(cellId);
                         applyStyle(cell, cellId);
                     }
                 }
@@ -363,8 +399,9 @@ public class SpreadsheetDisplayController {
         for (String cellId : cellIds) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {
-                cellLabel.setStyle(cellStyles.getOrDefault(cellId, ""));
+                cellLabel.setStyle(currentSheet.getCells().get(cellId).getStyle());
             }
+
         }
     }
 
@@ -377,7 +414,7 @@ public class SpreadsheetDisplayController {
         for (String cellId : cellIds) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {
-                String currentStyle = cellStyles.getOrDefault(cellId, "");
+                String currentStyle = currentSheet.getCells().get(cellId).getStyle();
                 String newStyle = currentStyle + "-fx-background-color: " + color + ";";
                 cellLabel.setStyle(newStyle);
             }

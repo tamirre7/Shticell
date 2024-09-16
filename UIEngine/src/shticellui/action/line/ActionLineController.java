@@ -86,6 +86,7 @@ public class ActionLineController {
             try {
                 // Update cell in the engine
                 currentSheet = engine.updateCell(cellId, newValue);
+                spreadsheetDisplayController.setCurrentSheet(currentSheet);
 
                 // Update all cells in the display
                 spreadsheetDisplayController.updateAllCells(currentSheet.getCells());
@@ -136,6 +137,14 @@ public class ActionLineController {
         cellidTF.clear();
         originalvalueTF.clear();
         lastmodverTF.clear();
+    }
+    public void disableEditing(){
+        updatevalbtn.setDisable(true);
+        originalvalueTF.setDisable(true);
+    }
+    public void enableEditing(){
+        updatevalbtn.setDisable(false);
+        originalvalueTF.setDisable(false);
     }
 
 }

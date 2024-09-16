@@ -23,4 +23,7 @@ public interface Engine {
     String[] getAvailableVersions();
     Integer getLatestVersion();
     SheetDto sortRange(Range range, List<String>colsToSort);
+    SheetDto addCell (String cellid);
+    SheetDto setCellStyle(String cellid, String style);
+    SheetDto setCellAlignment(String cellid, String alignment);
 }

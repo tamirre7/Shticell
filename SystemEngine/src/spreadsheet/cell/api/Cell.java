@@ -26,4 +26,8 @@ public interface Cell
     void setEffectiveValue (EffectiveValue effectiveValue);
     void resetDependencies ();
     void resetInfluences();
+    void setCellStyle(String style);
+    void setCellAlignment(String alignment);
+    String getCellStyle();
+    String getCellAlignment();
 }
