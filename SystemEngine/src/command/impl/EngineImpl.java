@@ -596,7 +596,7 @@ public class EngineImpl implements Engine {
         }
 
 
-        // Return a SheetDto with the retrieved SpreadSheet
+        // Return a SheetDto with the SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
                 currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
     }
