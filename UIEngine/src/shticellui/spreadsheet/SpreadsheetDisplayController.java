@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shticellui.action.line.ActionLineController;
+import shticellui.misc.MiscController;
 import shticellui.range.RangeController;
 
 import java.util.*;
@@ -21,12 +22,12 @@ public class SpreadsheetDisplayController {
     private int numRows;
     private int numCols;
     private Map<String, Label> cellLabels = new HashMap<>();
-    //private Map<String, String> cellStyles = new HashMap<>();
     private String lastSelectedCell = null;
     private RangeController rangeController;
     private Set<String> currentlyHighlightedCells = new HashSet<>();
     private SheetDto currentSheet;
     private SheetDto savedSheet;
+    private MiscController miscController;
 
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
@@ -46,6 +47,8 @@ public class SpreadsheetDisplayController {
     public void setCurrentSheet(SheetDto currentSheet) {
         this.currentSheet = currentSheet;
     }
+
+    public void setMiscController(MiscController miscController) { this.miscController = miscController; }
 
     public void setActionLineController(ActionLineController actionLineController) {
         this.actionLineController = actionLineController;
@@ -115,19 +118,42 @@ public class SpreadsheetDisplayController {
         }
     }
 
-    public void displaySortedSheet(SheetDto sheetDto) {
+    public void displayTemporarySheet(SheetDto sheetDto) {
+        clearPreviousRangeHighlight();
+        clearPreviousHighlights();
         savedSheet = currentSheet;
         currentSheet = sheetDto;
+        disableCellClick();
+        miscController.disableEditing();
         actionLineController.disableEditing();
+        rangeController.disableEditing();
         updateAllCells(sheetDto.getCells());
     }
 
+    private void disableCellClick() {
+        for(Label label : cellLabels.values()) {
+            label.setOnMouseClicked(null);
+        }
+    }
 
 
-    public void displayOriginaSheet() {
+    public void displayOriginalSheet() {
         currentSheet = savedSheet;
         actionLineController.enableEditing();
+        rangeController.enableEditing();
+        miscController.enableEditing();
+        clearCells();
+        createCells();
+        enableCellClick();
         updateAllCells(currentSheet.getCells());
+    }
+
+    private void enableCellClick() {
+        for (Map.Entry<String, Label> entry : cellLabels.entrySet()) {
+            String cellId = entry.getKey();
+            Label label = entry.getValue();
+            label.setOnMouseClicked(event -> handleCellClick(cellId));
+        }
     }
 
     private void setupCell(Label cellLabel, int col, int row) {
@@ -168,8 +194,10 @@ public class SpreadsheetDisplayController {
                 String cellId = "" + (char)('A' + col - 1) + row;
                 Label cellLabel = cellLabels.get(cellId);
                 if (cellLabel != null) {
+                    if (currentSheet.getCells().containsKey(cellId) == false)
+                        currentSheet = engine.addCell(cellId);
                     // Check if the cell is already highlighted
-                    if (!(currentSheet.getCells().containsKey(cellId)) || !currentSheet.getCells().get(cellId).getStyle().contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
+                    if (!currentSheet.getCells().get(cellId).getStyle().contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
                         String currentStyle = currentSheet.getCells().get(cellId).getStyle();
                         String newStyle = currentStyle + "-fx-border-color: blue; -fx-border-width: 1px; ";
                         cellLabel.setStyle(newStyle);
@@ -195,12 +223,12 @@ public class SpreadsheetDisplayController {
     private void handleCellClick(String cellId) {
         clearPreviousHighlights();
         CellDto cellDto = currentSheet.getCells().get(cellId);
-        if (cellDto != null) {highlightDependenciesAndInfluences(cellDto);}
+        if (cellDto != null) {highlightDependenciesAndInfluences(cellDto); lastSelectedCell = cellId;}
         if (actionLineController != null) {
             actionLineController.setCurrentSheet(currentSheet);
             actionLineController.setCellData(cellDto, cellId);
         }
-        lastSelectedCell = cellId;
+
     }
 
     private void setupCellContextMenu(Label cellLabel, String cellId) {
@@ -389,7 +417,7 @@ public class SpreadsheetDisplayController {
 
     private void clearPreviousHighlights() {
         if (lastSelectedCell != null) {
-            CellDto lastCellDto = engine.displayCellValue(lastSelectedCell);
+            CellDto lastCellDto = currentSheet.getCells().get(lastSelectedCell);
             clearHighlights(lastCellDto.getDependencies());
             clearHighlights(lastCellDto.getInfluences());
         }

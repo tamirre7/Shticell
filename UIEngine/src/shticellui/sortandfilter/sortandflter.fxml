@@ -10,12 +10,12 @@
    <children>
       <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleSort" prefHeight="26.0" prefWidth="42.0" text="Sort">
+            <Button fx:id="sortButton" mnemonicParsing="false" onAction="#handleSort" prefHeight="26.0" prefWidth="42.0" text="Sort">
                <HBox.margin>
                   <Insets left="5.0" top="5.0" />
                </HBox.margin>
             </Button>
-            <Button mnemonicParsing="false" onAction="#handleFilter" text="Filter">
+            <Button fx:id="filterButton" mnemonicParsing="false" onAction="#handleFilter" text="Filter">
                <HBox.margin>
                   <Insets left="17.0" top="5.0" />
                </HBox.margin>

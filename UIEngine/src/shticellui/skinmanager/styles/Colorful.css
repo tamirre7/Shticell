@@ -7,7 +7,7 @@
 .cell {
     -fx-background-color: #fff7e6; /* Soft light orange for cells */
     -fx-border-color: #ffcc80; /* Soft orange borders */
-    -fx-border-width: 0 1 1 0; /* Right and bottom borders only */
+    -fx-border-width: 1 1 1 1; /* Right and bottom borders only */
     -fx-padding: 5;
     -fx-alignment: CENTER;
 }
@@ -36,8 +36,8 @@
 
 /* Label styling */
 .label {
-    -fx-font-family: "Calibri";
-    -fx-font-size: 12px;
+    -fx-font-family: "Arial";
+    -fx-font-size: 10px;
     -fx-text-fill: #01579b; /* Dark blue text */
 }
 
@@ -49,6 +49,7 @@
 .grid-pane {
     -fx-background-color: #e0f7fa; /* Light blue background for grid */
     -fx-grid-lines-visible: false;
+
 }
 
 .border-pane {

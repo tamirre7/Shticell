@@ -109,4 +109,12 @@ public class MiscController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    public void disableEditing() {
+        saveButton.setDisable(true);
+    }
+
+    public void enableEditing() {
+        saveButton.setDisable(false);
+    }
 }

@@ -11,7 +11,7 @@
 .cell {
     -fx-background-color: #3a3a3a; /* Slightly lighter cells */
     -fx-border-color: #4f4f4f; /* Subtle borders for a clean look */
-    -fx-border-width: 0 1 1 0; /* Right and bottom borders only */
+    -fx-border-width: 1 1 1 1; /* Right and bottom borders only */
     -fx-padding: 5;
     -fx-alignment: CENTER;
 }
@@ -58,8 +58,8 @@
 }
 
 .label {
-    -fx-font-family: "Calibri";
-    -fx-font-size: 12px;
+    -fx-font-family: "David";
+    -fx-font-size: 17px;
     -fx-text-fill: #f1f1f1; /* White labels for high contrast */
 }
 

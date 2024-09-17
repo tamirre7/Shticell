@@ -5,28 +5,25 @@ import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import shticellui.spreadsheet.SpreadsheetDisplayController;
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
+import dto.CellDto;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SortAndFilterController {
+    @FXML
+    private Button sortButton;
+    @FXML
+    private Button filterButton;
     List<String> columnsToSortOrFilter;
     Range sortOrFilterRange;
     Dimension sheetDimension;
@@ -46,6 +43,7 @@ public class SortAndFilterController {
 
     @FXML
     public void handleSort() {
+
         sortAndFilterDialog();
 
         if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
@@ -56,23 +54,113 @@ public class SortAndFilterController {
         try {
             // Call the Engine to sort the selected range based on the chosen columns
             SheetDto sortedSheet = engine.sortRange(sortOrFilterRange, columnsToSortOrFilter);
-            spreadsheetDisplayController.displaySortedSheet(sortedSheet);
+            spreadsheetDisplayController.displayTemporarySheet(sortedSheet);
+            disableSortAndFilter();
 
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Sort Error", "An error occurred while sorting: " + e.getMessage());
         }
+
     }
 
+    private void disableSortAndFilter() {
+        sortButton.setDisable(true);
+        filterButton.setDisable(true);
+
+    }
 
 
     @FXML
     public void handleFilter() {
+        sortAndFilterDialog();
 
+        if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Error", "Please select a valid range and columns.");
+            return;
+        }
+
+        Map<String, List<String>> selectedValuesForColumns = new HashMap<>();
+
+        for (String column : columnsToSortOrFilter) {
+            List<String> uniqueValues = getUniqueValuesForColumn(sortOrFilterRange, column);
+
+            if (uniqueValues.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Error", "No values found in the selected column: " + column);
+                continue;
+            }
+
+            Dialog<List<String>> filterDialog = new Dialog<>();
+            filterDialog.setTitle("Filter Criteria for Column " + column);
+            filterDialog.setHeaderText("Select values to filter by for column " + column);
+
+            VBox vbox = new VBox();
+            List<CheckBox> checkBoxes = new ArrayList<>();
+            for (String value : uniqueValues) {
+                CheckBox checkBox = new CheckBox(value);
+                checkBoxes.add(checkBox);
+                vbox.getChildren().add(checkBox);
+            }
+            filterDialog.getDialogPane().setContent(vbox);
+
+            ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            filterDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+            filterDialog.setResultConverter(dialogButton -> {
+                if (dialogButton == okButtonType) {
+                    return checkBoxes.stream()
+                            .filter(CheckBox::isSelected)
+                            .map(CheckBox::getText)
+                            .collect(Collectors.toList());
+                }
+                return null;
+            });
+
+            Optional<List<String>> selectedValuesResult = filterDialog.showAndWait();
+
+            if (selectedValuesResult.isPresent()) {
+                selectedValuesForColumns.put(column, selectedValuesResult.get());
+            }
+        }
+
+        if (!selectedValuesForColumns.isEmpty()) {
+            try {
+                SheetDto filteredSheet = engine.filterRangeByColumnsAndValues(sortOrFilterRange, selectedValuesForColumns);
+                spreadsheetDisplayController.displayTemporarySheet(filteredSheet);
+                disableSortAndFilter();
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Filter Error", "An error occurred while filtering: " + e.getMessage());
+            }
+        }
     }
+
+    private List<String> getUniqueValuesForColumn(Range range, String column) {
+        Set<String> uniqueValues = new HashSet<>();
+        SheetDto sheet = engine.displayCurrentSpreadsheet();
+
+        CellIdentifierImpl topLeft = range.getTopLeft();
+        CellIdentifierImpl bottomRight = range.getBottomRight();
+        int colIndex = column.charAt(0) - 'A';  // המרה לאינדקס העמודה
+
+        for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
+            CellDto cell = sheet.getCells().get(engine.createCellId(row,colIndex));
+            if (cell != null)
+                uniqueValues.add(cell.getEffectiveValue());
+        }
+
+        return new ArrayList<>(uniqueValues);
+    }
+
+
     @FXML
     public void handleResetSortFilter() {
-        spreadsheetDisplayController.displayOriginaSheet();
+        enableSortAndFilter();
+        spreadsheetDisplayController.displayOriginalSheet();
+    }
+
+    private void enableSortAndFilter() {
+        sortButton.setDisable(false);
+        filterButton.setDisable(false);
     }
 
 

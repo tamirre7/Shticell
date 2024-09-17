@@ -117,7 +117,7 @@ public class ActionLineController {
         // Load the specified version of the spreadsheet
         currentSheet = engine.displaySheetByVersion(version);
         lastmodverTF.setText(version.toString());
-        spreadsheetDisplayController.displaySheet(currentSheet);
+        spreadsheetDisplayController.displayTemporarySheet(currentSheet);
 
         if (version.equals(engine.getLatestVersion())) {
             updatevalbtn.setDisable(false);
@@ -141,10 +141,12 @@ public class ActionLineController {
     public void disableEditing(){
         updatevalbtn.setDisable(true);
         originalvalueTF.setDisable(true);
+        versionSelector.setDisable(true);
     }
     public void enableEditing(){
         updatevalbtn.setDisable(false);
         originalvalueTF.setDisable(false);
+        versionSelector.setDisable(false);
     }
 
 }

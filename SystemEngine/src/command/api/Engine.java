@@ -6,6 +6,7 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Engine {
 
@@ -26,4 +27,6 @@ public interface Engine {
     SheetDto addCell (String cellid);
     SheetDto setCellStyle(String cellid, String style);
     SheetDto setCellAlignment(String cellid, String alignment);
+    SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns);
+    String createCellId(int row, int col);
 }

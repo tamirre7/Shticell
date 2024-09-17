@@ -13,10 +13,13 @@ import java.util.Optional;
 public class RangeController {
 
     @FXML private ListView<String> rangeListView;
+    @FXML private Button addButton;
+    @FXML private Button deleteButton;
     private final Engine engine;
     private ObservableList<String> rangeItems = FXCollections.observableArrayList();
     private SpreadsheetDisplayController spreadsheetDisplayController;
     private String currentlyHighlightedRange = null;
+
 
 
     public RangeController(Engine engine) {
@@ -50,9 +53,17 @@ public class RangeController {
         if (!rangeNameResult.isPresent()) {
             return;
         }
-
         String rangeName = rangeNameResult.get();
 
+        try {
+            if (engine.getRange(rangeName) != null)
+                 throw new IllegalArgumentException("Range name already exists");
+         }
+         catch (IllegalArgumentException e) {
+                showAlert(Alert.AlertType.WARNING, "Cannot add Range ", e.getMessage());
+                return;
+
+         }
         // Prompt for top-left cell identifier
         TextInputDialog topLeftDialog = new TextInputDialog();
         topLeftDialog.setTitle("Top-Left Cell");
@@ -132,5 +143,17 @@ public class RangeController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void disableEditing() {
+        rangeListView.setDisable(true);
+        addButton.setDisable(true);
+        deleteButton.setDisable(true);
+    }
+
+    public void enableEditing() {
+        rangeListView.setDisable(false);
+        addButton.setDisable(false);
+        deleteButton.setDisable(false);
     }
 }

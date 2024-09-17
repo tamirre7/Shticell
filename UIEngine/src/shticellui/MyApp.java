@@ -27,6 +27,7 @@ public class MyApp extends Application {
         // Initialize the engine
         engine = new EngineImpl(); // Replace this with actual engine initialization
         skinManager = new SkinManager();
+
         // Load the FXML file
         FXMLLoader loader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
 
@@ -41,6 +42,9 @@ public class MyApp extends Application {
         spreadsheetDisplayController.setActionLineController(actionLineController);
         actionLineController.setSpreadsheetDisplayController(spreadsheetDisplayController);
 
+        // Create MiscController and pass dependencies
+        MiscController miscController = new MiscController(engine, primaryStage, skinManager, spreadsheetDisplayController, actionLineController);
+
         // Set the controller factory to inject the engine and controllers
         loader.setControllerFactory(param -> {
             if (param == ActionLineController.class) {
@@ -50,9 +54,10 @@ public class MyApp extends Application {
                 loadFileController.setActionLineController(actionLineController); // Directly pass the ActionLineController
                 return loadFileController;
             } else if (param == MiscController.class) {
-                return new MiscController(engine, primaryStage,skinManager,spreadsheetDisplayController,actionLineController);
+                return miscController;
             } else if (param == SpreadsheetDisplayController.class) {
                 spreadsheetDisplayController.setRangeController(rangeController);
+                spreadsheetDisplayController.setMiscController(miscController); // Set MiscController on SpreadsheetDisplayController
                 return spreadsheetDisplayController;
             } else if (param == RangeController.class) {
                 return rangeController;
@@ -73,11 +78,13 @@ public class MyApp extends Application {
         // Create the scene
         Scene scene = new Scene(root);
         skinManager.applySkin(scene, "Default");
+
         // Set the title and scene, then show the stage
         primaryStage.setTitle("Shticell Application");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
 
     public static void main(String[] args) {
         launch(args);

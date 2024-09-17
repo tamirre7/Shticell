@@ -25,12 +25,12 @@
       </ScrollPane>
       <HBox prefHeight="39.0" prefWidth="119.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleDeleteRange" text="Delete">
+            <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteRange" text="Delete">
                <HBox.margin>
                   <Insets left="7.0" top="3.0" />
                </HBox.margin>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddRange" prefHeight="25.0" prefWidth="46.0" text="Add">
+            <Button fx:id="addButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddRange" prefHeight="25.0" prefWidth="46.0" text="Add">
                <HBox.margin>
                   <Insets left="8.0" top="3.0" />
                </HBox.margin>

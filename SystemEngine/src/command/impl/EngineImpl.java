@@ -391,6 +391,7 @@ public class EngineImpl implements Engine {
     @Override
     public RangeDto getRange(String rangeName) {
         RangeImpl range = currentSheet.getRange(rangeName);
+        if (range == null) { return null;}
         return new RangeDto(range.getName(), range.getTopLeft().toString(), range.getBottomRight().toString(), convertToListOfStrings(range.getCellsInRange()), range.isActive());
     }
 
@@ -412,6 +413,70 @@ public class EngineImpl implements Engine {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns) {
+        SheetDto sheet = displayCurrentSpreadsheet();
+
+        CellIdentifierImpl topLeft = range.getTopLeft();
+        CellIdentifierImpl bottomRight = range.getBottomRight();
+
+        Map<String, CellDto> updatedCells = new HashMap<>();
+
+        for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
+            boolean rowMatches = true;  // האם השורה מתאימה לפילטר על פי כל העמודות
+
+            // מעבר על כל עמודה שנבחרה
+            for (Map.Entry<String, List<String>> entry : selectedValuesForColumns.entrySet()) {
+                String column = entry.getKey();
+                List<String> selectedValues = entry.getValue();
+
+                int colIndex = column.charAt(0) - 'A';
+                CellDto cell = sheet.getCells().get(createCellId(row, colIndex));
+                if (cell == null) {
+                    rowMatches = false;
+                    break;
+                }
+                // אם הערך בעמודה הנוכחית לא תואם לאחד הערכים שנבחרו
+                else {
+                       if (!selectedValues.contains(cell.getEffectiveValue())) {
+                           rowMatches = false;
+                           break;
+                       }
+                    }
+
+            }
+
+            // אם השורה לא מתאימה לקריטריונים, נמלא את התאים בערכים ריקים
+            for (int col = topLeft.getCol() - 'A'; col <= bottomRight.getCol() - 'A'; col++) {
+                String cellId = createCellId(row, col);
+                CellDto cell = sheet.getCells().get(cellId);
+                if (cell == null) {
+                    cell = new CellDto(cellId,"","",0,new ArrayList<>(),new ArrayList<>(),
+                            "","");
+                }
+
+                if (rowMatches) {
+                    updatedCells.put(cellId, cell);  // שמירת הערך הקיים
+                } else {
+                    // עדכון התאים בשורה לערכים ריקים אם השורה לא תואמת
+                    updatedCells.put(cellId, new CellDto(cellId, "", "",
+                            0, new ArrayList<>(), new ArrayList<>(), "", ""));
+                }
+            }
+        }
+
+        // יצירת גיליון חדש עם השורות המסוננות
+        return new SheetDto(sheet.getNumCols(),
+                sheet.getNumRows(),
+                sheet.getWidthCol(),
+                sheet.getHeightRow(),
+                sheet.getName(),
+                sheet.getVersion(),
+                updatedCells,
+                sheet.getAmountOfCellsChangedInVersion(),
+                sheet.getSheetRanges());
     }
 
 
@@ -437,20 +502,8 @@ public class EngineImpl implements Engine {
             rowsInRange.add(rowCells);  // Add the row to the list
         }
 
-        int countOfHeaders = 0;
-
-        // Filter out header rows (non-numeric values in all columnsToSort)
-        List<List<CellDto>> rowsWithoutHeaders = new ArrayList<>();
-        for (List<CellDto> row : rowsInRange) {
-            if (!isHeaderRow(row, colsToSort, topLeft.getCol()) || countOfHeaders == 1) {
-                rowsWithoutHeaders.add(row);// Add only rows that are not headers
-            }
-            else
-                countOfHeaders++;
-        }
-
         // Sort the remaining rows based on the provided column order
-        rowsWithoutHeaders.sort((row1, row2) -> {
+        rowsInRange.sort((row1, row2) -> {
             for (String colToSort : colsToSort) {
                 int colIndex = colToSort.charAt(0) - topLeft.getCol();  // Convert column letter to index
                 CellDto cell1 = row1.get(colIndex);
@@ -482,11 +535,11 @@ public class EngineImpl implements Engine {
         // After sorting, update the cells in the sheet
         Map<String, CellDto> updatedCells = new HashMap<>(sheet.getCells());
 
-        for (int rowIndex = 0; rowIndex < rowsWithoutHeaders.size(); rowIndex++) {
-            List<CellDto> sortedRow = rowsWithoutHeaders.get(rowIndex);
+        for (int rowIndex = 0; rowIndex < rowsInRange.size(); rowIndex++) {
+            List<CellDto> sortedRow = rowsInRange.get(rowIndex);
             for (int col = 0; col < sortedRow.size(); col++) {
                 char currentCol = (char) (topLeft.getCol() + col);
-                int currentRow = topLeft.getRow() + rowIndex+countOfHeaders;
+                int currentRow = topLeft.getRow() + rowIndex;
                 String cellId = String.valueOf(currentCol) + currentRow;
                 CellDto sortedCell = sortedRow.get(col);
                 // Construct a new CellDto for each sorted cell
@@ -536,7 +589,7 @@ public class EngineImpl implements Engine {
     }
 
     // Helper method to create cell IDs based on row and column numbers
-    private String createCellId(int row, int col) {
+    public String createCellId(int row, int col) {
         return String.valueOf((char) ('A' + col)) + (row);
     }
 
@@ -682,6 +735,7 @@ public class EngineImpl implements Engine {
                 currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
 
     }
+
 
 }
 
