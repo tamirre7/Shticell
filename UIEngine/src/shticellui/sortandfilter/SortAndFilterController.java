@@ -54,8 +54,7 @@ public class SortAndFilterController {
         try {
             // Call the Engine to sort the selected range based on the chosen columns
             SheetDto sortedSheet = engine.sortRange(sortOrFilterRange, columnsToSortOrFilter);
-            spreadsheetDisplayController.displayTemporarySheet(sortedSheet);
-            disableSortAndFilter();
+            spreadsheetDisplayController.displayTemporarySheet(sortedSheet,false);
 
 
         } catch (Exception e) {
@@ -64,7 +63,7 @@ public class SortAndFilterController {
 
     }
 
-    private void disableSortAndFilter() {
+    public void disableSortAndFilter() {
         sortButton.setDisable(true);
         filterButton.setDisable(true);
 
@@ -126,8 +125,7 @@ public class SortAndFilterController {
         if (!selectedValuesForColumns.isEmpty()) {
             try {
                 SheetDto filteredSheet = engine.filterRangeByColumnsAndValues(sortOrFilterRange, selectedValuesForColumns);
-                spreadsheetDisplayController.displayTemporarySheet(filteredSheet);
-                disableSortAndFilter();
+                spreadsheetDisplayController.displayTemporarySheet(filteredSheet,false);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Filter Error", "An error occurred while filtering: " + e.getMessage());
             }
@@ -158,7 +156,7 @@ public class SortAndFilterController {
         spreadsheetDisplayController.displayOriginalSheet();
     }
 
-    private void enableSortAndFilter() {
+    public void enableSortAndFilter() {
         sortButton.setDisable(false);
         filterButton.setDisable(false);
     }

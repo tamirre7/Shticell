@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import shticellui.action.line.ActionLineController;
 import shticellui.misc.MiscController;
 import shticellui.range.RangeController;
+import shticellui.sortandfilter.SortAndFilterController;
 
 import java.util.*;
 
@@ -28,6 +29,7 @@ public class SpreadsheetDisplayController {
     private SheetDto currentSheet;
     private SheetDto savedSheet;
     private MiscController miscController;
+    private SortAndFilterController sortAndFilterController;
 
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
@@ -54,6 +56,8 @@ public class SpreadsheetDisplayController {
         this.actionLineController = actionLineController;
     }
     public void setRangeController(RangeController rangeController) {this.rangeController = rangeController;}
+
+    public void setSortAndFilterController(SortAndFilterController sortAndFilterController) {this.sortAndFilterController = sortAndFilterController;}
 
     public void displaySheet(SheetDto sheetDto) {
         clearCells();
@@ -118,14 +122,18 @@ public class SpreadsheetDisplayController {
         }
     }
 
-    public void displayTemporarySheet(SheetDto sheetDto) {
+    public void displayTemporarySheet(SheetDto sheetDto, boolean isOlderVersion) {
         clearPreviousRangeHighlight();
         clearPreviousHighlights();
         savedSheet = currentSheet;
         currentSheet = sheetDto;
         disableCellClick();
+
+        if(!isOlderVersion) {
+            actionLineController.disableEditing();
+        }
+        sortAndFilterController.disableSortAndFilter();
         miscController.disableEditing();
-        actionLineController.disableEditing();
         rangeController.disableEditing();
         updateAllCells(sheetDto.getCells());
     }
@@ -138,10 +146,11 @@ public class SpreadsheetDisplayController {
 
 
     public void displayOriginalSheet() {
-        currentSheet = savedSheet;
+        if (savedSheet != null) {currentSheet = savedSheet;}
         actionLineController.enableEditing();
         rangeController.enableEditing();
         miscController.enableEditing();
+        sortAndFilterController.enableSortAndFilter();
         clearCells();
         createCells();
         enableCellClick();
@@ -253,6 +262,14 @@ public class SpreadsheetDisplayController {
         for (Map.Entry<String, CellDto> entry : cells.entrySet()) {
             updateCell(entry.getKey(), entry.getValue());
         }
+
+        for (Map.Entry<String, Label> entry : cellLabels.entrySet()) {
+            String cellId = entry.getKey();
+            Label cellLabel = entry.getValue();
+            if (!cells.containsKey(cellId)) {
+                cellLabel.setText("");  // Set to empty string if not in the map
+            }
+        }
     }
 
     public void updateCell(String cellId, CellDto cellDto) {
@@ -315,6 +332,7 @@ public class SpreadsheetDisplayController {
         resetButton.setOnAction(event -> {
             SheetDto styledSheet = engine.setCellStyle(cellId, "");
             currentSheet = styledSheet;
+            applyStyle(cellLabel, cellId);
         });
 
         dialog.showAndWait();

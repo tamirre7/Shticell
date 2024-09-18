@@ -45,24 +45,28 @@ public class MyApp extends Application {
         // Create MiscController and pass dependencies
         MiscController miscController = new MiscController(engine, primaryStage, skinManager, spreadsheetDisplayController, actionLineController);
 
+        // Create SortAndFilterController and pass dependencies
+        SortAndFilterController sortAndFilterController = new SortAndFilterController(engine, spreadsheetDisplayController);
+
         // Set the controller factory to inject the engine and controllers
         loader.setControllerFactory(param -> {
             if (param == ActionLineController.class) {
                 return actionLineController;
             } else if (param == LoadFileController.class) {
                 LoadFileController loadFileController = new LoadFileController(engine, primaryStage, spreadsheetDisplayController);
-                loadFileController.setActionLineController(actionLineController); // Directly pass the ActionLineController
+                loadFileController.setActionLineController(actionLineController);
                 return loadFileController;
             } else if (param == MiscController.class) {
                 return miscController;
             } else if (param == SpreadsheetDisplayController.class) {
                 spreadsheetDisplayController.setRangeController(rangeController);
-                spreadsheetDisplayController.setMiscController(miscController); // Set MiscController on SpreadsheetDisplayController
+                spreadsheetDisplayController.setMiscController(miscController);
+                spreadsheetDisplayController.setSortAndFilterController(sortAndFilterController); // Set SortAndFilterController
                 return spreadsheetDisplayController;
             } else if (param == RangeController.class) {
                 return rangeController;
             } else if (param == SortAndFilterController.class) {
-                return new SortAndFilterController(engine, spreadsheetDisplayController);
+                return sortAndFilterController;
             } else {
                 try {
                     return param.getDeclaredConstructor().newInstance();
@@ -85,8 +89,8 @@ public class MyApp extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }
 }
+

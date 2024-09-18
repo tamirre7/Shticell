@@ -20,7 +20,7 @@
             <Insets left="5.0" right="5.0" />
          </VBox.margin>
          <content>
-            <ListView fx:id="rangeListView" onMouseClicked="#handleRangeSelection" styleClass="ranges-list" />
+            <ListView fx:id="rangeListView"  styleClass="ranges-list" />
          </content>
       </ScrollPane>
       <HBox prefHeight="39.0" prefWidth="119.0">
