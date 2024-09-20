@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import command.api.Engine;
 import shticellui.action.line.ActionLineController;
+import shticellui.formulabuilder.FormulaBuilder;
+import shticellui.graphbuilder.GraphBuilderController;
 import shticellui.loadfilecomp.LoadFileController;
 import shticellui.misc.MiscController;
 import shticellui.skinmanager.SkinManager;
@@ -21,12 +23,16 @@ public class MyApp extends Application {
 
     private Engine engine;
     private SkinManager skinManager;
+    FormulaBuilder formulaBuilder;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         // Initialize the engine
         engine = new EngineImpl(); // Replace this with actual engine initialization
         skinManager = new SkinManager();
+        formulaBuilder = new FormulaBuilder();
+        formulaBuilder.setEngine(engine);
+
 
         // Load the FXML file
         FXMLLoader loader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
@@ -40,7 +46,9 @@ public class MyApp extends Application {
         ActionLineController actionLineController = new ActionLineController();
         actionLineController.setEngine(engine);
         spreadsheetDisplayController.setActionLineController(actionLineController);
+        spreadsheetDisplayController.setFormulaBuilder(formulaBuilder);
         actionLineController.setSpreadsheetDisplayController(spreadsheetDisplayController);
+        formulaBuilder.setActionLineController(actionLineController);
 
         // Create MiscController and pass dependencies
         MiscController miscController = new MiscController(engine, primaryStage, skinManager, spreadsheetDisplayController, actionLineController);
@@ -67,6 +75,8 @@ public class MyApp extends Application {
                 return rangeController;
             } else if (param == SortAndFilterController.class) {
                 return sortAndFilterController;
+            }else if (param == GraphBuilderController.class) {
+                return new GraphBuilderController(spreadsheetDisplayController);
             } else {
                 try {
                     return param.getDeclaredConstructor().newInstance();

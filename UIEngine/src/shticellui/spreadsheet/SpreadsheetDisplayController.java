@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import shticellui.action.line.ActionLineController;
+import shticellui.formulabuilder.FormulaBuilder;
 import shticellui.misc.MiscController;
 import shticellui.range.RangeController;
 import shticellui.sortandfilter.SortAndFilterController;
@@ -33,6 +34,7 @@ public class SpreadsheetDisplayController {
     private SheetDto savedSheet;
     private MiscController miscController;
     private SortAndFilterController sortAndFilterController;
+    private FormulaBuilder formulaBuilder;
 
     public SpreadsheetDisplayController(Engine engine) {
         this.engine = engine;
@@ -56,6 +58,8 @@ public class SpreadsheetDisplayController {
             gridPane.setPrefWidth(Math.max(width, gridPane.getMinWidth()));
         });
     }
+
+    public void setFormulaBuilder(FormulaBuilder formulaBuilder) {this.formulaBuilder = formulaBuilder;}
 
     public void setCurrentSheet(SheetDto currentSheet) {
         this.currentSheet = currentSheet;
@@ -256,8 +260,11 @@ public class SpreadsheetDisplayController {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem styleMenuItem = new MenuItem("Setting the cell style");
         MenuItem resetMenuItem = new MenuItem("Reset style");
+        MenuItem buildFormulaMenuItem = new MenuItem("Build formula");
+        buildFormulaMenuItem.setOnAction(event -> formulaBuilder.buildFormula());
         styleMenuItem.setOnAction(event -> showCellStyleDialog(cellLabel, cellId));
         resetMenuItem.setOnAction(event -> resetCellStyle(cellLabel, cellId));
+        contextMenu.getItems().add(buildFormulaMenuItem);
         contextMenu.getItems().add(styleMenuItem);
         contextMenu.getItems().add(resetMenuItem);
         cellLabel.setContextMenu(contextMenu);
@@ -518,4 +525,7 @@ public class SpreadsheetDisplayController {
         }
     }
 
+    public SheetDto getCurrentSheet() {
+        return currentSheet;
+    }
 }

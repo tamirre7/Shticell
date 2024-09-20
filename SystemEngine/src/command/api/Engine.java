@@ -29,4 +29,5 @@ public interface Engine {
     SheetDto setCellAlignment(String cellid, String alignment);
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns);
     String createCellId(int row, int col);
+    String evaluateOriginalValue(String originalValue);
 }

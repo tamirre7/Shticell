@@ -736,6 +736,14 @@ public class EngineImpl implements Engine {
 
     }
 
+    @Override
+    public String evaluateOriginalValue(String originalValue)
+    {
+        Expression expression = parseExpression(originalValue, currentSheet);
+        EffectiveValue newEffectiveValue = expression.evaluate(currentSheet);
+        return newEffectiveValue.getValue().toString();
+    }
+
 
 }
 

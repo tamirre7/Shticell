@@ -40,7 +40,7 @@ public class ActionLineController {
     public void initialize() {
         updatevalbtn.setOnAction(event -> {
             if (!isViewingOldVersion) {
-                updateCellValue();
+                updateCellValue(null);
             } else {
                 showErrorAlert("Read-only Mode", "Cannot update cell in a read-only version.");
             }
@@ -77,9 +77,17 @@ public class ActionLineController {
         return activeCells.containsKey(cellId);
     }
 
-    private void updateCellValue() {
+    public void updateCellValue(String preBuildOriginalValue) {
         String cellId = cellidTF.getText();
-        String newValue = originalvalueTF.getText();
+        String newValue;
+
+        if (preBuildOriginalValue == null)
+            newValue = originalvalueTF.getText();
+        else
+            newValue = preBuildOriginalValue;
+
+
+
 
 
         if (cellId != null && !cellId.isEmpty() && newValue != null) {
