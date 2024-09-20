@@ -24,6 +24,8 @@ public class SortAndFilterController {
     private Button sortButton;
     @FXML
     private Button filterButton;
+    @FXML
+    private Button resetButton;
     List<String> columnsToSortOrFilter;
     Range sortOrFilterRange;
     Dimension sheetDimension;
@@ -47,7 +49,6 @@ public class SortAndFilterController {
         sortAndFilterDialog();
 
         if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Error", "Please select a valid range and columns.");
             return;
         }
 
@@ -63,9 +64,10 @@ public class SortAndFilterController {
 
     }
 
-    public void disableSortAndFilter() {
+    public void disableSortAndFilter(boolean versionView) {
         sortButton.setDisable(true);
         filterButton.setDisable(true);
+        if (versionView) {resetButton.setDisable(true);}
 
     }
 
@@ -75,7 +77,6 @@ public class SortAndFilterController {
         sortAndFilterDialog();
 
         if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, "Error", "Please select a valid range and columns.");
             return;
         }
 
@@ -138,7 +139,7 @@ public class SortAndFilterController {
 
         CellIdentifierImpl topLeft = range.getTopLeft();
         CellIdentifierImpl bottomRight = range.getBottomRight();
-        int colIndex = column.charAt(0) - 'A';  // המרה לאינדקס העמודה
+        int colIndex = column.charAt(0) - 'A';
 
         for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
             CellDto cell = sheet.getCells().get(engine.createCellId(row,colIndex));
@@ -153,12 +154,13 @@ public class SortAndFilterController {
     @FXML
     public void handleResetSortFilter() {
         enableSortAndFilter();
-        spreadsheetDisplayController.displayOriginalSheet();
+        spreadsheetDisplayController.displayOriginalSheet(false);
     }
 
     public void enableSortAndFilter() {
         sortButton.setDisable(false);
         filterButton.setDisable(false);
+        resetButton.setDisable(false);
     }
 
 
@@ -180,10 +182,14 @@ public class SortAndFilterController {
 
         // If the user cancels the top-left cell dialog, stop the process
         if (topLeftResult.isEmpty()) {
-            return;
+            return; // User canceled
         }
 
         String StrTopLeft = topLeftResult.get().toUpperCase();
+        if (StrTopLeft.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Error", "Cell ID cannot be empty.");
+            return;
+        }
 
         // Prompt for bottom-right cell identifier
         TextInputDialog bottomRightDialog = new TextInputDialog();
@@ -192,11 +198,15 @@ public class SortAndFilterController {
         Optional<String> bottomRightResult = bottomRightDialog.showAndWait();
 
         // If the user cancels the bottom-right cell dialog, stop the process
-        if (!bottomRightResult.isPresent()) {
+        if (bottomRightResult.isEmpty()) {
             return;
         }
-        String StrBottomRight = bottomRightResult.get().toUpperCase();
 
+        String StrBottomRight = bottomRightResult.get().toUpperCase();
+        if (StrBottomRight.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Error", "Cell ID cannot be empty.");
+            return;
+        }
         try {
             // If both cells are provided, process the range creation
             CellIdentifierImpl topLeft = new CellIdentifierImpl(StrTopLeft);
@@ -206,6 +216,7 @@ public class SortAndFilterController {
 
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Error - out of range", e.getMessage());
+            return;
         }
 
 // Create a ComboBox for column selection

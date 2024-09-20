@@ -126,7 +126,8 @@ public class ActionLineController {
         else {
             originalvalueTF.setDisable(false);
             updatevalbtn.setDisable(false);
-            spreadsheetDisplayController.displayOriginalSheet();
+            spreadsheetDisplayController.setCurrentSheet(currentSheet);
+            spreadsheetDisplayController.displayOriginalSheet(true);
         }
     }
 

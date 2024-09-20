@@ -140,6 +140,8 @@ public class RangeController {
             if (range != null) {
                 engine.removeRange(range);
                 rangeItems.remove(range);
+                this.spreadsheetDisplayController.clearPreviousRangeHighlight();
+
             }
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Cannot delete Range ", e.getMessage());

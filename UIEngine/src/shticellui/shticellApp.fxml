@@ -4,9 +4,9 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="580.0" prefWidth="899.0" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="710.0" prefWidth="964.0" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
    <content>
-      <BorderPane styleClass="border-pane">
+      <BorderPane prefHeight="686.0" prefWidth="884.0" styleClass="border-pane">
          <!-- Top section with VBox containing two GridPanes -->
          <top>
             <VBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" styleClass="top-vbox" BorderPane.alignment="CENTER">
@@ -21,6 +21,8 @@
          <left>
             <VBox maxWidth="121.0" prefWidth="121.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
                <fx:include source="sortandfilter/sortandflter.fxml" />
+               <fx:include source="formulabuilder/formulaBuilder.fxml" />
+               <fx:include source="graphbuilder/graphBuild.fxml" />
                <fx:include source="range/rangesComponent.fxml" />
                <fx:include source="misc/miscComponent.fxml" />
             </VBox>

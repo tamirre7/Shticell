@@ -95,6 +95,7 @@ public class MiscController {
         SheetDto sheetDto = engine.displayCurrentSpreadsheet();
         actionLineController.populateVersionSelector(engine.getAvailableVersions());
         spreadsheetDisplayController.setCurrentSheet(sheetDto);
+        spreadsheetDisplayController.enableEditing();
         spreadsheetDisplayController.displaySheet(sheetDto);
     }
 

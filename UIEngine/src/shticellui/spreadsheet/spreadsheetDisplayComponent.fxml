@@ -16,7 +16,7 @@
 
     <ScrollPane fx:id="scrollPane"
                 styleClass="scroll-pane"
-                fitToWidth="true"
+                fitToWidth="false"
                 fitToHeight="true"
                 hbarPolicy="AS_NEEDED"
                 vbarPolicy="AS_NEEDED"

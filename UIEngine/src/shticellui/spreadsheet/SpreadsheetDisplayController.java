@@ -3,7 +3,9 @@ package shticellui.spreadsheet;
 import command.api.Engine;
 import dto.CellDto;
 import dto.SheetDto;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -13,6 +15,7 @@ import shticellui.range.RangeController;
 import shticellui.sortandfilter.SortAndFilterController;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpreadsheetDisplayController {
 
@@ -38,12 +41,20 @@ public class SpreadsheetDisplayController {
     @FXML
     public void initialize() {
         scrollPane.setContent(gridPane);
-        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToWidth(false);  // Change this to false
         scrollPane.setFitToHeight(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
+        // Set a minimum width for the GridPane
         gridPane.setMinWidth(800);
         gridPane.setMinHeight(600);
+
+        // Add a listener to adjust the ScrollPane's width
+        scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            double width = newValue.getWidth();
+            gridPane.setPrefWidth(Math.max(width, gridPane.getMinWidth()));
+        });
     }
 
     public void setCurrentSheet(SheetDto currentSheet) {
@@ -122,17 +133,17 @@ public class SpreadsheetDisplayController {
         }
     }
 
-    public void displayTemporarySheet(SheetDto sheetDto, boolean isOlderVersion) {
+    public void displayTemporarySheet(SheetDto sheetDto, boolean versionView) {
         clearPreviousRangeHighlight();
         clearPreviousHighlights();
         savedSheet = currentSheet;
         currentSheet = sheetDto;
         disableCellClick();
 
-        if(!isOlderVersion) {
+        if(!versionView) {
             actionLineController.disableEditing();
         }
-        sortAndFilterController.disableSortAndFilter();
+        sortAndFilterController.disableSortAndFilter(versionView);
         miscController.disableEditing();
         rangeController.disableEditing();
         updateAllCells(sheetDto.getCells());
@@ -145,17 +156,19 @@ public class SpreadsheetDisplayController {
     }
 
 
-    public void displayOriginalSheet() {
-        if (savedSheet != null) {currentSheet = savedSheet;}
-        actionLineController.enableEditing();
-        rangeController.enableEditing();
-        miscController.enableEditing();
-        sortAndFilterController.enableSortAndFilter();
+    public void displayOriginalSheet(boolean versionView) {
+        if (savedSheet != null && !versionView) {currentSheet = savedSheet;}
+        enableEditing();
         clearCells();
         createCells();
         enableCellClick();
         updateAllCells(currentSheet.getCells());
     }
+
+    public void enableEditing() { actionLineController.enableEditing();
+        rangeController.enableEditing();
+        miscController.enableEditing();
+        sortAndFilterController.enableSortAndFilter();}
 
     private void enableCellClick() {
         for (Map.Entry<String, Label> entry : cellLabels.entrySet()) {
@@ -237,15 +250,23 @@ public class SpreadsheetDisplayController {
             actionLineController.setCurrentSheet(currentSheet);
             actionLineController.setCellData(cellDto, cellId);
         }
-
     }
 
     private void setupCellContextMenu(Label cellLabel, String cellId) {
         ContextMenu contextMenu = new ContextMenu();
-        MenuItem styleMenuItem = new MenuItem("Style Cell");
+        MenuItem styleMenuItem = new MenuItem("Setting the cell style");
+        MenuItem resetMenuItem = new MenuItem("Reset style");
         styleMenuItem.setOnAction(event -> showCellStyleDialog(cellLabel, cellId));
+        resetMenuItem.setOnAction(event -> resetCellStyle(cellLabel, cellId));
         contextMenu.getItems().add(styleMenuItem);
+        contextMenu.getItems().add(resetMenuItem);
         cellLabel.setContextMenu(contextMenu);
+    }
+
+    private void resetCellStyle(Label cellLabel, String cellId) {
+        SheetDto styledSheet = engine.setCellStyle(cellId, "");
+        currentSheet = styledSheet;
+        applyStyle(cellLabel, cellId);
     }
 
     private void setupHeaderContextMenu(Label cellLabel, int index, boolean isColumn) {
@@ -289,8 +310,8 @@ public class SpreadsheetDisplayController {
 
     private void showCellStyleDialog(Label cellLabel, String cellId) {
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Style Cell");
-        dialog.setHeaderText("Choose cell style:");
+        dialog.setTitle("Set Cell Style");
+        dialog.setHeaderText("Choose style:");
 
         GridPane grid = new GridPane();
         grid.setHgap(10);
@@ -298,27 +319,35 @@ public class SpreadsheetDisplayController {
 
         ColorPicker backgroundColorPicker = new ColorPicker();
         ColorPicker textColorPicker = new ColorPicker();
-        Button resetButton = new Button("Reset Style");
 
         grid.add(new Label("Background Color:"), 0, 0);
         grid.add(backgroundColorPicker, 1, 0);
         grid.add(new Label("Text Color:"), 0, 1);
         grid.add(textColorPicker, 1, 1);
-        grid.add(resetButton, 0, 2, 2, 1);
 
         dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType previewButtonType = new ButtonType("Preview", ButtonBar.ButtonData.OTHER);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, cancelButtonType, previewButtonType);
+
+        Node okButton = dialog.getDialogPane().lookupButton(okButtonType);
+        Node cancelButton = dialog.getDialogPane().lookupButton(cancelButtonType);
+        Node previewButton = dialog.getDialogPane().lookupButton(previewButtonType);
+
+        AtomicBoolean isPrev = new AtomicBoolean(false);
+
         if (currentSheet.getCells().get(cellId) == null) {
             SheetDto updatedSheet = engine.addCell(cellId);
             currentSheet = updatedSheet;
         }
+        String prevStyle = currentSheet.getCells().get(cellId).getStyle();
+
         backgroundColorPicker.setOnAction(event -> {
             String newStyle = currentSheet.getCells().get(cellId).getStyle() +
                     "-fx-background-color: " + toRgbString(backgroundColorPicker.getValue()) + ";";
             SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
             currentSheet = styledSheet;
-            applyStyle(cellLabel, cellId);
         });
 
         textColorPicker.setOnAction(event -> {
@@ -326,13 +355,35 @@ public class SpreadsheetDisplayController {
                     "-fx-text-fill: " + toRgbString(textColorPicker.getValue()) + ";";
             SheetDto styledSheet = engine.setCellStyle(cellId, newStyle);
             currentSheet = styledSheet;
-            applyStyle(cellLabel, cellId);
         });
 
-        resetButton.setOnAction(event -> {
-            SheetDto styledSheet = engine.setCellStyle(cellId, "");
-            currentSheet = styledSheet;
+        previewButton.addEventFilter(ActionEvent.ACTION, event -> {
+            event.consume();
             applyStyle(cellLabel, cellId);
+            isPrev.set(true);
+
+        });
+
+        okButton.addEventFilter(ActionEvent.ACTION, event -> {
+            applyStyle(cellLabel, cellId);
+            isPrev.set(false);
+            dialog.close();
+
+        });
+
+        cancelButton.addEventFilter(ActionEvent.ACTION, event -> {
+            SheetDto styledSheet = engine.setCellStyle(cellId, prevStyle);
+            currentSheet = styledSheet;
+            applyStyle(cellLabel,cellId);
+            dialog.close();
+        });
+
+        dialog.setOnHidden(event -> {
+            if (dialog.getResult() == null || isPrev.get()) {
+                SheetDto styledSheet = engine.setCellStyle(cellId, prevStyle);
+                currentSheet = styledSheet;
+                applyStyle(cellLabel,cellId);
+            }
         });
 
         dialog.showAndWait();
