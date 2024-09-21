@@ -4,11 +4,13 @@ import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,6 +31,7 @@ public class GraphBuilderController {
     }
     public GraphBuilderController() {
     }
+
     @FXML
     public void buildGraph() {
         try {
@@ -37,7 +40,7 @@ public class GraphBuilderController {
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Build Graph");
-            dialogStage.initModality(Modality.APPLICATION_MODAL); // חלון מודאלי
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.setScene(new Scene(root));
             dialogStage.showAndWait();
 
@@ -47,15 +50,14 @@ public class GraphBuilderController {
             String xBottomCell = dialogController.getXBottomCell().toUpperCase();
             String yTopCell = dialogController.getYTopCell().toUpperCase();
             String yBottomCell = dialogController.getYBottomCell().toUpperCase();
-            String graphType = dialogController.getGraphType();
 
             if (!dialogController.isConfirmed()) {
                 return;
             }
 
-            if (xTopCell != null && yTopCell != null && graphType != null
-                    && xBottomCell != null && yBottomCell != null) {
-                displayGraph(xTopCell, xBottomCell, yTopCell, yBottomCell, graphType, spreadsheetDisplayController);
+            if (xTopCell != null && yTopCell != null && xBottomCell != null
+                    && yBottomCell != null) {
+                displayGraph(xTopCell, xBottomCell, yTopCell, yBottomCell, spreadsheetDisplayController);
             } else {
                 showError("You must fill all fields.");
             }
@@ -66,7 +68,7 @@ public class GraphBuilderController {
     }
 
     private void displayGraph(String xTop, String xBottom, String yTop, String yBottom,
-                              String graphType, SpreadsheetDisplayController spreadsheetDisplayController) {
+                              SpreadsheetDisplayController spreadsheetDisplayController) {
         Stage stage = new Stage();
         stage.setTitle("Graph Display");
 
@@ -77,14 +79,10 @@ public class GraphBuilderController {
         char xCol = xTop.charAt(0);
         char yCol = yTop.charAt(0);
 
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("X Axis: " + xTop + " - " + xBottom);
-        yAxis.setLabel("Y Axis: " + yTop + " - " + yBottom);
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-
-        Set<Double> xValuesSet = new HashSet<>();
         List<Double> xValuesList = new ArrayList<>();
+        List<XYChart.Data<Number, Number>> numericSeriesData = new ArrayList<>();
+        List<XYChart.Data<String, Number>> stringSeriesData = new ArrayList<>();
+        Set<Double> xValuesSet = new HashSet<>();
 
         for (int i = 0; i < numOfRows; i++) {
             String xCellId = xCol + (String.valueOf(topRow + i));
@@ -95,51 +93,97 @@ public class GraphBuilderController {
             Double xValue = Double.valueOf(xValueStr);
 
             if (xValuesSet.contains(xValue)) {
-                showError("Error: Duplicate X value found: " + xValueStr + ". Cannot create graph with duplicate X values.");
+                showError("Error: Cannot create graph with duplicate X values.");
                 return;
             }
-
             xValuesSet.add(xValue);
+
             xValuesList.add(xValue);
 
-            series.getData().add(new XYChart.Data<>(xValueStr, yValueNumber));
+            numericSeriesData.add(new XYChart.Data<>(xValue, yValueNumber));
+            stringSeriesData.add(new XYChart.Data<>(xValueStr, yValueNumber));
         }
 
-        xValuesList.sort(Collections.reverseOrder());
+        Collections.sort(xValuesList);
 
+        ComboBox<String> graphTypeComboBox = new ComboBox<>();
+        graphTypeComboBox.getItems().addAll("Line Chart", "Bar Chart");
+        graphTypeComboBox.setValue("Line Chart");
+
+        VBox vbox = new VBox(10);
+        vbox.setAlignment(Pos.CENTER);
+        Scene scene = new Scene(vbox, 800, 400);
+        stage.setScene(scene);
+
+        LineChart<Number, Number> lineChart = createLineChart(numericSeriesData, xTop, xBottom, yTop, yBottom);
+        vbox.getChildren().addAll(graphTypeComboBox, lineChart);
+
+        graphTypeComboBox.setOnAction(event -> {
+            String selectedGraphType = graphTypeComboBox.getValue();
+            vbox.getChildren().remove(1);
+
+            if (selectedGraphType.equals("Line Chart")) {
+                LineChart<Number, Number> newLineChart = createLineChart(numericSeriesData, xTop, xBottom, yTop, yBottom);
+                vbox.getChildren().add(newLineChart);
+            } else if (selectedGraphType.equals("Bar Chart")) {
+                BarChart<String, Number> newBarChart = createBarChart(stringSeriesData, xValuesList, xTop, xBottom, yTop, yBottom);
+                vbox.getChildren().add(newBarChart);
+            }
+        });
+
+        stage.show();
+    }
+
+    private LineChart<Number, Number> createLineChart(List<XYChart.Data<Number, Number>> seriesData,
+                                                      String xTop, String xBottom, String yTop, String yBottom) {
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis: " + xTop + " - " + xBottom);
+        yAxis.setLabel("Y Axis: " + yTop + " - " + yBottom);
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.getData().addAll(seriesData);
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.getData().add(series);
+
+        lineChart.setLegendVisible(false);
+
+        return lineChart;
+    }
+
+    private BarChart<String, Number> createBarChart(List<XYChart.Data<String, Number>> seriesData,
+                                                    List<Double> xValuesList, String xTop, String xBottom, String yTop, String yBottom) {
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis: " + xTop + " - " + xBottom);
+        yAxis.setLabel("Y Axis: " + yTop + " - " + yBottom);
+
+        // המרה למחרוזות
         List<String> sortedXValuesStrList = xValuesList.stream()
                 .map(String::valueOf)
                 .collect(Collectors.toList());
         xAxis.setCategories(FXCollections.observableArrayList(sortedXValuesStrList));
 
-        xAxis.setAutoRanging(false);
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.getData().addAll(seriesData);
 
-        if (graphType.equals("Line Chart")) {
-            LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-            lineChart.setTitle("Line Graph");
-            lineChart.getData().add(series);
-            VBox vbox = new VBox(lineChart);
-            Scene scene = new Scene(vbox, 800, 400);
-            stage.setScene(scene);
-            stage.show();
-        } else if (graphType.equals("Bar Chart")) {
-            BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-            barChart.setTitle("Bar Graph");
-            barChart.getData().add(series);
-            VBox vbox = new VBox(barChart);
-            Scene scene = new Scene(vbox, 800, 400);
-            stage.setScene(scene);
-            stage.show();
-        }
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.getData().add(series);
+
+        barChart.setLegendVisible(false);
+
+        return barChart;
     }
 
 
+
     public static int extractRowFromCell(String cell) {
-        Pattern pattern = Pattern.compile("[A-Z](\\d+)"); // תואם אות אחת ואחריה מספרים
+        Pattern pattern = Pattern.compile("[A-Z](\\d+)");
         Matcher matcher = pattern.matcher(cell);
 
         if (matcher.find()) {
-            return Integer.parseInt(matcher.group(1)); // מחזיר את המספר בלבד
+            return Integer.parseInt(matcher.group(1));
         } else {
             throw new IllegalArgumentException("No valid cell reference found");
         }

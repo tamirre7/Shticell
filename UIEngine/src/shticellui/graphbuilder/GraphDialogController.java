@@ -2,7 +2,6 @@ package shticellui.graphbuilder;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -19,9 +18,6 @@ public class GraphDialogController {
 
     @FXML
     private TextField yBottomCellField;
-
-    @FXML
-    private ComboBox<String> graphTypeComboBox;
 
     private boolean isConfirmed = false;
 
@@ -40,10 +36,6 @@ public class GraphDialogController {
 
     public String getYBottomCell() {
         return yBottomCellField.getText();
-    }
-
-    public String getGraphType() {
-        return graphTypeComboBox.getValue();
     }
 
     public void CloseDialog(ActionEvent actionEvent) {

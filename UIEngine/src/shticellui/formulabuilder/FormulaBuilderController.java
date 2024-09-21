@@ -6,6 +6,9 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import shticellui.action.line.ActionLineController;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +16,7 @@ public class FormulaBuilderController {
     @FXML
     private TreeView<String> functionTreeView;
     @FXML
-    private TextArea formulaEditor;
+    private TextField formulaEditor;
     @FXML
     private TextField formulaPreview;
     @FXML
@@ -35,7 +38,7 @@ public class FormulaBuilderController {
         TreeItem<String> root = new TreeItem<>("Functions");
         root.setExpanded(true);
 
-        addFunctionCategory(root, "Arithmetic", "ABS", "DIVIDE", "MINUS", "MOD", "PERCENT", "PLUS", "POW", "TIMES", "SUM");
+        addFunctionCategory(root, "Arithmetic", "ABS", "DIVIDE", "MINUS", "MOD", "PERCENT", "PLUS", "POW", "TIMES");
         addFunctionCategory(root, "Ranges", "SUM", "AVERAGE");
         addFunctionCategory(root, "References", "REF");
         addFunctionCategory(root, "String", "CONCAT", "SUB");
@@ -85,11 +88,10 @@ public class FormulaBuilderController {
     private void updateSubFormulaPreviews() {
         StringBuilder previews = new StringBuilder();
         String formula = formulaEditor.getText();
-        Pattern pattern = Pattern.compile("\\{[^{}]+\\}");
-        Matcher matcher = pattern.matcher(formula);
 
-        while (matcher.find()) {
-            String subFormula = matcher.group();
+        List<String> subFormulas = extractNestedFormulas(formula);
+
+        for (String subFormula : subFormulas) {
             try {
                 String result = engine.evaluateOriginalValue(subFormula);
                 previews.append(subFormula).append(" = ").append(result).append("\n");
@@ -99,6 +101,25 @@ public class FormulaBuilderController {
         }
 
         subFormulaPreviews.setText(previews.toString());
+    }
+
+    private List<String> extractNestedFormulas(String formula) {
+        List<String> formulas = new ArrayList<>();
+        Stack<Integer> stack = new Stack<>();
+
+        for (int i = 0; i < formula.length(); i++) {
+            if (formula.charAt(i) == '{') {
+                stack.push(i);
+            } else if (formula.charAt(i) == '}') {
+                if (!stack.isEmpty()) {
+                    int start = stack.pop();
+                    String subFormula = formula.substring(start, i + 1);
+                    formulas.add(subFormula);
+                }
+            }
+        }
+
+        return formulas;
     }
 
     private void updateResultPreview() {

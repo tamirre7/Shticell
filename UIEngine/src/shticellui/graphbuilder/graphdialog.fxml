@@ -7,44 +7,26 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.GridPane?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
 <GridPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticellui.graphbuilder.GraphDialogController" hgap="10" vgap="10" alignment="CENTER">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <!-- כותרת ראשית -->
     <Label text="Select the cell ranges for the X and Y axes and the type of graph" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2"/>
 
-    <!-- תיאור לבחירת טווחים -->
     <Label text="Note: the ranges of both axes must include the same rows" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2"/>
 
-    <!-- טווח עבור X -->
     <Label text="X Axis Range" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
     <Label text="Top Cell" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
     <TextField fx:id="xTopCellField" promptText="e.g., A1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
     <Label text="Bottom Cell" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
     <TextField fx:id="xBottomCellField" promptText="e.g., A5" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
-    <!-- טווח עבור Y -->
     <Label text="Y Axis Range" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
     <Label text="Top Cell" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
     <TextField fx:id="yTopCellField" promptText="e.g., B1" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
     <Label text="Bottom Cell" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
     <TextField fx:id="yBottomCellField" promptText="e.g., B5" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-    <!-- בחירת סוג גרף -->
-    <Label text="Graph Type" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-    <ComboBox fx:id="graphTypeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="8">
-        <items>
-            <FXCollections fx:factory="observableArrayList">
-                <String fx:value="Bar Chart"/>
-                <String fx:value="Line Chart"/>
-            </FXCollections>
-        </items>
-    </ComboBox>
-
-    <!-- כפתור אישור -->
     <Button text="Confirm" onAction="#CloseDialog" GridPane.columnIndex="0" GridPane.rowIndex="9" GridPane.columnSpan="2" />
 </GridPane>
