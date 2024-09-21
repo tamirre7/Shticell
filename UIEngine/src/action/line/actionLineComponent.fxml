@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox prefHeight="45.0" prefWidth="897.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.line.impl.ActionLineController">
+<HBox prefHeight="45.0" prefWidth="897.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.line.impl.ActionLineControllerImpl">
    <children>
       <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
          <HBox.margin>

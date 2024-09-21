@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" style="-fx-background-color: #f0f0f0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="shticellui.formulabuilder.FormulaBuilderController">
+<VBox spacing="10" style="-fx-background-color: #f0f0f0;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="command.components.formulabuilder.impl.FormulaBuilderControllerImpl">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>

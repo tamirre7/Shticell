@@ -1,6 +1,5 @@
 package misc.impl;
 
-import action.line.impl.ActionLineController;
 import command.api.Engine;
 import dto.SaveLoadFileDto;
 import dto.SheetDto;
@@ -10,12 +9,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import misc.api.MiscController;
 import skinmanager.SkinManager;
 import spreadsheet.impl.SpreadsheetControllerImpl;
-
+import action.line.api.ActionLineController;
 import java.io.File;
 
-public class MiscControllerImpl {
+public class MiscControllerImpl implements MiscController {
 
     @FXML
     private Button saveButton;
@@ -36,7 +36,7 @@ public class MiscControllerImpl {
     private ActionLineController actionLineController;
 
     // Constructor
-    public MiscController(Engine engine, Stage primaryStage, SkinManager skinManager, SpreadsheetControllerImpl spreadsheetControllerImpl, ActionLineController actionLineController) {
+    public MiscControllerImpl(Engine engine, Stage primaryStage, SkinManager skinManager, SpreadsheetControllerImpl spreadsheetControllerImpl, ActionLineController actionLineController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
         this.skinManager = skinManager;
@@ -68,7 +68,7 @@ public class MiscControllerImpl {
     }
 
     @Override
-    private void handleSaveState() {
+    public void handleSaveState() {
         if (!engine.isFileLoaded())
         {
             showAlert("Error", "A file must be loaded before saving.");
@@ -90,7 +90,7 @@ public class MiscControllerImpl {
     }
 
     @Override
-    private void handleLoadState() {
+    public void handleLoadState() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Serialized Files", "*.ser"));
         fileChooser.setTitle("Load System State");
@@ -112,7 +112,7 @@ public class MiscControllerImpl {
     }
 
     @Override
-    private void applySkin(String skinFileName) {
+    public void applySkin(String skinFileName) {
         skinManager.applySkin(primaryStage.getScene(), skinFileName);
     }
 

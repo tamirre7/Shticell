@@ -3,7 +3,6 @@ package spreadsheet.impl;
 import action.line.impl.ActionLineControllerImpl;
 import command.api.Engine;
 import command.components.formulabuilder.FormulaBuilder;
-import command.components.sortandfilter.impl.SortAndFilterController;
 import command.components.sortandfilter.impl.SortAndFilterControllerImpl;
 import dto.CellDto;
 import dto.SheetDto;
@@ -18,16 +17,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import action.line.impl.ActionLineController;
-import misc.MiscController;
 import misc.impl.MiscControllerImpl;
-import range.RangeController;
 import range.impl.RangeControllerImpl;
+import spreadsheet.api.SpreadSheetController;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class SpreadsheetControllerImpl {
+public class SpreadsheetControllerImpl implements SpreadSheetController {
 
     @FXML private GridPane gridPane;
     @FXML private ScrollPane scrollPane;

@@ -1,7 +1,8 @@
 package command.components.formulabuilder.impl;
 
-import action.line.impl.ActionLineController;
+import action.line.api.ActionLineController;
 import command.api.Engine;
+import command.components.formulabuilder.api.FormulaBuilderController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class FormulaBuilderControllerImpl {
+public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     @FXML
     private TreeView<String> functionTreeView;
     @FXML

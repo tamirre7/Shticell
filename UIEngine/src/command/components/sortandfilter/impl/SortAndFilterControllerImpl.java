@@ -1,6 +1,7 @@
 package command.components.sortandfilter.impl;
 
 import command.api.Engine;
+import command.components.sortandfilter.api.SortAndFilterController;
 import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,7 +20,7 @@ import dto.CellDto;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SortAndFilterControllerImpl {
+public class SortAndFilterControllerImpl implements SortAndFilterController {
     @FXML
     private Button sortButton;
     @FXML
@@ -32,7 +33,7 @@ public class SortAndFilterControllerImpl {
     SpreadsheetControllerImpl spreadsheetControllerImpl;
     private final Engine engine;
 
-    public SortAndFilterController(Engine engine, SpreadsheetControllerImpl spreadsheetControllerImpl) {
+    public SortAndFilterControllerImpl(Engine engine, SpreadsheetControllerImpl spreadsheetControllerImpl) {
         this.engine = engine;
         this.spreadsheetControllerImpl = spreadsheetControllerImpl;
     }

@@ -1,4 +1,4 @@
 package command.components.sortandfilter.api;
 
-public class SortAndFilterController {
+public interface SortAndFilterController {
 }

@@ -1,6 +1,7 @@
 package command.components.graphbuilder.builder.impl;
 
-import command.components.graphbuilder.dialog.GraphDialogController;
+import command.components.graphbuilder.builder.api.GraphBuilderController;
+import command.components.graphbuilder.dialog.api.GraphDialogController;
 import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -23,14 +24,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-public class GraphBuilderControllerImpl {
+public class GraphBuilderControllerImpl implements GraphBuilderController {
 
     private SpreadsheetControllerImpl spreadsheetControllerImpl;
 
-    public GraphBuilderController(SpreadsheetControllerImpl spreadsheetControllerImpl) {
+    public GraphBuilderControllerImpl(SpreadsheetControllerImpl spreadsheetControllerImpl) {
         this.spreadsheetControllerImpl = spreadsheetControllerImpl;
-    }
-    public GraphBuilderController() {
     }
 
     @FXML

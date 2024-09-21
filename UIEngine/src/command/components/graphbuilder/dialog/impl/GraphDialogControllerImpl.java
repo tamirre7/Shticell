@@ -1,11 +1,12 @@
 package command.components.graphbuilder.dialog.impl;
 
+import command.components.graphbuilder.dialog.api.GraphDialogController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class GraphDialogControllerImpl {
+public class GraphDialogControllerImpl implements GraphDialogController {
 
     @FXML
     private TextField xTopCellField;

@@ -14,12 +14,13 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
+import loadfilecomp.api.LoadFileController;
 import spreadsheet.impl.SpreadsheetControllerImpl;
 
 
 import java.io.File;
 
-public class LoadFileControllerImpl {
+public class LoadFileControllerImpl implements LoadFileController {
 
     @FXML
     private Button loadFileButton;
@@ -56,7 +57,7 @@ public class LoadFileControllerImpl {
     }
 
     @Override
-    private void handleLoadFile() {
+    public void handleLoadFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML Files", "*.xml"));
         fileChooser.setTitle("Select Spreadsheet XML File");
@@ -102,7 +103,7 @@ public class LoadFileControllerImpl {
     }
 
     @Override
-    private void updateProgressBar() {
+    public void updateProgressBar() {
         try {
             // Initially set progress to 0%
             Platform.runLater(() -> loadingProgressBar.setProgress(0.0));

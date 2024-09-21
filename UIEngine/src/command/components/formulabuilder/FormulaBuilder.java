@@ -2,11 +2,12 @@ package command.components.formulabuilder;
 
 
 import command.api.Engine;
+import command.components.formulabuilder.api.FormulaBuilderController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import action.line.impl.ActionLineController;
+import action.line.api.ActionLineController;
 
 import java.io.IOException;
 

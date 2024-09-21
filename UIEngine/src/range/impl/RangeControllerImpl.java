@@ -23,7 +23,7 @@ public class RangeControllerImpl implements RangeController {
     private String currentlyHighlightedRange = null;
 
 
-    public RangeController(Engine engine) {
+    public RangeControllerImpl(Engine engine) {
         this.engine = engine;
     }
 
@@ -35,7 +35,7 @@ public class RangeControllerImpl implements RangeController {
     }
 
     @Override
-    private void handleMouseClick(javafx.scene.input.MouseEvent event) {
+    public void handleMouseClick(javafx.scene.input.MouseEvent event) {
         if (event.getClickCount() == 1) {  // Check if single click
             String selectedRange = rangeListView.getSelectionModel().getSelectedItem();
 
