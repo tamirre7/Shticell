@@ -1,6 +1,7 @@
 package spreadsheet.cell.api;
 
 import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.cell.style.api.CellStyle;
 
 import java.util.List;
 
@@ -26,8 +27,7 @@ public interface Cell
     void setEffectiveValue (EffectiveValue effectiveValue);
     void resetDependencies ();
     void resetInfluences();
-    void setCellStyle(String style);
-    void setCellAlignment(String alignment);
-    String getCellStyle();
-    String getCellAlignment();
+    void setCellStyle(CellStyle style);
+    CellStyle getCellStyle();
+
 }

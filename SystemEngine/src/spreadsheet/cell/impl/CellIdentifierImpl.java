@@ -1,9 +1,6 @@
 package spreadsheet.cell.impl;
 
-import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.sheetimpl.SpreadSheetImpl;
-
 import java.io.Serializable;
 
 public class CellIdentifierImpl implements CellIdentifier, Serializable

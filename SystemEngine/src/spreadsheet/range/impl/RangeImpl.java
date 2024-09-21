@@ -4,7 +4,6 @@ import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,10 +63,11 @@ public class RangeImpl implements Range, Serializable {
             }
         }
     }
-
+    @Override
     public String getName() {
         return name;
     }
+
     public List<CellIdentifierImpl> getCellsInRange() { return Collections.unmodifiableList(cellsInRange);}
 
     public CellIdentifierImpl getTopLeft() {

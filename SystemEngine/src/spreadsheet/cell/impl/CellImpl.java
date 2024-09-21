@@ -2,14 +2,14 @@ package spreadsheet.cell.impl;
 
 import expressions.api.Expression;
 import spreadsheet.api.ReadOnlySpreadSheet;
-import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.style.api.CellStyle;
+import spreadsheet.cell.style.impl.CellStyleImpl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import static expressions.parser.FunctionParser.parseExpression;
 
 public class CellImpl implements Cell, Serializable
@@ -21,8 +21,7 @@ public class CellImpl implements Cell, Serializable
     private List<CellIdentifierImpl> dependencies;
     private List<CellIdentifierImpl> influences;
     private ReadOnlySpreadSheet sheet;
-    private String style = "";
-    private String alignment = "-fx-alignment: center;";
+    private CellStyle style;
 
 
     public CellImpl(CellIdentifierImpl identifier, String originalValue,
@@ -35,6 +34,7 @@ public class CellImpl implements Cell, Serializable
         this.dependencies = new ArrayList<>();
         this.influences = new ArrayList<>();
         this.sheet = sheet;
+        this.style = new CellStyleImpl("");
     }
     @Override
     public CellIdentifierImpl getIdentifier() {
@@ -80,7 +80,6 @@ public class CellImpl implements Cell, Serializable
     @Override
     public void resetInfluences() {this.influences.clear(); }
 
-
     @Override
    public void updateVersion(int version) {
         this.lastModifiedVersion = version;
@@ -104,16 +103,15 @@ public class CellImpl implements Cell, Serializable
         return identifier.hashCode();
     }
 
-    @Override
-    public void setCellStyle(String style) {this.style = style;}
 
     @Override
-    public String getCellStyle() {return style;}
+    public CellStyle getCellStyle() {return style;}
 
     @Override
-    public void setCellAlignment (String alignment) {this.alignment = alignment;}
+    public void setCellStyle(CellStyle style) {
+        this.style = style;
+    }
 
-    @Override
-    public String getCellAlignment() {return alignment;}
+
 }
 

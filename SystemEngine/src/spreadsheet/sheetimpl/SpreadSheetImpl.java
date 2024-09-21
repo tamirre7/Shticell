@@ -9,10 +9,8 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
-import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.util.UpdateResult;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,9 +21,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     private String name;
     private int version;
     private Map<CellIdentifier, Cell> activeCells;
-    int amountOfCellsChangedInVersion;
     private Map<String, RangeImpl> ranges = new HashMap<>();
-
 
     public SpreadSheetImpl(String name, int version, Dimension sheetDimension) {
         this.name = name;
@@ -33,13 +29,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         this.activeCells = new HashMap<>();
         this.sheetDimension = sheetDimension;
         this.ranges = new HashMap<>();
-    }
-
-    @Override
-    public int getAmountOfCellsChangedInVersion(){return amountOfCellsChangedInVersion;}
-    @Override
-    public void setAmountOfCellsChangedInVersion(int amountOfCellsChangedInVersion) {
-        this.amountOfCellsChangedInVersion = amountOfCellsChangedInVersion;
     }
 
     @Override
@@ -66,7 +55,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         }
 
         return true;
-
     }
 
     @Override
@@ -74,12 +62,19 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         Cell cell = activeCells.get(identifier);
         if(cell == null) {
             //create new empty cell
-            CellImpl newCell = new CellImpl(identifier, "",0,this);
+            CellImpl newCell = new CellImpl(identifier, "",this.version,this);
             newCell.calculateEffectiveValue();
             activeCells.put(identifier, newCell);
             this.updateDependenciesAndInfluences();
         }
         return cell != null ? cell.getEffectiveValue() : null;
+    }
+    @Override
+    public void addEmptyCell (CellIdentifierImpl identifier){
+        CellImpl newCell = new CellImpl(identifier, "",this.version,this);
+        newCell.calculateEffectiveValue();
+        activeCells.put(identifier, newCell);
+        this.updateDependenciesAndInfluences();
     }
 
     // Getters and Setters
@@ -115,6 +110,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public void removeCell(CellIdentifier identifier) {
         activeCells.remove(identifier);
     }
+
     @Override
     public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
@@ -133,7 +129,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             // successful calculation. update sheet and relevant cells version
              int newVersion = newSheetVersion.increaseVersion();
              cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
-             newSheetVersion.setAmountOfCellsChangedInVersion(cellsThatHaveChanged.size());
              newSheetVersion.updateDependenciesAndInfluences();
              for (Cell cell : newSheetVersion.activeCells.values()) {
                  cell.calculateEffectiveValue();
@@ -169,10 +164,8 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                     // Add current cell to the influences of the referenced cell
                     cell.getDependencies().add(referencedCell.getIdentifier());
                 }
-
             }
         }
-
         // Check for cycles immediately after updating dependencies and influences
         try {
             orderCellsForCalculation();  // If this method fails, it means a cycle exists.
@@ -180,7 +173,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             throw new IllegalStateException(e.getMessage());
         }
     }
-
 
     private List<CellIdentifier> extractReferences(String value) {
         List<CellIdentifier> references = new ArrayList<>();
@@ -220,12 +212,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 }
                 i = rangeNameEnd;
             } else {
-                i = start + 1; // Skip invalid command
-            }
+                i = start + 1;} // Skip invalid command
         }
-
         return references;
-
     }
 
     private int findCellIdEnd(String value, int start) {
@@ -260,7 +249,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     private SpreadSheetImpl copySheet() {
-
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -291,8 +279,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return Objects.hash(name, version, activeCells);
     }
 
-
-
     public boolean isRangeWithinBounds(CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
         return isCellWithinBounds(topLeft) && isCellWithinBounds(bottomRight);
     }
@@ -320,7 +306,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         }
         if (ranges.get(name).isActive())
             throw new IllegalArgumentException("Range in use cannot be removed");
-
         ranges.remove(name);
     }
 

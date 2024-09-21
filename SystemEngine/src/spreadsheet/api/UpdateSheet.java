@@ -10,7 +10,7 @@ public interface UpdateSheet {
     void removeCell(CellIdentifier identifier);
     UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) ;
     void updateDependenciesAndInfluences();
-    void setAmountOfCellsChangedInVersion(int amountOfCellsChangedInVersion);
     void removeRange(String name);
+    void addEmptyCell (CellIdentifierImpl identifier);
     void addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
 }

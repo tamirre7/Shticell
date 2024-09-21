@@ -1,6 +1,5 @@
 package spreadsheet.sheetimpl;
 import spreadsheet.api.Dimension;
-
 import java.io.Serializable;
 import java.util.Objects;
 

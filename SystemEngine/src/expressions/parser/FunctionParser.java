@@ -3,7 +3,6 @@ package expressions.parser;
 import expressions.api.Expression;
 import expressions.expressionsimpl.*;
 import spreadsheet.api.ReadOnlySpreadSheet;
-import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.impl.RangeImpl;

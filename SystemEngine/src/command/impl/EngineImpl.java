@@ -3,7 +3,6 @@ package command.impl;
 import command.api.Engine;
 import dto.*;
 import expressions.api.Expression;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -14,6 +13,7 @@ import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
+import spreadsheet.cell.style.impl.CellStyleImpl;
 import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
@@ -40,9 +40,8 @@ public class EngineImpl implements Engine {
             return new SaveLoadFileDto(false, "File not found: " + path);
         }
 
-        InputStream inputStream;
         try {
-            inputStream = new FileInputStream(file);
+            new FileInputStream(file);
             // Initialize JAXB context and unmarshaller
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -119,7 +118,7 @@ public class EngineImpl implements Engine {
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
 
-            spreadSheet.setAmountOfCellsChangedInVersion(spreadSheet.getActiveCells().size());
+
 
             // Update dependencies and influences
             spreadSheet.updateDependenciesAndInfluences();
@@ -146,85 +145,12 @@ public class EngineImpl implements Engine {
         Dimension dimensions = currentSheet.getSheetDimentions();
 
         // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
-            Cell cell = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    cell.getIdentifier().toString(),
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue().toString(),
-                    cell.getLastModifiedVersion(),
-                    convertToListOfStrings(cell.getDependencies()),
-                    convertToListOfStrings(cell.getInfluences()),
-                    cell.getCellStyle(),
-                    cell.getCellAlignment()
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = entry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(entry.getKey(), rangeDto);
-        }
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
-
-        return new SheetDto(dimensions.getNumCols(), dimensions.getNumRows(), dimensions.getWidthCol(), dimensions.getHeightRow(), name, version, cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
-    }
-
-
-    @Override
-    public CellDto displayCellValue(String cellid) {
-
-        // Check if cellid is null or empty
-        if (cellid == null || cellid.isEmpty()) {
-            throw new IllegalArgumentException("Cell ID cannot be empty");
-        }
-
-        // Check if currentSheet is null
-        if (currentSheet == null) {
-            throw new IllegalStateException("Current sheet is not available");
-        }
-
-        currentSheet.isValidCellID(cellid);
-        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-
-        // Retrieve the cell from the currentSheet
-        Cell cell = currentSheet.getCell(cellIdentifier);
-
-        if (cell == null || cell.getOriginalValue() == null) {
-            return new CellDto(
-                    cellIdentifier.toString(),                      // The identifier of the cell
-                    "",                             // Default original value
-                    "",                             // Default effective value
-                    0,    // Last modified version (could be current version)
-                    Collections.emptyList(),              // No dependencies
-                    Collections.emptyList(),
-                    "",
-                    "-fx-alignment: center;"// No influences
-            );
-        }
-
-
-        // Create and return a CellDto
-        return new CellDto(
-                cell.getIdentifier().toString(),
-                cell.getOriginalValue(),
-                cell.getEffectiveValue().toString(),
-                cell.getLastModifiedVersion(),
-                convertToListOfStrings(cell.getDependencies()),
-                convertToListOfStrings(cell.getInfluences()),
-                cell.getCellStyle(),
-                cell.getCellAlignment()
-        );
+        return new SheetDto(dimensions.getNumCols(), dimensions.getNumRows(), dimensions.getWidthCol(), dimensions.getHeightRow(), name, version, cellDtos, cellsInRangeDto);
     }
 
     private List<String> convertToListOfStrings(List<CellIdentifierImpl> cellIdentifiers) {
@@ -239,13 +165,11 @@ public class EngineImpl implements Engine {
     public SheetDto updateCell(String cellid, String originalValue) {
 
         if (originalValue == null) {
-            throw new IllegalArgumentException("Original value must be entered (can also be empty)");
-        }
+            throw new IllegalArgumentException("Original value must be entered (can also be empty)");}
 
         // Check if cellid is null or empty
         if (cellid == null || cellid.isEmpty()) {
-            throw new IllegalArgumentException("Cell ID cannot be empty");
-        }
+            throw new IllegalArgumentException("Cell ID cannot be empty");}
 
         currentSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
@@ -258,92 +182,39 @@ public class EngineImpl implements Engine {
             sheetVersionMap.put(updateSpreadSheet.getVersion(), updateSpreadSheet);
             currentSheet = updateSpreadSheet;
         } else {
-            throw new RuntimeException(updateRes.getErrorMessage());
-        }
+            throw new RuntimeException(updateRes.getErrorMessage());}
 
         // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
-            Cell sheetCells = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    sheetCells.getIdentifier().toString(),
-                    sheetCells.getOriginalValue(),
-                    sheetCells.getEffectiveValue().toString(),
-                    sheetCells.getLastModifiedVersion(),
-                    convertToListOfStrings(sheetCells.getDependencies()),
-                    convertToListOfStrings(sheetCells.getInfluences()),
-                    sheetCells.getCellStyle(),
-                    sheetCells.getCellAlignment()
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> entry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = entry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(entry.getKey(), rangeDto);
-        }
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
                 currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(),
-                currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
+                currentSheet.getVersion(), cellDtos, cellsInRangeDto);
 
     }
-
 
     @Override
     public SheetDto displaySheetByVersion(int version) {
         // Retrieve the SpreadSheet from the version map
         SpreadSheet sheet = sheetVersionMap.get(version);
         if (sheet == null) {
-            throw new IllegalArgumentException("No spreadsheet found for the specified version");
-        }
+            throw new IllegalArgumentException("No spreadsheet found for the specified version");}
 
         // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : sheet.getActiveCells().entrySet()) {
-            Cell cell = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    cell.getIdentifier().toString(),
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue().toString(),
-                    cell.getLastModifiedVersion(),
-                    convertToListOfStrings(cell.getDependencies()),
-                    convertToListOfStrings(cell.getInfluences()),
-                    cell.getCellStyle(),
-                    cell.getCellAlignment()
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = rangeEntry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
-        }
-
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getWidthCol(),
-                sheet.getSheetDimentions().getHeightRow(), sheet.getName(), sheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
+                sheet.getSheetDimentions().getHeightRow(), sheet.getName(), sheet.getVersion(), cellDtos,  cellsInRangeDto);
     }
-
+    @Override
     public SaveLoadFileDto saveState(String path) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
             oos.writeObject(currentSheet);
@@ -356,9 +227,9 @@ public class EngineImpl implements Engine {
             return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
         }
         return new SaveLoadFileDto(true, "File saved successfully");
-
     }
 
+    @Override
     public SaveLoadFileDto loadSavedState(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
             currentSheet = (SpreadSheet) ois.readObject();
@@ -389,30 +260,13 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public RangeDto getRange(String rangeName) {
-        RangeImpl range = currentSheet.getRange(rangeName);
-        if (range == null) { return null;}
-        return new RangeDto(range.getName(), range.getTopLeft().toString(), range.getBottomRight().toString(), convertToListOfStrings(range.getCellsInRange()), range.isActive());
-    }
-
-    @Override
-    public String[] getAvailableVersions() {
-        return sheetVersionMap.keySet().stream()
-                .map(String::valueOf)  // Convert Integer to String
-                .toArray(String[]::new);
-    }
-
-    @Override
     public Integer getLatestVersion() {
         return sheetVersionMap.size();
     }
 
     @Override
     public boolean isFileLoaded() {
-        if (currentSheet == null) {
-            return false;
-        }
-        return true;
+        return currentSheet != null;
     }
 
     @Override
@@ -425,9 +279,8 @@ public class EngineImpl implements Engine {
         Map<String, CellDto> updatedCells = new HashMap<>();
 
         for (int row = topLeft.getRow(); row <= bottomRight.getRow(); row++) {
-            boolean rowMatches = true;  // האם השורה מתאימה לפילטר על פי כל העמודות
+            boolean rowMatches = true;
 
-            // מעבר על כל עמודה שנבחרה
             for (Map.Entry<String, List<String>> entry : selectedValuesForColumns.entrySet()) {
                 String column = entry.getKey();
                 List<String> selectedValues = entry.getValue();
@@ -438,36 +291,31 @@ public class EngineImpl implements Engine {
                     rowMatches = false;
                     break;
                 }
-                // אם הערך בעמודה הנוכחית לא תואם לאחד הערכים שנבחרו
                 else {
                        if (!selectedValues.contains(cell.getEffectiveValue())) {
                            rowMatches = false;
                            break;
                        }
                     }
-
             }
 
-            // אם השורה לא מתאימה לקריטריונים, נמלא את התאים בערכים ריקים
             for (int col = topLeft.getCol() - 'A'; col <= bottomRight.getCol() - 'A'; col++) {
                 String cellId = createCellId(row, col);
                 CellDto cell = sheet.getCells().get(cellId);
                 if (cell == null) {
                     cell = new CellDto(cellId,"","",0,new ArrayList<>(),new ArrayList<>(),
-                            "","");
+                            "");
                 }
 
                 if (rowMatches) {
-                    updatedCells.put(cellId, cell);  // שמירת הערך הקיים
+                    updatedCells.put(cellId, cell);
                 } else {
-                    // עדכון התאים בשורה לערכים ריקים אם השורה לא תואמת
                     updatedCells.put(cellId, new CellDto(cellId, "", "",
-                            0, new ArrayList<>(), new ArrayList<>(), "", ""));
+                            0, new ArrayList<>(), new ArrayList<>(), ""));
                 }
             }
         }
 
-        // יצירת גיליון חדש עם השורות המסוננות
         return new SheetDto(sheet.getNumCols(),
                 sheet.getNumRows(),
                 sheet.getWidthCol(),
@@ -475,10 +323,8 @@ public class EngineImpl implements Engine {
                 sheet.getName(),
                 sheet.getVersion(),
                 updatedCells,
-                sheet.getAmountOfCellsChangedInVersion(),
                 sheet.getSheetRanges());
     }
-
 
     @Override
     public SheetDto sortRange(Range range, List<String> colsToSort) {
@@ -497,7 +343,7 @@ public class EngineImpl implements Engine {
             List<CellDto> rowCells = new ArrayList<>();
             for (int col = (topLeft.getCol() - 'A'); col <= (bottomRight.getCol() - 'A'); col++) {
                 String cellId = createCellId(row, col);  // Create a cell identifier
-                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, "", "", 0, new ArrayList<>(), new ArrayList<>(),"","-fx-alignment: center;")));  // Fetch the cell or empty
+                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, "", "", 0, new ArrayList<>(), new ArrayList<>(),"")));  // Fetch the cell or empty
             }
             rowsInRange.add(rowCells);  // Add the row to the list
         }
@@ -550,28 +396,15 @@ public class EngineImpl implements Engine {
                         sortedCell.getLastModifiedVersion(),
                         sortedCell.getDependencies(),  // Assuming this remains the same
                         sortedCell.getInfluences(),
-                        sortedCell.getStyle(),
-                        sortedCell.getAlignment()
-
+                        sortedCell.getStyle()
                 );
 
                 updatedCells.put(cellId, cellDto);
             }
         }
 
-// Convert ranges (same as in displaySheetByVersion)
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-            RangeImpl rangeEntryValue = rangeEntry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(rangeEntryValue.getCellsInRange()),
-                    rangeEntryValue.isActive()
-            );
-            cellsInRangeDto.put(rangeEntry.getKey(), rangeDto);
-        }
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
 // Return the new SheetDto
         return new SheetDto(
@@ -582,7 +415,6 @@ public class EngineImpl implements Engine {
                 sheet.getName(),
                 sheet.getVersion(),
                 updatedCells,
-                currentSheet.getAmountOfCellsChangedInVersion(),
                 cellsInRangeDto
         );
 
@@ -602,137 +434,35 @@ public class EngineImpl implements Engine {
         }
     }
 
-    // Helper method to check if the row contains headers (non-numeric values)
-    private boolean isHeaderRow(List<CellDto> row, List<String> colsToSort, char colOffset) {
-        for (String colToSort : colsToSort) {
-            int colIndex = colToSort.charAt(0) - colOffset ;  // Convert column letter to index
-            String value = row.get(colIndex).getEffectiveValue();
-            if (parseNumericValue(value) != null || Objects.equals(value, "")) {
-                return false;  // If it's numeric, it's not a header row
-            }
-        }
-        return true;  // All values are non-numeric, so it's a header row
-    }
-
     @Override
-    public SheetDto addCell (String cellId) {
+    public SheetDto addEmptyCell (String cellId) {
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
-        currentSheet.getCellEffectiveValue(cellIdentifier);
+        currentSheet.addEmptyCell(cellIdentifier);
+        // Convert cells from Cell to CellDto
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
-            Cell cell = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    cell.getIdentifier().toString(),
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue().toString(),
-                    cell.getLastModifiedVersion(),
-                    convertToListOfStrings(cell.getDependencies()),
-                    convertToListOfStrings(cell.getInfluences()),
-                    "",
-                    "-fx-alignment: center;"
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
-
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = rangeEntry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
-        }
-
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
         // Return a SheetDto with the SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
+                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
     public SheetDto setCellStyle(String cellid, String style) {
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-        currentSheet.getCell(cellIdentifier).setCellStyle(style);
+        currentSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
 
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
-            Cell cell = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    cell.getIdentifier().toString(),
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue().toString(),
-                    cell.getLastModifiedVersion(),
-                    convertToListOfStrings(cell.getDependencies()),
-                    convertToListOfStrings(cell.getInfluences()),
-                    cell.getCellStyle(),
-                    cell.getCellAlignment()
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
+        // Convert cells from Cell to CellDto
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = rangeEntry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
-        }
-
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
-
-    }
-
-    @Override
-    public SheetDto setCellAlignment(String cellid, String alignment) {
-        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-        currentSheet.getCell(cellIdentifier).setCellAlignment(alignment);
-
-        Map<String, CellDto> cellDtos = new HashMap<>();
-        for (Map.Entry<CellIdentifier, Cell> entry : currentSheet.getActiveCells().entrySet()) {
-            Cell cell = entry.getValue();
-            CellDto cellDto = new CellDto(
-                    cell.getIdentifier().toString(),
-                    cell.getOriginalValue(),
-                    cell.getEffectiveValue().toString(),
-                    cell.getLastModifiedVersion(),
-                    convertToListOfStrings(cell.getDependencies()),
-                    convertToListOfStrings(cell.getInfluences()),
-                    cell.getCellStyle(),
-                    cell.getCellAlignment()
-            );
-            cellDtos.put(entry.getKey().toString(), cellDto);
-        }
-
-        Map<String, RangeDto> cellsInRangeDto = new HashMap<>();
-        for (Map.Entry<String, RangeImpl> rangeEntry : currentSheet.getRanges().entrySet()) {
-            RangeImpl range = rangeEntry.getValue();
-            RangeDto rangeDto = new RangeDto(
-                    range.getName(),
-                    range.getTopLeft().toString(),
-                    range.getBottomRight().toString(),
-                    convertToListOfStrings(range.getCellsInRange()),
-                    range.isActive()
-            );
-            cellsInRangeDto.put(rangeEntry.getKey().toString(), rangeDto);
-        }
-
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, currentSheet.getAmountOfCellsChangedInVersion(), cellsInRangeDto);
+                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, cellsInRangeDto);
 
     }
 
@@ -744,6 +474,36 @@ public class EngineImpl implements Engine {
         return newEffectiveValue.getValue().toString();
     }
 
-
+    private Map<String, CellDto> convertCellsToCellDtos(Map<CellIdentifier, Cell> activeCells) {
+        Map<String, CellDto> cellDtos = new HashMap<>();
+        for (Map.Entry<CellIdentifier, Cell> entry : activeCells.entrySet()) {
+            Cell sheetCell = entry.getValue();
+            CellDto cellDto = new CellDto(
+                    sheetCell.getIdentifier().toString(),
+                    sheetCell.getOriginalValue(),
+                    sheetCell.getEffectiveValue().toString(),
+                    sheetCell.getLastModifiedVersion(),
+                    convertToListOfStrings(sheetCell.getDependencies()),
+                    convertToListOfStrings(sheetCell.getInfluences()),
+                    sheetCell.getCellStyle().toString()
+            );
+            cellDtos.put(entry.getKey().toString(), cellDto);
+        }
+        return cellDtos;
+    }
+    private Map<String, RangeDto> convertRangesToRangeDtos(Map<String, RangeImpl> ranges) {
+        Map<String, RangeDto> rangeDtos = new HashMap<>();
+        for (Map.Entry<String, RangeImpl> entry : ranges.entrySet()) {
+            RangeImpl range = entry.getValue();
+            RangeDto rangeDto = new RangeDto(
+                    range.getName(),
+                    range.getTopLeft().toString(),
+                    range.getBottomRight().toString(),
+                    convertToListOfStrings(range.getCellsInRange()),
+                    range.isActive()
+            );
+            rangeDtos.put(entry.getKey(), rangeDto);
+        }
+        return rangeDtos;
+    }
 }
-

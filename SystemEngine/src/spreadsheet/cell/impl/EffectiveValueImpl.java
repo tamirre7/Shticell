@@ -2,7 +2,6 @@ package spreadsheet.cell.impl;
 
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.api.CellType;
-
 import java.io.Serializable;
 import java.util.Objects;
 
