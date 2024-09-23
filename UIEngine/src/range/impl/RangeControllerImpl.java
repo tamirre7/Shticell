@@ -7,7 +7,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import range.api.RangeController;
-import spreadsheet.impl.SpreadsheetControllerImpl;
+import spreadsheet.UISheetModel;
+import spreadsheet.api.SpreadsheetController;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import java.util.Map;
 import java.util.Optional;
@@ -17,10 +18,11 @@ public class RangeControllerImpl implements RangeController {
     @FXML private ListView<String> rangeListView;
     @FXML private Button addButton;
     @FXML private Button deleteButton;
-    private final Engine engine;
+    private Engine engine;
     private ObservableList<String> rangeItems = FXCollections.observableArrayList();
-    private SpreadsheetControllerImpl spreadsheetControllerImpl;
+    private SpreadsheetController spreadsheetController;
     private String currentlyHighlightedRange = null;
+    private UISheetModel uiSheetModel;
 
 
     public RangeControllerImpl(Engine engine) {
@@ -39,30 +41,30 @@ public class RangeControllerImpl implements RangeController {
         if (event.getClickCount() == 1) {  // Check if single click
             String selectedRange = rangeListView.getSelectionModel().getSelectedItem();
 
-            if (selectedRange != null && !selectedRange.trim().isEmpty() && spreadsheetControllerImpl != null) {
+            if (selectedRange != null && !selectedRange.trim().isEmpty() && spreadsheetController != null) {
                 if (selectedRange.equals(currentlyHighlightedRange)) {
                     // Clear highlight and reset the tracking
-                    spreadsheetControllerImpl.clearPreviousRangeHighlight();
+                    uiSheetModel.clearPreviousRangeHighlight();
                     currentlyHighlightedRange = null;  // Clear the highlight tracking
                     rangeListView.getSelectionModel().clearSelection(); // Clear selection in ListView
                 } else {
                     // Highlight the newly selected range
-                    RangeDto rangeDto = spreadsheetControllerImpl.getCurrentSheet().getSheetRanges().get(selectedRange);
+                    RangeDto rangeDto = spreadsheetController.getCurrentSheet().getSheetRanges().get(selectedRange);
                     if (rangeDto != null) {
                         String topLeft = rangeDto.getTopLeft();
                         String bottomRight = rangeDto.getBottomRight();
-                        spreadsheetControllerImpl.highlightRange(topLeft, bottomRight);
+                        uiSheetModel.highlightRange(topLeft, bottomRight);
                         currentlyHighlightedRange = selectedRange;  // Update the tracking
                     }
                 }
             } else {
                 // No selection or no spreadsheet display controller available
-                spreadsheetControllerImpl.clearPreviousRangeHighlight();
+                uiSheetModel.clearPreviousRangeHighlight();
                 currentlyHighlightedRange = null;
             }
         }
         else {
-            spreadsheetControllerImpl.clearPreviousRangeHighlight();
+            uiSheetModel.clearPreviousRangeHighlight();
             currentlyHighlightedRange = null;  // Clear the highlight tracking
             rangeListView.getSelectionModel().clearSelection(); // Clear selection in ListView
         }
@@ -70,8 +72,12 @@ public class RangeControllerImpl implements RangeController {
 
 
     @Override
-    public void setSpreadsheetDisplayController(SpreadsheetControllerImpl spreadsheetControllerImpl) {
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
+    public void setSpreadsheetDisplayController(SpreadsheetController spreadsheetController) {
+        this.spreadsheetController = spreadsheetController;
+    }
+
+    public void setUiSheetModel(UISheetModel uiSheetModel) {
+        this.uiSheetModel = uiSheetModel;
     }
 
     @Override
@@ -94,7 +100,7 @@ public class RangeControllerImpl implements RangeController {
         String rangeName = rangeNameResult.get();
 
         try {
-            if (spreadsheetControllerImpl.getCurrentSheet().getSheetRanges().get(rangeNameResult) != null)
+            if (spreadsheetController.getCurrentSheet().getSheetRanges().get(rangeNameResult) != null)
                 throw new IllegalArgumentException("Range name already exists");
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Cannot add Range ", e.getMessage());
@@ -143,7 +149,7 @@ public class RangeControllerImpl implements RangeController {
             if (range != null) {
                 engine.removeRange(range);
                 rangeItems.remove(range);
-                this.spreadsheetControllerImpl.clearPreviousRangeHighlight();
+                this.uiSheetModel.clearPreviousRangeHighlight();
 
             }
         } catch (IllegalArgumentException e) {

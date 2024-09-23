@@ -11,7 +11,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import misc.api.MiscController;
 import skinmanager.SkinManager;
-import spreadsheet.impl.SpreadsheetControllerImpl;
+import spreadsheet.api.SpreadsheetController;
 import action.line.api.ActionLineController;
 import java.io.File;
 
@@ -32,17 +32,18 @@ public class MiscControllerImpl implements MiscController {
 
     private Engine engine;
     private Stage primaryStage;
-    private SpreadsheetControllerImpl spreadsheetControllerImpl;
+    private SpreadsheetController spreadsheetController;
     private ActionLineController actionLineController;
 
     // Constructor
-    public MiscControllerImpl(Engine engine, Stage primaryStage, SkinManager skinManager, SpreadsheetControllerImpl spreadsheetControllerImpl, ActionLineController actionLineController) {
+    public MiscControllerImpl(Engine engine, Stage primaryStage, SkinManager skinManager, SpreadsheetController spreadsheetController, ActionLineController actionLineController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
         this.skinManager = skinManager;
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
+        this.spreadsheetController = spreadsheetController;
         this.actionLineController = actionLineController;
     }
+    
 
     @FXML
     private void initialize() {
@@ -62,7 +63,7 @@ public class MiscControllerImpl implements MiscController {
         saveButton.setOnAction(event -> handleSaveState());
         loadButton.setOnAction(event -> handleLoadState());
     }
-
+    @Override
     public boolean areAnimationsEnabled() {
         return animationsCheckBox.isSelected();
     }
@@ -106,9 +107,9 @@ public class MiscControllerImpl implements MiscController {
         }
         SheetDto sheetDto = engine.displayCurrentSpreadsheet();
         actionLineController.populateVersionSelector(engine.getLatestVersion());
-        spreadsheetControllerImpl.setCurrentSheet(sheetDto);
-        spreadsheetControllerImpl.enableEditing();
-        spreadsheetControllerImpl.displaySheet(sheetDto);
+        spreadsheetController.setCurrentSheet(sheetDto);
+        spreadsheetController.enableEditing();
+        spreadsheetController.displaySheet(sheetDto);
     }
 
     @Override

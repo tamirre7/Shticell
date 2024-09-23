@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import command.api.Engine;
 import dto.SheetDto;
 import dto.CellDto;
+import spreadsheet.api.SpreadsheetController;
 import spreadsheet.impl.SpreadsheetControllerImpl;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public class ActionLineControllerImpl implements ActionLineController {
 
     private Engine engine;
     private SheetDto currentSheet;
-    private SpreadsheetControllerImpl spreadsheetControllerImpl;
+    private SpreadsheetController spreadsheetController;
     private boolean isViewingOldVersion = false;
 
     public ActionLineControllerImpl() {
@@ -55,8 +56,8 @@ public class ActionLineControllerImpl implements ActionLineController {
     }
 
     @Override
-    public void setSpreadsheetDisplayController(SpreadsheetControllerImpl spreadsheetControllerImpl) {
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
+    public void setSpreadsheetDisplayController(SpreadsheetController spreadsheetController) {
+        this.spreadsheetController = spreadsheetController;
     }
 
     @Override
@@ -95,10 +96,10 @@ public class ActionLineControllerImpl implements ActionLineController {
             try {
                 // Update cell in the engine
                 currentSheet = engine.updateCell(cellId, newValue);
-                spreadsheetControllerImpl.setCurrentSheet(currentSheet);
+                spreadsheetController.setCurrentSheet(currentSheet);
 
                 // Update all cells in the display
-                spreadsheetControllerImpl.updateAllCells(currentSheet.getCells());
+                spreadsheetController.updateAllCells(currentSheet.getCells());
                 int numOfVersions = engine.getLatestVersion();
                 populateVersionSelector(numOfVersions);
             } catch (RuntimeException e) {
@@ -128,13 +129,13 @@ public class ActionLineControllerImpl implements ActionLineController {
         if (!version.equals(engine.getLatestVersion())) {
             originalvalueTF.setDisable(true);
             updatevalbtn.setDisable(true);
-            spreadsheetControllerImpl.displayTemporarySheet(currentSheet, true);
+            spreadsheetController.displayTemporarySheet(currentSheet, true);
         }
         else {
             originalvalueTF.setDisable(false);
             updatevalbtn.setDisable(false);
-            spreadsheetControllerImpl.setCurrentSheet(currentSheet);
-            spreadsheetControllerImpl.displayOriginalSheet(true);
+            spreadsheetController.setCurrentSheet(currentSheet);
+            spreadsheetController.displayOriginalSheet(true);
         }
     }
 

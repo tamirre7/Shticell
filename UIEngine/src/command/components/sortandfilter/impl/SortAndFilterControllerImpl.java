@@ -9,7 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import spreadsheet.impl.SpreadsheetControllerImpl;
+import spreadsheet.api.SpreadsheetController;
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
@@ -30,17 +30,12 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     List<String> columnsToSortOrFilter;
     Range sortOrFilterRange;
     Dimension sheetDimension;
-    SpreadsheetControllerImpl spreadsheetControllerImpl;
-    private final Engine engine;
+    SpreadsheetController spreadsheetController;
+    private Engine engine;
 
-    public SortAndFilterControllerImpl(Engine engine, SpreadsheetControllerImpl spreadsheetControllerImpl) {
+    public SortAndFilterControllerImpl(Engine engine, SpreadsheetController spreadsheetController) {
         this.engine = engine;
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
-    }
-
-    @FXML
-    public void initialize() {
-
+        this.spreadsheetController = spreadsheetController;
     }
 
 
@@ -56,7 +51,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         try {
             // Call the Engine to sort the selected range based on the chosen columns
             SheetDto sortedSheet = engine.sortRange(sortOrFilterRange, columnsToSortOrFilter);
-            spreadsheetControllerImpl.displayTemporarySheet(sortedSheet,false);
+            spreadsheetController.displayTemporarySheet(sortedSheet,false);
 
 
         } catch (Exception e) {
@@ -64,7 +59,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
 
     }
-
+    @Override
     public void disableSortAndFilter(boolean versionView) {
         sortButton.setDisable(true);
         filterButton.setDisable(true);
@@ -74,6 +69,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
 
     @FXML
+    @Override
     public void handleFilter() {
         sortAndFilterDialog();
 
@@ -127,7 +123,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         if (!selectedValuesForColumns.isEmpty()) {
             try {
                 SheetDto filteredSheet = engine.filterRangeByColumnsAndValues(sortOrFilterRange, selectedValuesForColumns);
-                spreadsheetControllerImpl.displayTemporarySheet(filteredSheet,false);
+                spreadsheetController.displayTemporarySheet(filteredSheet,false);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Filter Error", "An error occurred while filtering: " + e.getMessage());
             }
@@ -153,17 +149,17 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
 
     @FXML
+    @Override
     public void handleResetSortFilter() {
         enableSortAndFilter();
-        spreadsheetControllerImpl.displayOriginalSheet(false);
+        spreadsheetController.displayOriginalSheet(false);
     }
-
+    @Override
     public void enableSortAndFilter() {
         sortButton.setDisable(false);
         filterButton.setDisable(false);
         resetButton.setDisable(false);
     }
-
 
     public void initDimension() {
         SheetDto sheet = engine.displayCurrentSpreadsheet();

@@ -6,5 +6,6 @@ public interface MiscController {
     void applySkin(String skinFileName);
     void disableEditing();
     void enableEditing();
+    boolean areAnimationsEnabled();
 
     }

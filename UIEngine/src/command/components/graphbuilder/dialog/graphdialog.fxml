@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="command.components.graphbuilder.dialog.GraphDialogController" hgap="10" vgap="10" alignment="CENTER">
+<GridPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="command.components.graphbuilder.dialog.impl.GraphDialogControllerImpl" hgap="10" vgap="10" alignment="CENTER">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>

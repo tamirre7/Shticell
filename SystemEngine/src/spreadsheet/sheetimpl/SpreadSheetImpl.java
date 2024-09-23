@@ -298,6 +298,13 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             throw new IllegalArgumentException("Range is out of bounds");
         }
         ranges.put(name, new RangeImpl (name, topLeft, bottomRight,sheetDimension));
+        List<CellIdentifierImpl> cellsInRange = ranges.get(name).getCellsInRange();
+        for (CellIdentifierImpl cellIdentifier : cellsInRange) {
+            if (!activeCells.containsKey(cellIdentifier)){
+                addEmptyCell(cellIdentifier);
+            }
+        }
+
     }
 
     public void removeRange(String name) {

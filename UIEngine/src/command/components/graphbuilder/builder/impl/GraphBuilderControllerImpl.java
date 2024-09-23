@@ -16,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import spreadsheet.api.SpreadsheetController;
 import spreadsheet.impl.SpreadsheetControllerImpl;
 
 import java.util.*;
@@ -26,11 +27,12 @@ import java.util.stream.Collectors;
 
 public class GraphBuilderControllerImpl implements GraphBuilderController {
 
-    private SpreadsheetControllerImpl spreadsheetControllerImpl;
+    private SpreadsheetController spreadsheetController;
 
-    public GraphBuilderControllerImpl(SpreadsheetControllerImpl spreadsheetControllerImpl) {
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
+    public GraphBuilderControllerImpl(SpreadsheetController spreadsheetController) {
+        this.spreadsheetController = spreadsheetController;
     }
+
 
     @FXML
     public void buildGraph() {
@@ -57,7 +59,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
             if (xTopCell != null && yTopCell != null && xBottomCell != null
                     && yBottomCell != null) {
-                displayGraph(xTopCell, xBottomCell, yTopCell, yBottomCell, spreadsheetControllerImpl);
+                displayGraph(xTopCell, xBottomCell, yTopCell, yBottomCell, spreadsheetController);
             } else {
                 showError("You must fill all fields.");
             }
@@ -68,14 +70,14 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
     }
 
     private void displayGraph(String xTop, String xBottom, String yTop, String yBottom,
-                              SpreadsheetControllerImpl spreadsheetControllerImpl) {
+                              SpreadsheetController spreadsheetController) {
         Stage stage = new Stage();
         stage.setTitle("Graph Display");
 
         int topRow = extractRowFromCell(xTop);
         int bottomRow = extractRowFromCell(xBottom);
         int numOfRows = bottomRow - topRow + 1;
-        SheetDto sheetDto = spreadsheetControllerImpl.getCurrentSheet();
+        SheetDto sheetDto = spreadsheetController.getCurrentSheet();
         char xCol = xTop.charAt(0);
         char yCol = yTop.charAt(0);
 

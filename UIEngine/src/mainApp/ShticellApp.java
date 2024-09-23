@@ -20,7 +20,8 @@ import misc.impl.MiscControllerImpl;
 import range.api.RangeController;
 import range.impl.RangeControllerImpl;
 import skinmanager.SkinManager;
-import spreadsheet.api.SpreadSheetController;
+import spreadsheet.UISheetModel;
+import spreadsheet.api.SpreadsheetController;
 import spreadsheet.impl.SpreadsheetControllerImpl;
 
 import java.io.IOException;
@@ -33,22 +34,17 @@ public class ShticellApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // Initialize the engine
-        engine = new EngineImpl(); // Replace this with actual engine initialization
+        // Initialize the engine and other components
+        engine = new EngineImpl();
         skinManager = new SkinManager();
         formulaBuilder = new FormulaBuilder();
         formulaBuilder.setEngine(engine);
+        UISheetModel uiSheetModel = new UISheetModel();
 
-
-        // Load the FXML file
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
-
-        // Create shared controllers
-        SpreadSheetController spreadsheetController = new SpreadsheetControllerImpl(engine);
+        SpreadsheetController spreadsheetController = new SpreadsheetControllerImpl(engine, uiSheetModel);
         RangeController rangeController = new RangeControllerImpl(engine);
         rangeController.setSpreadsheetDisplayController(spreadsheetController);
 
-        // Create the ActionLineController once and pass it to both the spreadsheet and load controllers
         ActionLineController actionLineController = new ActionLineControllerImpl();
         actionLineController.setEngine(engine);
         spreadsheetController.setActionLineController(actionLineController);
@@ -56,34 +52,37 @@ public class ShticellApp extends Application {
         actionLineController.setSpreadsheetDisplayController(spreadsheetController);
         formulaBuilder.setActionLineController(actionLineController);
 
-        // Create MiscController and pass dependencies
         MiscController miscController = new MiscControllerImpl(engine, primaryStage, skinManager, spreadsheetController, actionLineController);
 
-        // Create SortAndFilterController and pass dependencies
         SortAndFilterController sortAndFilterController = new SortAndFilterControllerImpl(engine, spreadsheetController);
 
-        // Set the controller factory to inject the engine and controllers
-        loader.setControllerFactory(param -> {
-            if (param == ActionLineController.class) {
+        GraphBuilderController graphBuilderController = new GraphBuilderControllerImpl(spreadsheetController);
+
+        // Load the main FXML file
+        FXMLLoader mainLoader = new FXMLLoader(getClass().getResource("shticellApp.fxml"));
+
+        mainLoader.setControllerFactory(param -> {
+            if (param == ActionLineController.class || param == ActionLineControllerImpl.class) {
                 return actionLineController;
             } else if (param == LoadFileControllerImpl.class) {
                 LoadFileControllerImpl loadFileController = new LoadFileControllerImpl(engine, primaryStage, spreadsheetController);
                 loadFileController.setActionLineController(actionLineController);
                 return loadFileController;
-            } else if (param == MiscController.class) {
+            } else if (param == MiscController.class || param == MiscControllerImpl.class) {
                 return miscController;
-            } else if (param == SpreadsheetControllerImpl.class) {
+            } else if (param == SpreadsheetController.class || param == SpreadsheetControllerImpl.class) {
                 spreadsheetController.setRangeController(rangeController);
                 spreadsheetController.setMiscController(miscController);
-                spreadsheetController.setSortAndFilterController(sortAndFilterController); // Set SortAndFilterController
+                spreadsheetController.setSortAndFilterController(sortAndFilterController);
                 return spreadsheetController;
-            } else if (param == RangeController.class) {
+            } else if (param == RangeController.class || param == RangeControllerImpl.class) {
                 return rangeController;
-            } else if (param == SortAndFilterController.class) {
+            } else if (param == SortAndFilterController.class || param == SortAndFilterControllerImpl.class) {
                 return sortAndFilterController;
-            }else if (param == GraphBuilderController.class) {
-                return new GraphBuilderControllerImpl(spreadsheetController);
+            } else if (param == GraphBuilderController.class || param == GraphBuilderControllerImpl.class) {
+                return graphBuilderController;
             } else {
+                // For any other controller, let JavaFX create it
                 try {
                     return param.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
@@ -92,8 +91,8 @@ public class ShticellApp extends Application {
             }
         });
 
-        // Load the root element from the FXML file
-        Parent root = loader.load();
+        // Load the root element from the main FXML file
+        Parent root = mainLoader.load();
 
         // Create the scene
         Scene scene = new Scene(root);
@@ -109,4 +108,3 @@ public class ShticellApp extends Application {
         launch(args);
     }
 }
-

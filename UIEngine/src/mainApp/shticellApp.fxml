@@ -11,25 +11,25 @@
          <top>
             <VBox maxHeight="80.0" minHeight="80.0" prefHeight="80.0" styleClass="top-vbox" BorderPane.alignment="CENTER">
                <!-- First GridPane included -->
-               <fx:include source="loadfilecomp/loadFileComponent.fxml" />
+               <fx:include source="../loadfilecomp/loadFileComponent.fxml" />
                <!-- Second GridPane included -->
-               <fx:include source="action/line/actionLineComponent.fxml" />
+               <fx:include source="../action/line/actionLineComponent.fxml" />
             </VBox>
          </top>
 
          <!-- Left section with the Ranges Component -->
          <left>
             <VBox maxWidth="121.0" prefWidth="121.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
-               <fx:include source="sortandfilter/sortandflter.fxml" />
-               <fx:include source="graphbuilder/graphbuild.fxml" />
-               <fx:include source="range/rangescomponent.fxml" />
-               <fx:include source="misc/misccomponent.fxml" />
+               <fx:include source="../command/components/sortandfilter/sortandflter.fxml" />
+               <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" />
+               <fx:include source="../range/rangescomponent.fxml" />
+               <fx:include source="../misc/misccomponent.fxml" />
             </VBox>
          </left>
 
          <!-- Center section for the Spreadsheet display -->
          <center>
-            <fx:include source="spreadsheet/spreadsheetdisplaycomponent.fxml" />
+            <fx:include source="../spreadsheet/spreadsheetcomponent.fxml" />
          </center>
       </BorderPane>
    </content>

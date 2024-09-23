@@ -15,7 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import loadfilecomp.api.LoadFileController;
-import spreadsheet.impl.SpreadsheetControllerImpl;
+import spreadsheet.api.SpreadsheetController;
 
 
 import java.io.File;
@@ -31,7 +31,7 @@ public class LoadFileControllerImpl implements LoadFileController {
     @FXML
     private TextField fileTextField;
 
-    private SpreadsheetControllerImpl spreadsheetControllerImpl;
+    private final SpreadsheetController spreadsheetController;
     private ActionLineController actionLineController;
 
     private Engine engine;
@@ -39,11 +39,12 @@ public class LoadFileControllerImpl implements LoadFileController {
     private Stage loadingStage;
     private ProgressBar loadingProgressBar;
 
-    public LoadFileControllerImpl(Engine engine, Stage primaryStage, SpreadsheetControllerImpl spreadsheetControllerImpl) {
+    public LoadFileControllerImpl(Engine engine, Stage primaryStage, SpreadsheetController spreadsheetController) {
         this.engine = engine;
         this.primaryStage = primaryStage;
-        this.spreadsheetControllerImpl = spreadsheetControllerImpl;
+        this.spreadsheetController = spreadsheetController;
     }
+
 
     @FXML
     private void initialize() {
@@ -79,10 +80,10 @@ public class LoadFileControllerImpl implements LoadFileController {
                             if (result.isSucceeded()) {
                                 fileTextField.setText(selectedFile.getAbsolutePath());
                                 SheetDto sheetDto = engine.displayCurrentSpreadsheet();
-                                spreadsheetControllerImpl.setCurrentSheet(sheetDto);
-                                spreadsheetControllerImpl.enableEditing();
+                                spreadsheetController.setCurrentSheet(sheetDto);
+                                spreadsheetController.enableEditing();
                                 actionLineController.populateVersionSelector(engine.getLatestVersion());
-                                spreadsheetControllerImpl.displaySheet(sheetDto);
+                                spreadsheetController.displaySheet(sheetDto);
                             } else {
                                 showAlert(Alert.AlertType.ERROR, "Error", result.getMessage());
                                 statusLabel.setText("Failed to load file: " + selectedFile.getName());
