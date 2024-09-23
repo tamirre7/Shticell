@@ -3,9 +3,11 @@ package command.components.formulabuilder.impl;
 import action.line.api.ActionLineController;
 import command.api.Engine;
 import command.components.formulabuilder.api.FormulaBuilderController;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 import java.util.ArrayList;
@@ -60,6 +62,9 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         functionTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue.isLeaf()) {
                 insertFunctionIntoEditor(newValue.getValue());
+                PauseTransition pause = new PauseTransition(Duration.millis(200));
+                pause.setOnFinished(event -> functionTreeView.getSelectionModel().clearSelection());
+                pause.play();
             }
         });
     }

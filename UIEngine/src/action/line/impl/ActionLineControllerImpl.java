@@ -95,7 +95,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         if (cellId != null && !cellId.isEmpty() && newValue != null) {
             try {
                 // Update cell in the engine
-                currentSheet = engine.updateCell(cellId, newValue);
+                currentSheet = engine.updateCellWithSheetVersionUpdate(cellId, newValue);
                 spreadsheetController.setCurrentSheet(currentSheet);
 
                 // Update all cells in the display

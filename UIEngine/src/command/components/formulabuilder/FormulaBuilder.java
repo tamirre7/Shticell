@@ -19,7 +19,7 @@ public class FormulaBuilder {
     public void buildFormula() {
         try {
             // Load the FXML file for the formula builder dialog
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/shticellui/formulabuilder/formulabuilder.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/formulabuilder/formulabuilder.fxml"));
             Parent root = loader.load();
 
             // Get the controller instance

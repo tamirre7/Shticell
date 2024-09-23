@@ -44,6 +44,7 @@ public class ShticellApp extends Application {
         SpreadsheetController spreadsheetController = new SpreadsheetControllerImpl(engine, uiSheetModel);
         RangeController rangeController = new RangeControllerImpl(engine);
         rangeController.setSpreadsheetDisplayController(spreadsheetController);
+        rangeController.setUiSheetModel(uiSheetModel);
 
         ActionLineController actionLineController = new ActionLineControllerImpl();
         actionLineController.setEngine(engine);

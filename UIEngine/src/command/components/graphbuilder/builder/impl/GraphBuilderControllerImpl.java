@@ -37,7 +37,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
     @FXML
     public void buildGraph() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/shticellui/graphbuilder/graphDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/graphbuilder/dialog/graphDialog.fxml"));
             Parent root = loader.load();
 
             Stage dialogStage = new Stage();

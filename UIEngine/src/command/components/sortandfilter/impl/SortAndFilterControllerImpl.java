@@ -179,7 +179,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
         // If the user cancels the top-left cell dialog, stop the process
         if (topLeftResult.isEmpty()) {
-            return; // User canceled
+            return; // User canceled, do nothing
         }
 
         String StrTopLeft = topLeftResult.get().toUpperCase();
@@ -196,7 +196,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
         // If the user cancels the bottom-right cell dialog, stop the process
         if (bottomRightResult.isEmpty()) {
-            return;
+            return; // User canceled, do nothing
         }
 
         String StrBottomRight = bottomRightResult.get().toUpperCase();
@@ -204,6 +204,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             showAlert(Alert.AlertType.WARNING, "Error", "Cell ID cannot be empty.");
             return;
         }
+
         try {
             // If both cells are provided, process the range creation
             CellIdentifierImpl topLeft = new CellIdentifierImpl(StrTopLeft);
@@ -216,30 +217,35 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             return;
         }
 
-// Create a ComboBox for column selection
+        char leftCol = StrTopLeft.charAt(0);
+        char rightCol = StrBottomRight.charAt(0);
+        int leftColNumber = leftCol - 'A' + 1;
+        int rightColNumber = rightCol - 'A' + 1;
+        int numOfColumns = rightColNumber - leftColNumber + 1;
+        // Create a ComboBox for column selection
         ComboBox<String> columnComboBox = new ComboBox<>();
-        for (int i = 0; i < sheetDimension.getNumCols(); i++) {
-            String columnName = String.valueOf((char) ('A' + i));
+        for (int i = 0; i < numOfColumns; i++) {
+            String columnName = String.valueOf((char) (leftCol + i));
             columnComboBox.getItems().add(columnName);
         }
         columnComboBox.setPromptText("Select a column");
 
-// Create a ListView to display selected columns in order
+        // Create a ListView to display selected columns in order
         ListView<String> selectedColumnsListView = new ListView<>();
         ObservableList<String> selectedColumns = FXCollections.observableArrayList();
         selectedColumnsListView.setItems(selectedColumns);
         selectedColumnsListView.setPrefHeight(130);
 
-// Create an "Add" button to add selected columns
+        // Create an "Add" button to add selected columns
         Button addButton = new Button("Add");
         addButton.setDisable(true);  // Initially disable the button
 
-// Enable the button when a column is selected
+        // Enable the button when a column is selected
         columnComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             addButton.setDisable(newVal == null || selectedColumns.contains(newVal));
         });
 
-// Handle adding the selected column
+        // Handle adding the selected column
         addButton.setOnAction(e -> {
             String selectedColumn = columnComboBox.getValue();
             if (selectedColumn != null && !selectedColumns.contains(selectedColumn)) {
@@ -248,16 +254,16 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             columnComboBox.setValue(null);  // Reset the ComboBox for the next selection
         });
 
-// Create a "Remove" button to remove a column from the selection
+        // Create a "Remove" button to remove a column from the selection
         Button removeButton = new Button("Remove Selected");
         removeButton.setDisable(true);  // Initially disable the button
 
-// Enable the remove button only when a column is selected from the list
+        // Enable the remove button only when a column is selected from the list
         selectedColumnsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             removeButton.setDisable(newVal == null);
         });
 
-// Handle removing the selected column
+        // Handle removing the selected column
         removeButton.setOnAction(e -> {
             String selectedColumn = selectedColumnsListView.getSelectionModel().getSelectedItem();
             if (selectedColumn != null) {
@@ -265,24 +271,24 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             }
         });
 
-// Create a dialog to wrap the selection process
+        // Create a dialog to wrap the selection process
         Dialog<List<String>> columnDialog = new Dialog<>();
         columnDialog.setTitle("Select Columns");
         columnDialog.setHeaderText("Select columns (in order):");
 
-// Set dialog buttons
+        // Set dialog buttons
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         columnDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
-// Layout for the ComboBox, ListView, and buttons
+        // Layout for the ComboBox, ListView, and buttons
         VBox layout = new VBox(10);
         layout.getChildren().addAll(new Label("Choose a column and click 'Add':"), columnComboBox, addButton, new Label("Selected columns:"), selectedColumnsListView, removeButton);
         layout.setPadding(new Insets(10));
 
-// Set content of the dialog
+        // Set content of the dialog
         columnDialog.getDialogPane().setContent(layout);
 
-// Convert the result to the list of selected columns
+        // Convert the result to the list of selected columns
         columnDialog.setResultConverter(dialogButton -> {
             if (dialogButton == okButtonType) {
                 return new ArrayList<>(selectedColumns);
@@ -290,18 +296,19 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             return null;
         });
 
-// Show the dialog and capture the result
+        // Show the dialog and capture the result
         Optional<List<String>> result = columnDialog.showAndWait();
 
-// If the user cancels or no columns are selected, stop the process
-        if (result.isEmpty() || result.get().isEmpty()) {
-            return;
+        // If the user cancels or no columns are selected, stop the process
+        if (result.isEmpty() || result.get() == null) {
+            return; // User canceled, do nothing
         }
 
-// Use the selected columns in order
+        // Use the selected columns in order
         List<String> columns = result.get();
         this.columnsToSortOrFilter = columns;
     }
+
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);

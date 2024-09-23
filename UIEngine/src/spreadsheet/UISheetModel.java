@@ -123,6 +123,7 @@ public class UISheetModel {
         gridPane.getRowConstraints().clear();
 
         ColumnConstraints headerColumn = new ColumnConstraints(30);
+        headerColumn.setHgrow(Priority.NEVER);
         gridPane.getColumnConstraints().add(headerColumn);
 
         for (int col = 0; col < numCols; col++) {
@@ -132,6 +133,7 @@ public class UISheetModel {
         }
 
         RowConstraints headerRow = new RowConstraints(30);
+        headerRow.setVgrow(Priority.NEVER);
         gridPane.getRowConstraints().add(headerRow);
 
         for (int row = 0; row < numRows; row++) {
@@ -144,8 +146,10 @@ public class UISheetModel {
     public void clearPreviousHighlights() {
         if (lastSelectedCell != null) {
             CellDto lastCellDto = spreadSheetController.getCurrentSheet().getCells().get(lastSelectedCell);
-            clearHighlights(lastCellDto.getDependencies());
-            clearHighlights(lastCellDto.getInfluences());
+            if(lastCellDto != null) {
+                clearHighlights(lastCellDto.getDependencies());
+                clearHighlights(lastCellDto.getInfluences());
+            }
         }
     }
 
@@ -180,12 +184,12 @@ public class UISheetModel {
                 } else {
                     gridPane.getRowConstraints().get(index).setPrefHeight(size);
                 }
+                spreadSheetController.recalculateGridDimensions();
             } catch (NumberFormatException e) {
                 showAlert("Invalid input", "Please enter a valid number.");
             }
         });
     }
-
 
     private void highlightCells(List<String> cellIds, String color) {
         for (String cellId : cellIds) {

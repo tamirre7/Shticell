@@ -8,7 +8,7 @@ public interface UpdateSheet {
     void setName(String name);
     void setVersion(int version);
     void removeCell(CellIdentifier identifier);
-    UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) ;
+    UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue,boolean isDynamicUpdate) ;
     void updateDependenciesAndInfluences();
     void removeRange(String name);
     void addEmptyCell (CellIdentifierImpl identifier);

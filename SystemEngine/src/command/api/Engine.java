@@ -12,13 +12,14 @@ public interface Engine {
 
     SaveLoadFileDto loadFile(String path);
     SheetDto displayCurrentSpreadsheet();
-    SheetDto updateCell(String cellid, String originalValue);
+    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue);
+    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue);
     SheetDto displaySheetByVersion(int version);
     SaveLoadFileDto saveState(String path);
     SaveLoadFileDto loadSavedState(String path);
     boolean isFileLoaded();
-    RangeDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
-    void removeRange(String rangeName);
+    SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
+    SheetDto removeRange(String rangeName);
     Integer getLatestVersion();
     SheetDto sortRange(Range range, List<String>colsToSort);
     SheetDto addEmptyCell (String cellid);

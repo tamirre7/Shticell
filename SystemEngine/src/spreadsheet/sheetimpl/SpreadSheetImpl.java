@@ -112,10 +112,13 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue) {
+    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
         newSheetVersion.updateDependenciesAndInfluences();
-        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + 1, newSheetVersion);
+        int versionUpdate = isDynamicUpdate ? 0 : 1;
+        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + versionUpdate, newSheetVersion);
+        Cell beforeUpdateCell = activeCells.get(cellId);
+        if(beforeUpdateCell != null) {newCell.setCellStyle(beforeUpdateCell.getCellStyle());}
         newSheetVersion.activeCells.put(cellId, newCell);
 
         try {
@@ -127,8 +130,10 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                             .collect(Collectors.toList());
 
             // successful calculation. update sheet and relevant cells version
-             int newVersion = newSheetVersion.increaseVersion();
-             cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
+            if(!isDynamicUpdate) {
+                int newVersion = newSheetVersion.increaseVersion();
+                cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
+            }
              newSheetVersion.updateDependenciesAndInfluences();
              for (Cell cell : newSheetVersion.activeCells.values()) {
                  cell.calculateEffectiveValue();

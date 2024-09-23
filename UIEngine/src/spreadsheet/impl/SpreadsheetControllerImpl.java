@@ -30,7 +30,6 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private ActionLineController actionLineController;
     private int numRows;
     private int numCols;
-
     private RangeController rangeController;
     private SheetDto currentSheet;
     private SheetDto savedSheet;
@@ -102,15 +101,42 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         rangeController.displayRanges(sheetDto.getSheetRanges());
 
         if (gridPane.getChildren().isEmpty()) {
-            uiSheetModel.setupGridDimensions(numRows,numCols);
-            uiSheetModel.createCells(numRows,numCols);
+            uiSheetModel.setupGridDimensions(numRows, numCols);
+            uiSheetModel.createCells(numRows, numCols);
         }
 
         updateAllCells(sheetDto.getCells());
 
+        recalculateGridDimensions();
+
         if (miscController.areAnimationsEnabled()) {
             uiSheetModel.animateSheetAppearance();
         }
+    }
+    @Override
+    public void recalculateGridDimensions() {
+        double totalWidth = calculateTotalGridWidth();
+        double totalHeight = calculateTotalGridHeight();
+        gridPane.setMinWidth(Math.max(800, totalWidth));
+        gridPane.setPrefWidth(Math.max(800, totalWidth));
+        gridPane.setMinHeight(Math.max(600, totalHeight));
+        gridPane.setPrefHeight(Math.max(600, totalHeight));
+    }
+
+    private double calculateTotalGridWidth() {
+        double totalWidth = gridPane.getColumnConstraints().get(0).getPrefWidth(); // Header column
+        for (int i = 1; i <= numCols; i++) {
+            totalWidth += gridPane.getColumnConstraints().get(i).getPrefWidth();
+        }
+        return totalWidth;
+    }
+
+    private double calculateTotalGridHeight() {
+        double totalHeight = gridPane.getRowConstraints().get(0).getPrefHeight(); // Header row
+        for (int i = 1; i <= numRows; i++) {
+            totalHeight += gridPane.getRowConstraints().get(i).getPrefHeight();
+        }
+        return totalHeight;
     }
 
 
@@ -120,6 +146,11 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         uiSheetModel.clearPreviousHighlights();
         savedSheet = currentSheet;
         currentSheet = sheetDto;
+       disableEditing(versionView);
+        updateAllCells(sheetDto.getCells());
+    }
+    private void disableEditing(boolean versionView)
+    {
         disableCellClick();
 
         if(!versionView) {
@@ -128,7 +159,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         sortAndFilterController.disableSortAndFilter(versionView);
         miscController.disableEditing();
         rangeController.disableEditing();
-        updateAllCells(sheetDto.getCells());
+
     }
 
     private void disableCellClick() {
@@ -147,16 +178,19 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     public void displayOriginalSheet(boolean versionView) {
         if (savedSheet != null && !versionView) {currentSheet = savedSheet;}
         enableEditing();
-        uiSheetModel.clearCells();
-        uiSheetModel.createCells(numRows,numCols);
-        enableCellClick();
+
         updateAllCells(currentSheet.getCells());
     }
+
     @Override
     public void enableEditing() { actionLineController.enableEditing();
         rangeController.enableEditing();
         miscController.enableEditing();
-        sortAndFilterController.enableSortAndFilter();}
+        sortAndFilterController.enableSortAndFilter();
+        uiSheetModel.clearCells();
+        uiSheetModel.createCells(numRows,numCols);
+        enableCellClick();
+    }
 
 
     private void enableCellClick() {
@@ -219,8 +253,10 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     }
 
     private void resetCellStyle(Label cellLabel, String cellId) {
-        currentSheet = engine.setCellStyle(cellId, "");
-        uiSheetModel.applyStyle(cellLabel, cellId);
+        if (currentSheet.getCells().get(cellId) != null) {
+            currentSheet = engine.setCellStyle(cellId, "");
+            uiSheetModel.applyStyle(cellLabel, cellId);
+        }
     }
 
     @Override
@@ -461,16 +497,17 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             sliderValueLabel.setText(String.format("%.2f", roundedValue));
 
             String newvalueStr = String.format("%.2f", roundedValue);
-            SheetDto tempSheet = engine.updateCell(cellID, newvalueStr);
-           displayTemporarySheet(tempSheet, true);
-
+            SheetDto tempSheet = engine.updateCellWithoutSheetVersionUpdate(cellID, newvalueStr);
+            disableEditing(false);
+            updateAllCells(tempSheet.getCells());
         });
 
         Button doneButton = new Button("Done");
 
         doneButton.setOnAction(e -> {
-            savedSheet = engine.updateCell(cellID, realOriginalValue);
-            displayOriginalSheet(false); // חזרה לגיליון המקורי
+            engine.updateCellWithoutSheetVersionUpdate(cellID, realOriginalValue);
+            enableEditing();
+            updateAllCells(currentSheet.getCells());// חזרה לגיליון המקורי
             Stage stage = (Stage) doneButton.getScene().getWindow();
             stage.close();
         });
@@ -483,7 +520,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         dialog.setTitle("Update Cell Value");
         dialog.setScene(scene);
 
-        dialog.setOnCloseRequest(e -> { savedSheet = engine.updateCell(cellID, realOriginalValue);
+        dialog.setOnCloseRequest(e -> { savedSheet = engine.updateCellWithoutSheetVersionUpdate(cellID, realOriginalValue);
             displayOriginalSheet(false);});
         dialog.show();
     }

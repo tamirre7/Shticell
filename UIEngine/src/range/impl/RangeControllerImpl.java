@@ -2,6 +2,7 @@ package range.impl;
 
 import command.api.Engine;
 import dto.RangeDto;
+import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -100,7 +101,7 @@ public class RangeControllerImpl implements RangeController {
         String rangeName = rangeNameResult.get();
 
         try {
-            if (spreadsheetController.getCurrentSheet().getSheetRanges().get(rangeNameResult) != null)
+            if (spreadsheetController.getCurrentSheet().getSheetRanges().get(rangeName) != null)
                 throw new IllegalArgumentException("Range name already exists");
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Cannot add Range ", e.getMessage());
@@ -134,7 +135,8 @@ public class RangeControllerImpl implements RangeController {
         try {
             CellIdentifierImpl topLeft = new CellIdentifierImpl(strTopLeft);
             CellIdentifierImpl bottomRight = new CellIdentifierImpl(strBottomRight);
-            engine.addRange(rangeName, topLeft, bottomRight);
+            SheetDto updatedSheet = engine.addRange(rangeName, topLeft, bottomRight);
+            spreadsheetController.setCurrentSheet(updatedSheet);
             rangeItems.add(rangeName);
         } catch (IllegalArgumentException e) {
             showAlert(Alert.AlertType.WARNING, "Cannot add Range ", e.getMessage());
@@ -147,7 +149,8 @@ public class RangeControllerImpl implements RangeController {
         String range = rangeListView.getSelectionModel().getSelectedItem();
         try {
             if (range != null) {
-                engine.removeRange(range);
+                SheetDto updateSheet = engine.removeRange(range);
+                spreadsheetController.setCurrentSheet(updateSheet);
                 rangeItems.remove(range);
                 this.uiSheetModel.clearPreviousRangeHighlight();
 

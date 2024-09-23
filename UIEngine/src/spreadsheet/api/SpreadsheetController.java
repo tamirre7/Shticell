@@ -29,4 +29,5 @@ public interface SpreadsheetController {
     void showAlignmentDialog(int index, boolean isColumn);
     SheetDto getCurrentSheet();
     void enableEditing();
+    void recalculateGridDimensions();
 }
