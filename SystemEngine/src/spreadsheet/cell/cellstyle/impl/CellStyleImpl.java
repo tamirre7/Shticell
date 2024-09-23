@@ -1,6 +1,6 @@
-package spreadsheet.cell.style.impl;
+package spreadsheet.cell.cellstyle.impl;
+import spreadsheet.cell.cellstyle.api.CellStyle;
 
-import spreadsheet.cell.style.api.CellStyle;
 
 public class CellStyleImpl implements CellStyle {
     private String style;

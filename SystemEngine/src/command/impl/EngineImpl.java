@@ -11,9 +11,10 @@ import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
+import spreadsheet.cell.cellstyle.api.CellStyle;
+import spreadsheet.cell.cellstyle.impl.CellStyleImpl;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
-import spreadsheet.cell.style.impl.CellStyleImpl;
 import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
@@ -485,7 +486,7 @@ public class EngineImpl implements Engine {
                     sheetCell.getLastModifiedVersion(),
                     convertToListOfStrings(sheetCell.getDependencies()),
                     convertToListOfStrings(sheetCell.getInfluences()),
-                    sheetCell.getCellStyle().toString()
+                    sheetCell.getCellStyle().getStyle()
             );
             cellDtos.put(entry.getKey().toString(), cellDto);
         }

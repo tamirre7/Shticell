@@ -4,9 +4,11 @@ import expressions.api.Expression;
 import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.style.api.CellStyle;
-import spreadsheet.cell.style.impl.CellStyleImpl;
+import spreadsheet.cell.cellstyle.api.CellStyle;
+import spreadsheet.cell.cellstyle.impl.CellStyleImpl;
 
+
+import javax.swing.text.Style;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

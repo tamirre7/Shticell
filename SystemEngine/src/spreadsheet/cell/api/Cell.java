@@ -1,8 +1,10 @@
 package spreadsheet.cell.api;
 
+import spreadsheet.cell.cellstyle.api.CellStyle;
 import spreadsheet.cell.impl.CellIdentifierImpl;
-import spreadsheet.cell.style.api.CellStyle;
 
+
+import javax.swing.text.Style;
 import java.util.List;
 
 public interface Cell

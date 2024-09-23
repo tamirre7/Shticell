@@ -1,4 +1,4 @@
-package spreadsheet.cell.style.api;
+package spreadsheet.cell.cellstyle.api;
 
 public interface CellStyle {
     String getStyle();
