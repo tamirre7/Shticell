@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox prefHeight="30.0" prefWidth="475.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="loadfilecomp.impl.LoadFileControllerImpl">
+<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="loadfilecomp.impl.LoadFileControllerImpl">
    <children>
       <Button fx:id="loadFileButton" mnemonicParsing="false" text="Load File" />
       <Label fx:id="statusLabel" text="Currently Loaded File:">
@@ -14,9 +14,19 @@
             <Insets left="10.0" top="5.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="fileTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="262.0" HBox.hgrow="ALWAYS" promptText="Loaded file path">
+      <TextField fx:id="fileTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="262.0" promptText="Loaded file path" HBox.hgrow="ALWAYS">
          <HBox.margin>
             <Insets left="3.0" />
+         </HBox.margin>
+      </TextField>
+      <Label text="Spreadsheet Name:">
+         <HBox.margin>
+            <Insets left="15.0" top="5.0" />
+         </HBox.margin>
+      </Label>
+      <TextField fx:id="sheetNameTF" promptText="Sheet Name">
+         <HBox.margin>
+            <Insets left="5.0" />
          </HBox.margin>
       </TextField>
    </children>

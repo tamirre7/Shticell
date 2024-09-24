@@ -46,7 +46,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     @FXML
     public void initialize() {
         scrollPane.setContent(gridPane);
-        scrollPane.setFitToWidth(false);  // Change this to false
+        scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -101,7 +101,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         rangeController.displayRanges(sheetDto.getSheetRanges());
 
         if (gridPane.getChildren().isEmpty()) {
-            uiSheetModel.setupGridDimensions(numRows, numCols);
+            uiSheetModel.setupGridDimensions(numRows, numCols,currentSheet.getHeightRow(),currentSheet.getWidthCol());
             uiSheetModel.createCells(numRows, numCols);
         }
 
@@ -124,16 +124,16 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     }
 
     private double calculateTotalGridWidth() {
-        double totalWidth = gridPane.getColumnConstraints().get(0).getPrefWidth(); // Header column
-        for (int i = 1; i <= numCols; i++) {
+        double totalWidth = gridPane.getColumnConstraints().getFirst().getPrefWidth(); // Header column
+        for (int i = 0; i <= numCols; i++) {
             totalWidth += gridPane.getColumnConstraints().get(i).getPrefWidth();
         }
         return totalWidth;
     }
 
     private double calculateTotalGridHeight() {
-        double totalHeight = gridPane.getRowConstraints().get(0).getPrefHeight(); // Header row
-        for (int i = 1; i <= numRows; i++) {
+        double totalHeight = gridPane.getRowConstraints().getFirst().getPrefHeight(); // Header row
+        for (int i = 0; i <= numRows; i++) {
             totalHeight += gridPane.getRowConstraints().get(i).getPrefHeight();
         }
         return totalHeight;

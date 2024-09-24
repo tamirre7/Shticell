@@ -21,7 +21,8 @@ import spreadsheet.api.SpreadsheetController;
 import java.io.File;
 
 public class LoadFileControllerImpl implements LoadFileController {
-
+    @FXML
+    private TextField sheetNameTF;
     @FXML
     private Button loadFileButton;
 
@@ -80,6 +81,7 @@ public class LoadFileControllerImpl implements LoadFileController {
                             if (result.isSucceeded()) {
                                 fileTextField.setText(selectedFile.getAbsolutePath());
                                 SheetDto sheetDto = engine.displayCurrentSpreadsheet();
+                                sheetNameTF.setText(sheetDto.getName());
                                 spreadsheetController.setCurrentSheet(sheetDto);
                                 spreadsheetController.enableEditing();
                                 actionLineController.populateVersionSelector(engine.getLatestVersion());

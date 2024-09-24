@@ -118,7 +118,7 @@ public class UISheetModel {
         parallelTransition.play();
     }
 
-    public void setupGridDimensions(int numRows, int numCols) {
+    public void setupGridDimensions(int numRows, int numCols,int rowHeight, int colWidth) {
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
 
@@ -126,8 +126,8 @@ public class UISheetModel {
         headerColumn.setHgrow(Priority.NEVER);
         gridPane.getColumnConstraints().add(headerColumn);
 
-        for (int col = 0; col < numCols; col++) {
-            ColumnConstraints column = new ColumnConstraints(100); // Default width
+        for (int col = 0; col <= numCols; col++) {
+            ColumnConstraints column = new ColumnConstraints(colWidth);
             column.setHgrow(Priority.SOMETIMES);
             gridPane.getColumnConstraints().add(column);
         }
@@ -136,8 +136,8 @@ public class UISheetModel {
         headerRow.setVgrow(Priority.NEVER);
         gridPane.getRowConstraints().add(headerRow);
 
-        for (int row = 0; row < numRows; row++) {
-            RowConstraints rowConstraint = new RowConstraints(25); // Default height
+        for (int row = 0; row <= numRows; row++) {
+            RowConstraints rowConstraint = new RowConstraints(rowHeight); // Default height
             rowConstraint.setVgrow(Priority.SOMETIMES);
             gridPane.getRowConstraints().add(rowConstraint);
         }
