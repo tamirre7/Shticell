@@ -14,7 +14,7 @@
             <Insets left="10.0" top="5.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="fileTextField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="262.0" promptText="Loaded file path" HBox.hgrow="ALWAYS">
+      <TextField fx:id="fileTextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="262.0" promptText="Loaded file path" HBox.hgrow="ALWAYS">
          <HBox.margin>
             <Insets left="3.0" />
          </HBox.margin>
@@ -24,7 +24,7 @@
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </Label>
-      <TextField fx:id="sheetNameTF" promptText="Sheet Name">
+      <TextField fx:id="sheetNameTF" editable="false" promptText="Sheet Name">
          <HBox.margin>
             <Insets left="5.0" />
          </HBox.margin>

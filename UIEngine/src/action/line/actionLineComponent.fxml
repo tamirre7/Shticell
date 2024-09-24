@@ -32,7 +32,7 @@
                   <Insets top="9.0" />
                </HBox.margin>
             </Label>
-            <TextField fx:id="lastmodverTF" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="Version">
+            <TextField fx:id="lastmodverTF" editable="false" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="Version">
                <HBox.margin>
                   <Insets left="5.0" top="5.0" />
                </HBox.margin>

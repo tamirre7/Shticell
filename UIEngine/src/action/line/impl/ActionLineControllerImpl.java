@@ -84,7 +84,12 @@ public class ActionLineControllerImpl implements ActionLineController {
 
     @Override
     public void updateCellValue(String preBuildOriginalValue) {
-        String cellId = cellidTF.getText();
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
+        String cellId = cellidTF.getText().toUpperCase();
         String newValue;
 
         if (preBuildOriginalValue == null)
@@ -122,6 +127,11 @@ public class ActionLineControllerImpl implements ActionLineController {
     }
 
     private void loadSpreadsheetVersion(Integer version) {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         // Load the specified version of the spreadsheet
         currentSheet = engine.displaySheetByVersion(version);
         lastmodverTF.setText(version.toString());
@@ -167,5 +177,11 @@ public class ActionLineControllerImpl implements ActionLineController {
         originalvalueTF.setDisable(false);
         versionSelector.setDisable(false);
     }
-
+    private void showAlert(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

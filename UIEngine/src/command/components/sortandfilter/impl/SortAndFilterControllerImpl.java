@@ -41,6 +41,11 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
     @FXML
     public void handleSort() {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
 
         sortAndFilterDialog();
 
@@ -71,6 +76,11 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     @FXML
     @Override
     public void handleFilter() {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         sortAndFilterDialog();
 
         if (sortOrFilterRange == null || columnsToSortOrFilter == null || columnsToSortOrFilter.isEmpty()) {
@@ -151,6 +161,11 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     @FXML
     @Override
     public void handleResetSortFilter() {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         enableSortAndFilter();
         spreadsheetController.displayOriginalSheet(false);
     }
@@ -312,6 +327,14 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

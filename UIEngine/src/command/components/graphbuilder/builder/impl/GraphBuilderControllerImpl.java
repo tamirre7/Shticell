@@ -36,6 +36,11 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
     @FXML
     public void buildGraph() {
+        if (spreadsheetController.getCurrentSheet() == null)
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/graphbuilder/dialog/graphDialog.fxml"));
             Parent root = loader.load();
@@ -193,6 +198,14 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        alert.showAndWait();
+    }
+
+    private void showAlert(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         alert.showAndWait();
     }
 }

@@ -90,6 +90,11 @@ public class RangeControllerImpl implements RangeController {
     @FXML
     @Override
     public void handleAddRange() {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         TextInputDialog rangeNameDialog = new TextInputDialog();
         rangeNameDialog.setTitle("Add Range");
         rangeNameDialog.setHeaderText("Enter new range name (example: MyRange):");
@@ -146,6 +151,11 @@ public class RangeControllerImpl implements RangeController {
     @FXML
     @Override
     public void handleDeleteRange() {
+        if (!engine.isFileLoaded())
+        {
+            showAlert("Error", "A file must be loaded first.");
+            return;
+        }
         String range = rangeListView.getSelectionModel().getSelectedItem();
         try {
             if (range != null) {
@@ -180,5 +190,13 @@ public class RangeControllerImpl implements RangeController {
         rangeListView.setDisable(false);
         addButton.setDisable(false);
         deleteButton.setDisable(false);
+    }
+
+    private void showAlert(String title, String message) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
