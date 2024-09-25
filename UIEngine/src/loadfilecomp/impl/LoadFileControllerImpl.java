@@ -8,6 +8,7 @@ import command.api.Engine;
 import dto.SaveLoadFileDto;
 import javafx.application.Platform;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
@@ -160,6 +161,13 @@ public class LoadFileControllerImpl implements LoadFileController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        // Resize the alert window to fit the content
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE);  // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);   // Adjust width to fit content
+
         alert.showAndWait();
     }
+
 }

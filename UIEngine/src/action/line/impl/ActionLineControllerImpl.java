@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import command.api.Engine;
 import dto.SheetDto;
 import dto.CellDto;
+import javafx.scene.layout.Region;
 import spreadsheet.api.SpreadsheetController;
 import spreadsheet.impl.SpreadsheetControllerImpl;
 
@@ -177,11 +178,17 @@ public class ActionLineControllerImpl implements ActionLineController {
         originalvalueTF.setDisable(false);
         versionSelector.setDisable(false);
     }
-    private void showAlert(String title, String message) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(content);
+
+        // Resize the alert window by setting its width and height
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+
         alert.showAndWait();
     }
 }

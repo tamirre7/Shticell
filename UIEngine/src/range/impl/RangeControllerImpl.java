@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import range.api.RangeController;
 import spreadsheet.UISheetModel;
 import spreadsheet.api.SpreadsheetController;
@@ -192,11 +193,17 @@ public class RangeControllerImpl implements RangeController {
         deleteButton.setDisable(false);
     }
 
-    private void showAlert(String title, String message) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(content);
+
+        // Resize the alert window by setting its width and height
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+
         alert.showAndWait();
     }
 }

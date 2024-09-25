@@ -206,6 +206,12 @@ public class UISheetModel {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+
+        // Resize the alert window by setting its width and height
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+
         alert.showAndWait();
     }
 

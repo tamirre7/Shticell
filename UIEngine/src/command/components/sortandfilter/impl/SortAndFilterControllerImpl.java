@@ -16,6 +16,7 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import dto.CellDto;
+import javafx.scene.layout.Region;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     public void handleSort() {
         if (!engine.isFileLoaded())
         {
-            showAlert("Error", "A file must be loaded first.");
+            showAlert(Alert.AlertType.ERROR, "Error", "A file must be loaded first.");
             return;
         }
 
@@ -78,7 +79,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     public void handleFilter() {
         if (!engine.isFileLoaded())
         {
-            showAlert("Error", "A file must be loaded first.");
+            showAlert(Alert.AlertType.ERROR,"Error", "A file must be loaded first.");
             return;
         }
         sortAndFilterDialog();
@@ -163,7 +164,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     public void handleResetSortFilter() {
         if (!engine.isFileLoaded())
         {
-            showAlert("Error", "A file must be loaded first.");
+            showAlert(Alert.AlertType.ERROR, "Error", "A file must be loaded first.");
             return;
         }
         enableSortAndFilter();
@@ -330,14 +331,14 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
+
+        // Resize the alert window to fit the content
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE);  // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);   // Adjust width to fit content
+
         alert.showAndWait();
     }
 
-    private void showAlert(String title, String message) {
-        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
 }
