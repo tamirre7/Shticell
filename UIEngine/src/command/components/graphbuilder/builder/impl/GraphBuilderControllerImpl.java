@@ -19,7 +19,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import spreadsheet.api.SpreadsheetController;
-import spreadsheet.impl.SpreadsheetControllerImpl;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -44,7 +43,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
             return;
         }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/graphbuilder/dialog/graphDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/graphbuilder/dialog/graphdialog.fxml"));
             Parent root = loader.load();
 
             Stage dialogStage = new Stage();
