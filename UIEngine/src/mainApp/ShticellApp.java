@@ -34,7 +34,7 @@ public class ShticellApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        // Initialize the engine and other components
+        // Initialize the engine and other componentss
         engine = new EngineImpl();
         skinManager = new SkinManager();
         formulaBuilder = new FormulaBuilder();

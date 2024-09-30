@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+   <content>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+         <top>
+            <fx:include source="../components/loadsheet/load-sheet.fxml" />
+         </top>
+         <left>
+            <fx:include source="../components/commands/components/commands-menu.fxml" />
+         </left>
+
+         <center>
+            <VBox BorderPane.alignment="CENTER">
+               <fx:include source="../components/avaliable/sheets/available-sheets.fxml" />
+               <fx:include source="../components/permision/table/permission-table.fxml" />
+            </VBox>
+         </center>
+
+      </BorderPane>
+   </content>
+</ScrollPane>

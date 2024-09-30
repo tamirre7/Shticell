@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml" styleClass="commands-menu">
+    <Label text="Commands:" styleClass="commands-header"/>
+    <ListView fx:id="commandsList" styleClass="commands-list">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="View Sheet"/>
+                <String fx:value="Request Permission"/>
+                <String fx:value="Response To Permission Requests"/>
+                <String fx:value="Enter Chat"/>
+                <String fx:value="Logout"/>
+            </FXCollections>
+        </items>
+    </ListView>
+
+    <stylesheets>
+        <URL value="@commands-menu.css"/>
+    </stylesheets>
+</VBox>

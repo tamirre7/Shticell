@@ -1,0 +1,23 @@
+
+/* Styles for text alignment */
+.cell-align-left {
+    -fx-alignment: CENTER-LEFT;
+}
+
+.cell-align-center {
+    -fx-alignment: CENTER;
+}
+
+.cell-align-right {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+.cell-highlight-dependency {
+    -fx-background-color: lightblue;
+}
+
+.cell-highlight-influence {
+    -fx-background-color: lightgreen;
+}
+
+

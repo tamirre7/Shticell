@@ -1,0 +1,73 @@
+.root {
+    -fx-font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    -fx-background-color: #F9F9F9;
+}
+
+.scroll-pane {
+    -fx-background-color: #F9F9F9;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.main-container {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 10;
+    -fx-padding: 30;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495E;
+}
+
+.prompt-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #7F8C8D;
+}
+
+.input-field {
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: #D0D0D0;
+    -fx-border-width: 1;
+    -fx-padding: 5 10;
+    -fx-pref-width: 200;
+}
+
+.button {
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-insets: 0;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#loginButton {
+    -fx-background-color: #2ECC71;
+}
+
+#loginButton:hover {
+    -fx-background-color: #27AE60;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+
+#quitButton {
+    -fx-background-color: #E74C3C;
+}
+
+#quitButton:hover {
+    -fx-background-color: #C0392B;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+}
+.error-label {
+    -fx-text-fill: #E74C3C;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-opacity: 0.8;
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.avaliable.sheets.impl.AvailableSheetsControllerImpl">
+    <children>
+        <TableView fx:id="sheetsTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+            <columns>
+                <TableColumn fx:id="uploadedByColumn" prefWidth="134.4" text="Uploaded By" />
+                <TableColumn fx:id="sheetNameColumn" prefWidth="120.8" text="Sheet Name" />
+                <TableColumn fx:id="sheetSizeColumn" prefWidth="108.8" text="Sheet Size (nxm)" />
+                <TableColumn fx:id="permissionColumn" prefWidth="130.4" text="Permission" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>
