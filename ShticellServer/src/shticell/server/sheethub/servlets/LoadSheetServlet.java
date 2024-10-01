@@ -5,6 +5,7 @@ import command.api.Engine;
 import dto.SaveLoadFileDto;
 import dto.SheetDto;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @WebServlet(name = "LoadSheetServlet", urlPatterns = "/sheethub/loadsheet")
+@MultipartConfig
 public class LoadSheetServlet extends HttpServlet {
 
     @Override

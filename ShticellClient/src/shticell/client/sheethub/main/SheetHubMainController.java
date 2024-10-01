@@ -47,23 +47,23 @@ public class SheetHubMainController {
         try {
             // Load the main layout
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource(Constants.SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION));
-            Parent mainView = mainLoader.load();  // Assuming a BorderPane as the main layout
+            mainLoader.setController(this);
+            Parent mainView = mainLoader.load();  // Load the FXML file for the main layout
 
             // Load and initialize the LoadSheetController and its view
             FXMLLoader loadSheetLoader = new FXMLLoader(getClass().getResource(Constants.LOAD_SHEET_PAGE_FXML_RESOURCE_LOCATION));
-            Parent loadSheetView = loadSheetLoader.load();  // Load the FXML file for LoadSheet
-            loadSheetController = loadSheetLoader.getController();  // Now the controller is initialized
-            loadSheetController.setLoginController(loginController);
+            Parent loadSheetView = loadSheetLoader.load();  // Load the FXML
+            loadSheetController = loadSheetLoader.getController();  // Get controller after loading FXML
 
             // Load and initialize the AvailableSheetsController and its view
             FXMLLoader availableSheetsLoader = new FXMLLoader(getClass().getResource(Constants.AVAILABLE_SHEETS_PAGE_RESOURCE_LOCATION));
-            Parent availableSheetsView = availableSheetsLoader.load();  // Load the FXML file for AvailableSheets
-            availableSheetsController = availableSheetsLoader.getController();  // Now the controller is initialized
+            Parent availableSheetsView = availableSheetsLoader.load();  // Load the FXML
+            availableSheetsController = availableSheetsLoader.getController();  // Get controller after loading FXML
 
             // Set up the connections between controllers
             loadSheetController.setAvailableSheetsController(availableSheetsController);
 
-            // Create the scene and show the stage
+            // Set up the main scene and show the stage
             Scene scene = new Scene(mainView);
             primaryStage.setScene(scene);
             primaryStage.show();
@@ -71,5 +71,6 @@ public class SheetHubMainController {
             e.printStackTrace();
         }
     }
+
 
 }

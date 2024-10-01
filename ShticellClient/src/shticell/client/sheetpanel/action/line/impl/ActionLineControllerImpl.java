@@ -16,6 +16,8 @@ import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ActionLineControllerImpl {
     @FXML
@@ -78,7 +80,7 @@ public class ActionLineControllerImpl {
     }
 
     private int getLatestVersion() {
-        Integer latestVersion = 0;
+        AtomicInteger latestVersion = new AtomicInteger(0);
         //noinspection ConstantConditions
         String finalUrl = HttpUrl
                 .parse(Constants.LATEST_VERSION_PAGE)
@@ -90,6 +92,7 @@ public class ActionLineControllerImpl {
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
                 Platform.runLater(() ->
                         showErrorAlert("Error", e.getMessage())
                 );
@@ -105,12 +108,12 @@ public class ActionLineControllerImpl {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        //???????????
+                        latestVersion.set(4);
                     });
                 }
             }
         });
-        return latestVersion;
+        return latestVersion.get();
     }
 
     private void showErrorAlert(String title, String content) {
