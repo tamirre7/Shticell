@@ -9,8 +9,6 @@ import java.util.Map;
 
 public interface ReadOnlySpreadSheet {
     EffectiveValue getCellEffectiveValue(CellIdentifierImpl identifier);
-    String getName();
-    int getVersion();
     boolean isValidCellID(String cellID);
     Dimension getSheetDimentions();
     Map<CellIdentifier, Cell> getActiveCells();
@@ -19,5 +17,5 @@ public interface ReadOnlySpreadSheet {
     RangeImpl getRange(String name);
     boolean isCellWithinBounds(CellIdentifierImpl cell);
     boolean isRangeWithinBounds(CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
-
+    String getSheetName();
 }

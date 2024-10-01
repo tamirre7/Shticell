@@ -12,24 +12,24 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.avaliable.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.loadsheet.api.LoadSheetController;
+import shticell.client.sheethub.components.login.api.LoginController;
+import shticell.client.sheethub.components.login.impl.LoginControllerImpl;
 import shticell.client.util.http.HttpClientUtil;
 import shticell.client.util.Constants;
 
 import java.io.File;
 import java.io.IOException;
 
-public class LoadSheetControllerImpl {
+public class LoadSheetControllerImpl implements LoadSheetController {
+
     @FXML
     private Label greetingLabel;
 
-    private LoadSheetController loadSheetController;
+    private LoginController loginController;
     private AvailableSheetsController availableSheetsController;
 
-    @FXML
-    public void initialize() {
-        setGreetingLabel();
-    }
 
+    @Override
     @FXML
     public void loadButtonClicked(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -42,7 +42,8 @@ public class LoadSheetControllerImpl {
         }
     }
 
-    private void uploadFile(File file) {
+    @Override
+    public void uploadFile(File file) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(),
@@ -50,7 +51,7 @@ public class LoadSheetControllerImpl {
                 .build();
 
         Request request = new Request.Builder()
-                .url(Constants.LOAD_SHEET_ENDPOINT)
+                .url(Constants.LOAD_SHEET_PAGE)
                 .post(requestBody)
                 .build();
 
@@ -65,7 +66,7 @@ public class LoadSheetControllerImpl {
                     });
                 } else {
                     Platform.runLater(() ->
-                            showAlert(AlertType.ERROR, "Error", "Failed to load file: " + response.message())
+                            showErrorAlert("Error", "Failed to load file: " + response.message())
                     );
                 }
             }
@@ -73,14 +74,14 @@ public class LoadSheetControllerImpl {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showAlert(AlertType.ERROR, "Error", "Error: " + e.getMessage())
+                        showErrorAlert("Error", "Error: " + e.getMessage())
                 );
             }
         });
     }
 
-    private void showAlert(AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
+    private void showErrorAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
@@ -88,11 +89,15 @@ public class LoadSheetControllerImpl {
     }
 
     private void setGreetingLabel() {
-        if (loadSheetController != null) {
-            greetingLabel.setText("Hello, " + loadSheetController.getLoggedUserName() + "!");
+        if (loginController != null) {
+            greetingLabel.setText("Hello, " + loginController.getLoggedUserName() + "!");
         }
     }
+    @Override
+    public void setLoginSheetController(LoginController loginController) {
+        this.loginController = loginController;}
 
-    public void setLoadSheetController(LoadSheetController loadSheetController) {this.loadSheetController = loadSheetController;}
-    public void setAvailableSheetsController(AvailableSheetsController availableSheetsController) {this.availableSheetsController = availableSheetsController;}
+    @Override
+    public void setAvailableSheetsController(AvailableSheetsController availableSheetsController) {
+        this.availableSheetsController = availableSheetsController;}
 }

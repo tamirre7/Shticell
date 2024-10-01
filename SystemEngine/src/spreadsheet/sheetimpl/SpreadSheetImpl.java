@@ -10,6 +10,7 @@ import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
 import spreadsheet.range.impl.RangeImpl;
+import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.util.UpdateResult;
 import java.io.*;
 import java.util.*;
@@ -18,18 +19,22 @@ import java.util.stream.Collectors;
 public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     private final Dimension sheetDimension;
-    private String name;
-    private int version;
-    private Map<CellIdentifier, Cell> activeCells;
+    private final Map<CellIdentifier, Cell> activeCells;
     private Map<String, RangeImpl> ranges = new HashMap<>();
+    private SheetManager sheetManager;
+    private String sheetName;
 
-    public SpreadSheetImpl(String name, int version, Dimension sheetDimension) {
-        this.name = name;
-        this.version = version;
+
+    public SpreadSheetImpl(Dimension sheetDimension,SheetManager sheetManager) {
         this.activeCells = new HashMap<>();
         this.sheetDimension = sheetDimension;
         this.ranges = new HashMap<>();
+        this.sheetManager = sheetManager;
+        this.sheetName = sheetManager.getSheetName();
     }
+
+    @Override
+    public String getSheetName(){return this.sheetName;}
 
     @Override
     public boolean isValidCellID(String cellID) {
@@ -61,43 +66,23 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public EffectiveValue getCellEffectiveValue(CellIdentifierImpl identifier) {
         Cell cell = activeCells.get(identifier);
         if(cell == null) {
-            //create new empty cell
-            CellImpl newCell = new CellImpl(identifier, "",this.version,this);
-            newCell.calculateEffectiveValue();
-            activeCells.put(identifier, newCell);
-            this.updateDependenciesAndInfluences();
+           addEmptyCell(identifier);
         }
         return cell != null ? cell.getEffectiveValue() : null;
     }
     @Override
     public void addEmptyCell (CellIdentifierImpl identifier){
-        CellImpl newCell = new CellImpl(identifier, "",this.version,this);
+        CellImpl newCell = new CellImpl(identifier, "",sheetManager.getLatestVersion(),this);
         newCell.calculateEffectiveValue();
         activeCells.put(identifier, newCell);
         this.updateDependenciesAndInfluences();
     }
 
-    // Getters and Setters
-    @Override
-    public String getName() {
-        return name;
-    }
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-    @Override
-    public int getVersion() {
-        return version;
-    }
     @Override
     public Dimension getSheetDimentions() {
         return sheetDimension;
     }
-    @Override
-    public void setVersion(int version) {
-        this.version = version;
-    }
+
     @Override
     public Map<CellIdentifier, Cell> getActiveCells() {
         return activeCells;
@@ -116,7 +101,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         SpreadSheetImpl newSheetVersion = this.copySheet();
         newSheetVersion.updateDependenciesAndInfluences();
         int versionUpdate = isDynamicUpdate ? 0 : 1;
-        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.getVersion() + versionUpdate, newSheetVersion);
+        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.sheetManager.getLatestVersion() + versionUpdate, newSheetVersion);
         Cell beforeUpdateCell = activeCells.get(cellId);
         if(beforeUpdateCell != null) {newCell.setCellStyle(beforeUpdateCell.getCellStyle());}
         newSheetVersion.activeCells.put(cellId, newCell);
@@ -131,7 +116,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
             // successful calculation. update sheet and relevant cells version
             if(!isDynamicUpdate) {
-                int newVersion = newSheetVersion.increaseVersion();
+                int newVersion = newSheetVersion.sheetManager.getLatestVersion() +1;
                 cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
             }
              newSheetVersion.updateDependenciesAndInfluences();
@@ -143,10 +128,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         } catch (Exception e) {
             return new UpdateResult(this, e.getMessage());
         }
-    }
-
-    private int increaseVersion() {
-        return ++version;
     }
 
     public void updateDependenciesAndInfluences() {
@@ -274,14 +255,12 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             return true;
         if (o == null || getClass() != o.getClass()) return false;
         SpreadSheetImpl sheet = (SpreadSheetImpl) o;
-        return version == sheet.version &&
-                Objects.equals(name, sheet.name) &&
-                Objects.equals(activeCells, sheet.activeCells);
+        return Objects.equals(activeCells, sheet.activeCells);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, version, activeCells);
+        return Objects.hash(activeCells);
     }
 
     public boolean isRangeWithinBounds(CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
@@ -331,6 +310,8 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public Map<String, RangeImpl> getRanges()  {
         return ranges;
     }
+
+
 }
 
 

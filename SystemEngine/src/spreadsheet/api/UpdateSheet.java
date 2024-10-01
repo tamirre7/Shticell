@@ -5,8 +5,6 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.util.UpdateResult;
 
 public interface UpdateSheet {
-    void setName(String name);
-    void setVersion(int version);
     void removeCell(CellIdentifier identifier);
     UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue,boolean isDynamicUpdate) ;
     void updateDependenciesAndInfluences();

@@ -5,18 +5,17 @@ import dto.*;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
 public interface Engine {
 
-    SaveLoadFileDto loadFile(String path);
+    SaveLoadFileDto loadFile(InputStream fileContent);
     SheetDto displayCurrentSpreadsheet();
     SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue);
     SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue);
     SheetDto displaySheetByVersion(int version);
-    SaveLoadFileDto saveState(String path);
-    SaveLoadFileDto loadSavedState(String path);
     boolean isFileLoaded();
     SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
     SheetDto removeRange(String rangeName);

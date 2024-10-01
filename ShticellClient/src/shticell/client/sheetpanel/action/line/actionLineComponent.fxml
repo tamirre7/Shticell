@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="action.line.impl.ActionLineControllerImpl">
+<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl">
    <children>
       <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
          <HBox.margin>
@@ -20,7 +20,7 @@
             <Insets left="15.0" top="5.0" />
          </HBox.margin>
       </TextField>
-      <Button fx:id="updatevalbtn" minHeight="25.0" minWidth="98.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" text="Update Value">
+      <Button fx:id="updatevalbtn" minHeight="25.0" minWidth="98.0" mnemonicParsing="false" onAction="#updateCellValue" prefHeight="26.0" prefWidth="98.0" text="Update Value">
          <HBox.margin>
             <Insets left="15.0" top="4.0" />
          </HBox.margin>

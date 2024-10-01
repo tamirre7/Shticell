@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
@@ -18,7 +22,8 @@
 
          <!-- Left section with the Ranges Component -->
          <left>
-            <VBox styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
+            <VBox minHeight="-Infinity" prefHeight="490.0" prefWidth="125.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
+               <Separator prefWidth="200.0" />
                <fx:include source="../command/components/sortandfilter/sortandflter.fxml" />
                <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" />
                <fx:include source="../range/rangescomponent.fxml" />
@@ -30,6 +35,16 @@
          <center>
             <fx:include source="../spreadsheet/spreadsheetcomponent.fxml" />
          </center>
+         <bottom>
+            <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="1059.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button mnemonicParsing="false" text="Main Screen">
+                     <HBox.margin>
+                        <Insets bottom="5.0" right="7.0" top="3.0" />
+                     </HBox.margin></Button>
+               </children>
+            </HBox>
+         </bottom>
       </BorderPane>
    </content>
 </ScrollPane>

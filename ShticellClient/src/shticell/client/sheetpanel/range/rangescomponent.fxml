@@ -5,11 +5,20 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="269.0" prefWidth="119.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="range.impl.RangeControllerImpl">
    <children>
+      <Separator prefWidth="600.0">
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Separator>
       <Label alignment="TOP_LEFT" text="Ranges">
          <VBox.margin>
             <Insets left="40.0" top="15.0" />
@@ -20,7 +29,7 @@
             <Insets left="5.0" right="5.0" />
          </VBox.margin>
          <content>
-            <ListView fx:id="rangeListView"  styleClass="ranges-list" />
+            <ListView fx:id="rangeListView" prefHeight="224.0" prefWidth="108.0" styleClass="ranges-list" />
          </content>
       </ScrollPane>
       <HBox prefHeight="39.0" prefWidth="119.0">

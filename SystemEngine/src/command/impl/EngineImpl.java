@@ -11,7 +11,6 @@ import spreadsheet.api.SpreadSheet;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
-import spreadsheet.cell.cellstyle.api.CellStyle;
 import spreadsheet.cell.cellstyle.impl.CellStyleImpl;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
@@ -19,6 +18,8 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
+import spreadsheet.sheetmanager.api.SheetManager;
+import spreadsheet.sheetmanager.impl.SheetManagerImpl;
 import spreadsheet.util.UpdateResult;
 import xml.generated.*;
 
@@ -29,26 +30,22 @@ import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
     private SpreadSheet currentSheet = null;
-    private Map<Integer, SpreadSheet> sheetVersionMap = new HashMap<>();
+    private Map<String, SheetManager> sheetMap = new HashMap<>();
 
     @Override
-    public SaveLoadFileDto loadFile(String path) {
-        File file = new File(path);
-        if (!path.toLowerCase().endsWith(".xml")) {
-            return new SaveLoadFileDto(false, "Invalid file type: Only XML files are supported.");
-        }
-        if (!file.exists()) {
-            return new SaveLoadFileDto(false, "File not found: " + path);
-        }
-
+    public SaveLoadFileDto loadFile(InputStream fileContent) {
         try {
-            new FileInputStream(file);
             // Initialize JAXB context and unmarshaller
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
             // Unmarshal the XML file to STLSheet object
-            STLSheet stlSheet = (STLSheet) unmarshaller.unmarshal(new File(path));
+            STLSheet stlSheet = (STLSheet) unmarshaller.unmarshal(fileContent);
+
+            String sheetName = stlSheet.getName();
+            if (sheetMap.containsKey(sheetName)) {
+                return new SaveLoadFileDto(false, "Sheet name '" + sheetName + "' already exists. Each sheet must have a unique name.");
+            }
 
             // Validate sheet dimensions
             STLLayout stlLayout = stlSheet.getSTLLayout();
@@ -69,7 +66,9 @@ public class EngineImpl implements Engine {
             );
 
             // Create a new SpreadSheet instance with the provided dimensions
-            SpreadSheet spreadSheet = new SpreadSheetImpl(stlSheet.getName(), 1, sheetDimensions);
+            SheetManager sheetManager = new SheetManagerImpl(stlSheet.getName());
+            SpreadSheet spreadSheet = new SpreadSheetImpl(sheetDimensions, sheetManager);
+            sheetManager.updateSheetVersion(spreadSheet);
 
             STLRanges stlRanges = stlSheet.getSTLRanges();
             for (STLRange stlRange : stlRanges.getSTLRange()) {
@@ -126,12 +125,10 @@ public class EngineImpl implements Engine {
 
             // Update the current sheet and version map
             this.currentSheet = spreadSheet;
-            sheetVersionMap = new HashMap<>();
-            sheetVersionMap.put(1, currentSheet);
+            sheetMap.put(stlSheet.getName(), sheetManager);
+
             return new SaveLoadFileDto(true, "File loaded successfully.");
-        } catch (FileNotFoundException e) {
-            return new SaveLoadFileDto(false, "File not found: " + path);
-        } catch (JAXBException e) {
+        }  catch (JAXBException e) {
             return new SaveLoadFileDto(false, "XML parsing error: " + e.getMessage());
         } catch (Exception e) {
             return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
@@ -141,8 +138,8 @@ public class EngineImpl implements Engine {
     @Override
     public SheetDto displayCurrentSpreadsheet() {
 
-        String name = currentSheet.getName();
-        int version = currentSheet.getVersion();
+        String name = currentSheet.getSheetName();
+        int version = sheetMap.get(currentSheet.getSheetName()).getLatestVersion();
         Dimension dimensions = currentSheet.getSheetDimentions();
 
         // Convert cells from Cell to CellDto
@@ -192,9 +189,8 @@ public class EngineImpl implements Engine {
         updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate);
         if (updateRes.isSuccess()) {
             updateSpreadSheet = updateRes.getSheet();
-            if(!isDynamicUpdate) {
-                sheetVersionMap.put(updateSpreadSheet.getVersion(), updateSpreadSheet);}
-            currentSheet = updateSpreadSheet;
+            if(!isDynamicUpdate) {sheetMap.get(currentSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}
+            currentSheet = sheetMap.get(currentSheet.getSheetName()).getSheetByVersion(getLatestVersion());
         } else {
             throw new RuntimeException(updateRes.getErrorMessage());}
 
@@ -206,15 +202,15 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(),
-                currentSheet.getVersion(), cellDtos, cellsInRangeDto);
+                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
+               getLatestVersion(), cellDtos, cellsInRangeDto);
 
     }
 
     @Override
     public SheetDto displaySheetByVersion(int version) {
         // Retrieve the SpreadSheet from the version map
-        SpreadSheet sheet = sheetVersionMap.get(version);
+        SpreadSheet sheet = sheetMap.get(currentSheet.getSheetName()).getSheetByVersion(version);
         if (sheet == null) {
             throw new IllegalArgumentException("No spreadsheet found for the specified version");}
 
@@ -226,39 +222,7 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getWidthCol(),
-                sheet.getSheetDimentions().getHeightRow(), sheet.getName(), sheet.getVersion(), cellDtos,  cellsInRangeDto);
-    }
-    @Override
-    public SaveLoadFileDto saveState(String path) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path))) {
-            oos.writeObject(currentSheet);
-            oos.writeObject(sheetVersionMap);
-        } catch (FileNotFoundException e) {
-            return new SaveLoadFileDto(false, "File not found: " + path);
-        } catch (IOException e) {
-            return new SaveLoadFileDto(false, "IO error while saving: " + e.getMessage());
-        } catch (Exception e) {
-            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
-        }
-        return new SaveLoadFileDto(true, "File saved successfully");
-    }
-
-    @Override
-    public SaveLoadFileDto loadSavedState(String path) {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path))) {
-            currentSheet = (SpreadSheet) ois.readObject();
-            sheetVersionMap = (Map<Integer, SpreadSheet>) ois.readObject();
-            System.out.println("System state loaded successfully.");
-        } catch (FileNotFoundException e) {
-            return new SaveLoadFileDto(false, "File not found: " + path);
-        } catch (IOException e) {
-            return new SaveLoadFileDto(false, "IO error while loading: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            return new SaveLoadFileDto(false, "Class not found during loading: " + e.getMessage());
-        } catch (Exception e) {
-            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
-        }
-        return new SaveLoadFileDto(true, "File loaded successfully");
+                sheet.getSheetDimentions().getHeightRow(), sheet.getSheetName(), version, cellDtos,  cellsInRangeDto);
     }
 
     @Override
@@ -272,8 +236,8 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(),
-                currentSheet.getVersion(), cellDtos, cellsInRangeDto);
+                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
+                getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
@@ -286,14 +250,12 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(),
-                currentSheet.getVersion(), cellDtos, cellsInRangeDto);
+                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
+               getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
-    public Integer getLatestVersion() {
-        return sheetVersionMap.size();
-    }
+    public Integer getLatestVersion() {return sheetMap.get(currentSheet.getSheetName()).getLatestVersion();}
 
     @Override
     public boolean isFileLoaded() {
@@ -476,7 +438,7 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, cellsInRangeDto);
+                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
@@ -492,7 +454,7 @@ public class EngineImpl implements Engine {
 
         // Return a SheetDto with the retrieved SpreadSheet
         return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getName(), currentSheet.getVersion(), cellDtos, cellsInRangeDto);
+                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
 
     }
 

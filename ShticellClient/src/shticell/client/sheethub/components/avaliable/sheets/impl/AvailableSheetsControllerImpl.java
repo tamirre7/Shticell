@@ -31,7 +31,6 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     private TableColumn<SheetDto, String> permissionColumn;
 
     private ObservableList<SheetDto> sheetList = FXCollections.observableArrayList();
-    private Map<String, SheetDto> sheetMap = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -59,12 +58,12 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
 
     // Adds a new sheet to the map and the observable list
     public void addSheet(SheetDto sheetDto) {
-        sheetMap.put(sheetDto.getSheetName(), sheetDto);
         sheetList.add(sheetDto);
     }
 
+    @Override
     // Handles what happens when a sheet is selected from the table
-    private void handleSheetSelection(SheetDto selectedSheet) {
+    public void handleSheetSelection(SheetDto selectedSheet) {
         if (selectedSheet != null) {
 
 

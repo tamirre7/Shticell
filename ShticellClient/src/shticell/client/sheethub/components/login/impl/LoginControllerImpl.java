@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -23,7 +24,7 @@ public class LoginControllerImpl implements LoginController {
     @FXML
     public Label errorLabel;
 
-    private ChatAppMainController chatAppMainController;
+    //  private ChatAppMainController chatAppMainController;
 
     private final StringProperty errorMessageProperty = new SimpleStringProperty();
     private String loggedUserName;
@@ -31,13 +32,11 @@ public class LoginControllerImpl implements LoginController {
     @FXML
     public void initialize() {
         errorLabel.textProperty().bind(errorMessageProperty);
-        HttpClientUtil.setCookieManagerLoggingFacility(line ->
-                Platform.runLater(() ->
-                        updateHttpStatusLine(line)));
     }
 
     @FXML
-    private void loginButtonClicked(ActionEvent event) {
+    @Override
+    public void loginButtonClicked(ActionEvent event) {
 
         String userName = userNameTextField.getText();
         if (userName.isEmpty()) {
@@ -53,10 +52,7 @@ public class LoginControllerImpl implements LoginController {
                 .build()
                 .toString();
 
-        updateHttpStatusLine("New request is launched for: " + finalUrl);
-
         HttpClientUtil.runAsync(finalUrl, new Callback() {
-
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
@@ -74,28 +70,27 @@ public class LoginControllerImpl implements LoginController {
                 } else {
                     Platform.runLater(() -> {
                         loggedUserName = userName;
-                        chatAppMainController.updateUserName(userName);
-                        chatAppMainController.switchToChatRoom();
+                        //chatAppMainController.updateUserName(userName);
+                       // chatAppMainController.switchToChatRoom();
                     });
                 }
             }
         });
     }
 
-
+    @Override
     public String getLoggedUserName() {return loggedUserName;}
 
     @FXML
-    private void quitButtonClicked(ActionEvent e) {
+    @Override
+    public void quitButtonClicked(ActionEvent e) {
         Platform.exit();
     }
 
-    private void updateHttpStatusLine(String data) {
-        chatAppMainController.updateHttpLine(data);
-    }
+//    @Override
+//    public void setChatAppMainController(ChatAppMainController chatAppMainController) {
+//        this.chatAppMainController = chatAppMainController;
+//    }
 
-    public void setChatAppMainController(ChatAppMainController chatAppMainController) {
-        this.chatAppMainController = chatAppMainController;
-    }
 }
 
