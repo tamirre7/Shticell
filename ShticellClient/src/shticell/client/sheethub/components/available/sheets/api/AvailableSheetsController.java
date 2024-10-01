@@ -1,4 +1,4 @@
-package shticell.client.sheethub.components.avaliable.sheets.api;
+package shticell.client.sheethub.components.available.sheets.api;
 
 import dto.SheetDto;
 

@@ -6,14 +6,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import shticell.client.sheethub.components.avaliable.sheets.api.AvailableSheetsController;
+import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.loadsheet.api.LoadSheetController;
 import shticell.client.sheethub.components.login.api.LoginController;
-import shticell.client.sheethub.components.login.impl.LoginControllerImpl;
 import shticell.client.util.http.HttpClientUtil;
 import shticell.client.util.Constants;
 
@@ -94,7 +92,7 @@ public class LoadSheetControllerImpl implements LoadSheetController {
         }
     }
     @Override
-    public void setLoginSheetController(LoginController loginController) {
+    public void setLoginController(LoginController loginController) {
         this.loginController = loginController;}
 
     @Override

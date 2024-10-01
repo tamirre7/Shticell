@@ -16,7 +16,7 @@
 
          <center>
             <VBox BorderPane.alignment="CENTER">
-               <fx:include source="../components/avaliable/sheets/available-sheets.fxml" />
+               <fx:include source="../components/available/sheets/available-sheets.fxml" />
                <fx:include source="../components/permision/table/permission-table.fxml" />
             </VBox>
          </center>

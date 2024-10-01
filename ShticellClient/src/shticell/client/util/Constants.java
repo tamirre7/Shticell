@@ -5,7 +5,7 @@ public class Constants {
     public final static String SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/main/shticell-hub-main.fxml";
     public final static String LOGIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/login/login-page.fxml";
     public final static String LOAD_SHEET_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/loadsheet/load-sheet.fxml";
-    public final static String AVAILABLE_SHEETS_PAGE_RESOURCE_LOCATION = "/shticell/client/sheethub/components/available/sheets/available-sheet.fxml";
+    public final static String AVAILABLE_SHEETS_PAGE_RESOURCE_LOCATION = "/shticell/client/sheethub/components/available/sheets/available-sheets.fxml";
 
 
     //server resources locations

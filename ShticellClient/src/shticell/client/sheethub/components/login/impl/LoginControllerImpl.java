@@ -12,6 +12,7 @@ import javafx.scene.input.KeyEvent;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.login.api.LoginController;
+import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.util.http.HttpClientUtil;
 import shticell.client.util.Constants;
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class LoginControllerImpl implements LoginController {
     public Label errorLabel;
 
     //  private ChatAppMainController chatAppMainController;
-
+    private SheetHubMainController sheetHubMainController;
     private final StringProperty errorMessageProperty = new SimpleStringProperty();
     private String loggedUserName;
 
@@ -72,6 +73,7 @@ public class LoginControllerImpl implements LoginController {
                         loggedUserName = userName;
                         //chatAppMainController.updateUserName(userName);
                        // chatAppMainController.switchToChatRoom();
+                        sheetHubMainController.onLoginSuccess();
                     });
                 }
             }
@@ -91,6 +93,9 @@ public class LoginControllerImpl implements LoginController {
 //    public void setChatAppMainController(ChatAppMainController chatAppMainController) {
 //        this.chatAppMainController = chatAppMainController;
 //    }
-
+    @Override
+public void setSheetHubMainController(SheetHubMainController sheetHubMainController) {
+    this.sheetHubMainController = sheetHubMainController;
+}
 }
 

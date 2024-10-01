@@ -1,4 +1,4 @@
-package shticell.client.sheethub.components.avaliable.sheets.impl;
+package shticell.client.sheethub.components.available.sheets.impl;
 
 import dto.SheetDto;
 import javafx.collections.FXCollections;
@@ -8,10 +8,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import shticell.client.sheethub.components.avaliable.sheets.api.AvailableSheetsController;
-
-import java.util.HashMap;
-import java.util.Map;
+import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 
 public class AvailableSheetsControllerImpl implements AvailableSheetsController {
 
