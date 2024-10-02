@@ -2,17 +2,14 @@
 
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <TableView maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+    <TableView styleClass="table-view">
         <columns>
-          <TableColumn prefWidth="148.00000607967377" text="User Name" />
-          <TableColumn prefWidth="163.99993896484375" text="Permission Type" />
-            <TableColumn prefWidth="138.39990234375" text="Permission Status" />
+            <TableColumn prefWidth="200" text="User Name" />
+            <TableColumn prefWidth="200" text="Permission Type" />
+            <TableColumn prefWidth="200" text="Permission Status" />
         </columns>
-      </TableView>
-   </children>
-</AnchorPane>
+    </TableView>
+</VBox>

@@ -3,24 +3,26 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" >
+<ScrollPane fitToWidth="true" fitToHeight="true" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.main.SheetHubMainController">
    <content>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+      <BorderPane>
          <top>
             <fx:include source="../components/loadsheet/load-sheet.fxml" />
          </top>
          <left>
             <fx:include source="../components/commands/components/commands-menu.fxml" />
          </left>
-
          <center>
-            <VBox BorderPane.alignment="CENTER">
-               <fx:include source="../components/available/sheets/available-sheets.fxml" />
+            <VBox styleClass="content-area">
+               <fx:include source="../components/available/sheets/available-sheets.fxml" fx:id="availableSheetsController"/>
                <fx:include source="../components/permision/table/permission-table.fxml" />
             </VBox>
          </center>
-
       </BorderPane>
    </content>
+   <stylesheets>
+      <URL value="@sheet-hub-styles.css"/>
+   </stylesheets>
 </ScrollPane>

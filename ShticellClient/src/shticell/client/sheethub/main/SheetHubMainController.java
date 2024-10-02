@@ -1,5 +1,6 @@
 package shticell.client.sheethub.main;
 
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,8 +16,11 @@ import java.io.IOException;
 public class SheetHubMainController {
 
     private Stage primaryStage;
+    @FXML
     private LoginController loginController;
+    @FXML
     private LoadSheetController loadSheetController;
+    @FXML
     private AvailableSheetsController availableSheetsController;
 
     public void initialize(Stage primaryStage) {
@@ -45,22 +49,11 @@ public class SheetHubMainController {
 
     private void loadMainView() {
         try {
-            // Load the main layout
+            // No need to set the controller programmatically
             FXMLLoader mainLoader = new FXMLLoader(getClass().getResource(Constants.SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION));
-            mainLoader.setController(this);
             Parent mainView = mainLoader.load();  // Load the FXML file for the main layout
 
-            // Load and initialize the LoadSheetController and its view
-            FXMLLoader loadSheetLoader = new FXMLLoader(getClass().getResource(Constants.LOAD_SHEET_PAGE_FXML_RESOURCE_LOCATION));
-            Parent loadSheetView = loadSheetLoader.load();  // Load the FXML
-            loadSheetController = loadSheetLoader.getController();  // Get controller after loading FXML
-
-            // Load and initialize the AvailableSheetsController and its view
-            FXMLLoader availableSheetsLoader = new FXMLLoader(getClass().getResource(Constants.AVAILABLE_SHEETS_PAGE_RESOURCE_LOCATION));
-            Parent availableSheetsView = availableSheetsLoader.load();  // Load the FXML
-            availableSheetsController = availableSheetsLoader.getController();  // Get controller after loading FXML
-
-            // Set up the connections between controllers
+            // Use the already injected controllers
             loadSheetController.setAvailableSheetsController(availableSheetsController);
 
             // Set up the main scene and show the stage
@@ -71,6 +64,5 @@ public class SheetHubMainController {
             e.printStackTrace();
         }
     }
-
 
 }

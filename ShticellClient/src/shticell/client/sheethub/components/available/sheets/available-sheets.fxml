@@ -2,17 +2,15 @@
 
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl">
-    <children>
-        <TableView fx:id="sheetsTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
-            <columns>
-                <TableColumn fx:id="uploadedByColumn" prefWidth="134.4" text="Uploaded By" />
-                <TableColumn fx:id="sheetNameColumn" prefWidth="120.8" text="Sheet Name" />
-                <TableColumn fx:id="sheetSizeColumn" prefWidth="108.8" text="Sheet Size (nxm)" />
-                <TableColumn fx:id="permissionColumn" prefWidth="130.4" text="Permission" />
-            </columns>
-        </TableView>
-    </children>
-</AnchorPane>
+<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl">
+    <TableView fx:id="sheetsTable" styleClass="table-view">
+        <columns>
+            <TableColumn fx:id="uploadedByColumn" prefWidth="150" text="Uploaded By" />
+            <TableColumn fx:id="sheetNameColumn" prefWidth="150" text="Sheet Name" />
+            <TableColumn fx:id="sheetSizeColumn" prefWidth="150" text="Sheet Size (nxm)" />
+            <TableColumn fx:id="permissionColumn" prefWidth="150" text="Permission" />
+        </columns>
+    </TableView>
+</VBox>
