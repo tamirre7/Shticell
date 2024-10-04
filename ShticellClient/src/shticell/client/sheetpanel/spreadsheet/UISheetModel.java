@@ -1,4 +1,4 @@
-package spreadsheet;
+package shticell.client.sheetpanel.spreadsheet;
 
 import dto.CellDto;
 import javafx.animation.FadeTransition;
@@ -13,7 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import javafx.scene.layout.*;
-import spreadsheet.api.SpreadsheetController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
+
 
 import java.util.*;
 

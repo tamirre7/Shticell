@@ -1,7 +1,6 @@
-package command.components.formulabuilder.api;
+package shticell.client.sheetpanel.command.components.formulabuilder.api;
 
-import action.line.api.ActionLineController;
-import command.api.Engine;
+import shticell.client.sheetpanel.action.line.api.ActionLineController;
 
 public interface FormulaBuilderController {
     void setActionLineController(ActionLineController actionLineController);

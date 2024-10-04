@@ -108,7 +108,7 @@ public class ActionLineControllerImpl {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        latestVersion.set(4);
+                        latestVersion.set(Integer.parseInt(responseBody));
                     });
                 }
             }

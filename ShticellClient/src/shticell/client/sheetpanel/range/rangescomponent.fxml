@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="269.0" prefWidth="119.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="range.impl.RangeControllerImpl">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="269.0" prefWidth="119.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.range.impl.RangeControllerImpl">
    <children>
       <Separator prefWidth="600.0">
          <VBox.margin>
@@ -26,25 +26,22 @@
       </Label>
       <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
          <VBox.margin>
-            <Insets left="5.0" right="5.0" />
+            <Insets left="5.0" right="5.0"/>
          </VBox.margin>
-         <content>
-            <ListView fx:id="rangeListView" prefHeight="224.0" prefWidth="108.0" styleClass="ranges-list" />
-         </content>
+         <ListView fx:id="rangeListView" prefHeight="224.0" prefWidth="108.0" styleClass="ranges-list"/>
       </ScrollPane>
       <HBox prefHeight="39.0" prefWidth="119.0">
-         <children>
-            <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteRange" text="Delete">
-               <HBox.margin>
-                  <Insets left="7.0" top="3.0" />
-               </HBox.margin>
-            </Button>
-            <Button fx:id="addButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleAddRange" prefHeight="25.0" prefWidth="46.0" text="Add">
-               <HBox.margin>
-                  <Insets left="8.0" top="3.0" />
-               </HBox.margin>
-            </Button>
-         </children>
+         <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteRange" text="Delete">
+            <HBox.margin>
+               <Insets left="7.0" top="3.0"/>
+            </HBox.margin>
+         </Button>
+         <Button fx:id="addButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
+                 onAction="#handleAddRange" prefHeight="25.0" prefWidth="46.0" text="Add">
+            <HBox.margin>
+               <Insets left="8.0" top="3.0"/>
+            </HBox.margin>
+         </Button>
       </HBox>
    </children>
 </VBox>

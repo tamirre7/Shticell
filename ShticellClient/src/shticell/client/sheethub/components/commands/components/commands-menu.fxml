@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" styleClass="commands-menu">
-    <Label text="Commands:" styleClass="commands-header"/>
+<VBox styleClass="commands-menu" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl">
+    <Label styleClass="commands-header" text="Commands:" />
     <ListView fx:id="commandsList" styleClass="commands-list">
         <items>
             <FXCollections fx:factory="observableArrayList">
-                <String fx:value="View Selected Sheet"/>
-                <String fx:value="Request Permission"/>
-                <String fx:value="Response To Permission Requests"/>
-                <String fx:value="Enter Chat"/>
+                <String fx:value="View Selected Sheet" />
+                <String fx:value="Request Permission" />
+                <String fx:value="Response To Permission Requests" />
+                <String fx:value="Enter Chat" />
             </FXCollections>
         </items>
     </ListView>
-    <Button text="Logout" styleClass="logout-button" VBox.vgrow="ALWAYS" />
+    <Button styleClass="logout-button" text="Logout" VBox.vgrow="ALWAYS" />
 </VBox>

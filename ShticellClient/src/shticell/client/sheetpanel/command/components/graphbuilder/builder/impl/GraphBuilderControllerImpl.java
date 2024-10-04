@@ -1,7 +1,7 @@
-package command.components.graphbuilder.builder.impl;
+package shticell.client.sheetpanel.command.components.graphbuilder.builder.impl;
 
-import command.components.graphbuilder.builder.api.GraphBuilderController;
-import command.components.graphbuilder.dialog.api.GraphDialogController;
+import shticell.client.sheetpanel.command.components.graphbuilder.builder.api.GraphBuilderController;
+import shticell.client.sheetpanel.command.components.graphbuilder.dialog.api.GraphDialogController;
 import dto.SheetDto;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import spreadsheet.api.SpreadsheetController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -36,14 +36,13 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
 
     @FXML
+    @Override
     public void buildGraph() {
-        if (spreadsheetController.getCurrentSheet() == null)
-        {
+        if (spreadsheetController.getCurrentSheet() == null) {
             showAlert("Error", "A file must be loaded first.");
-            return;
-        }
+            return; }
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/graphbuilder/dialog/graphdialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/shticell/client/sheetpanel/command/components/graphbuilder/dialog/graphdialog.fxml"));
             Parent root = loader.load();
 
             Stage dialogStage = new Stage();
@@ -67,7 +66,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
                     && yBottomCell != null) {
                 displayGraph(xTopCell, xBottomCell, yTopCell, yBottomCell, spreadsheetController);
             } else {
-                showError("You must fill all fields.");
+                showAlert("Error","You must fill all fields.");
             }
 
         } catch (Exception e) {
@@ -101,11 +100,10 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
             Double xValue = Double.valueOf(xValueStr);
 
             if (xValuesSet.contains(xValue)) {
-                showError("Error: Cannot create graph with duplicate X values.");
+                showAlert("ERROR","Cannot create graph with duplicate X values.");
                 return;
             }
             xValuesSet.add(xValue);
-
             xValuesList.add(xValue);
 
             numericSeriesData.add(new XYChart.Data<>(xValue, yValueNumber));
@@ -167,7 +165,6 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
         xAxis.setLabel("X Axis: " + xTop + " - " + xBottom);
         yAxis.setLabel("Y Axis: " + yTop + " - " + yBottom);
 
-        // המרה למחרוזות
         List<String> sortedXValuesStrList = xValuesList.stream()
                 .map(String::valueOf)
                 .collect(Collectors.toList());
@@ -186,7 +183,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
 
 
-    public static int extractRowFromCell(String cell) {
+    private static int extractRowFromCell(String cell) {
         Pattern pattern = Pattern.compile("[A-Z](\\d+)");
         Matcher matcher = pattern.matcher(cell);
 
@@ -197,10 +194,6 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
         }
     }
 
-    private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
-        alert.showAndWait();
-    }
 
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

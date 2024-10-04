@@ -73,7 +73,7 @@ public class LoginControllerImpl implements LoginController {
                         loggedUserName = userName;
                         //chatAppMainController.updateUserName(userName);
                        // chatAppMainController.switchToChatRoom();
-                        sheetHubMainController.onLoginSuccess();
+                        sheetHubMainController.switchToHubPage();
                     });
                 }
             }

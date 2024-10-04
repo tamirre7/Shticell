@@ -1,20 +1,17 @@
-package command.components.formulabuilder;
+package shticell.client.sheetpanel.command.components.formulabuilder;
 
 
-import command.api.Engine;
-import command.components.formulabuilder.api.FormulaBuilderController;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import action.line.api.ActionLineController;
+
 
 import java.io.IOException;
 
 
 public class FormulaBuilder {
-    ActionLineController actionLineController;
-    Engine engine;
 
     public void buildFormula() {
         try {
@@ -23,10 +20,7 @@ public class FormulaBuilder {
             Parent root = loader.load();
 
             // Get the controller instance
-          FormulaBuilderController controller = loader.getController();
-
-            // Pass the engine and cell data to the controller
-            controller.setup(actionLineController,engine);
+       //   FormulaBuilderController controller = loader.getController();
 
             // Show the formula builder window
             Stage stage = new Stage();
@@ -37,8 +31,4 @@ public class FormulaBuilder {
             e.printStackTrace();
         }
     }
-    public void setActionLineController(ActionLineController actionLineController) {this.actionLineController = actionLineController;}
-    public void setEngine(Engine engine) {this.engine = engine;}
-
-
 }

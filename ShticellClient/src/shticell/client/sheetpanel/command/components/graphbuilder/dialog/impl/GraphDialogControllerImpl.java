@@ -1,6 +1,6 @@
-package command.components.graphbuilder.dialog.impl;
+package shticell.client.sheetpanel.command.components.graphbuilder.dialog.impl;
 
-import command.components.graphbuilder.dialog.api.GraphDialogController;
+import shticell.client.sheetpanel.command.components.graphbuilder.dialog.api.GraphDialogController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;

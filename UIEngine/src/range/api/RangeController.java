@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface RangeController {
     void handleMouseClick(javafx.scene.input.MouseEvent event);
-    void setSpreadsheetDisplayController(SpreadsheetController spreadsheetController);
+    void setSpreadsheetController(SpreadsheetController spreadsheetController);
     void setUiSheetModel(UISheetModel uiSheetModel);
     void displayRanges(Map<String, RangeDto> ranges);
     void handleAddRange();

@@ -1,4 +1,4 @@
-package command.components.graphbuilder.dialog.api;
+package shticell.client.sheetpanel.command.components.graphbuilder.dialog.api;
 
 public interface GraphDialogController {
     String getXTopCell();

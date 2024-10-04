@@ -1,14 +1,15 @@
-package command.components.formulabuilder.impl;
+package shticell.client.sheetpanel.command.components.formulabuilder.impl;
 
-import action.line.api.ActionLineController;
-import command.api.Engine;
-import command.components.formulabuilder.api.FormulaBuilderController;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
+import shticell.client.sheetpanel.action.line.api.ActionLineController;
+import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaBuilderController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,15 +68,6 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
             }
         });
     }
-
-    private void setupFormulaEditorListener() {
-        formulaEditor.textProperty().addListener((observable, oldValue, newValue) -> {
-            updateFormulaPreview();
-            updateSubFormulaPreviews();
-            updateResultPreview();
-        });
-    }
-
     private void insertFunctionIntoEditor(String functionName) {
         String template = "{" + functionName + ",}";
         int caretPosition = formulaEditor.getCaretPosition();
@@ -85,26 +77,12 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         formulaEditor.positionCaret(caretPosition + template.length() - 1);
     }
 
-    private void updateFormulaPreview() {
-        formulaPreview.setText(formulaEditor.getText());
-    }
-
-    private void updateSubFormulaPreviews() {
-        StringBuilder previews = new StringBuilder();
-        String formula = formulaEditor.getText();
-
-        List<String> subFormulas = extractNestedFormulas(formula);
-
-        for (String subFormula : subFormulas) {
-            try {
-                String result = engine.evaluateOriginalValue(subFormula);
-                previews.append(subFormula).append(" = ").append(result).append("\n");
-            } catch (Exception e) {
-                previews.append(subFormula).append(" = Error: ").append(e.getMessage()).append("\n");
-            }
-        }
-
-        subFormulaPreviews.setText(previews.toString());
+    private void setupFormulaEditorListener() {
+        formulaEditor.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateFormulaPreview();
+          //  updateSubFormulaPreviews();
+          //  updateResultPreview();
+        });
     }
 
     private List<String> extractNestedFormulas(String formula) {
@@ -126,19 +104,14 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         return formulas;
     }
 
-    private void updateResultPreview() {
-        try {
-            String result = engine.evaluateOriginalValue(formulaEditor.getText());
-            resultPreview.setText(result);
-        } catch (Exception e) {
-            resultPreview.setText("Error: " + e.getMessage());
-        }
+    private void sendTempEvaluateRequest(String formula) {
+
     }
 
     @FXML
     public void applyFormula() {
         String formula = formulaEditor.getText();
-        actionLineController.updateCellValue(formula);
+       // actionLineController.updateCellValue(formula);
         closeWindow();
     }
 
@@ -151,4 +124,11 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         Stage stage = (Stage) functionTreeView.getScene().getWindow();
         stage.close();
     }
+
+    private void updateFormulaPreview() {
+        formulaPreview.setText(formulaEditor.getText());
+    }
+
+    @Override
+    public void setActionLineController(ActionLineController actionLineController) {this.actionLineController = actionLineController;}
 }

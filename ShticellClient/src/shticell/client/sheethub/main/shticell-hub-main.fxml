@@ -5,19 +5,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import java.net.URL?>
 
-<ScrollPane fitToWidth="true" fitToHeight="true" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.main.SheetHubMainController">
+<ScrollPane fx:id="mainPanel" fitToWidth="true" fitToHeight="true" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.main.SheetHubMainController">
    <content>
-      <BorderPane>
+      <BorderPane fx:id="sheetHubComponent">
          <top>
-            <fx:include source="../components/loadsheet/load-sheet.fxml" />
+            <fx:include source="../components/loadsheet/load-sheet.fxml" fx:id="loadSheetComponent"/>
          </top>
          <left>
-            <fx:include source="../components/commands/components/commands-menu.fxml" />
+            <fx:include source="../components/commands/components/commands-menu.fxml"/>
          </left>
          <center>
             <VBox styleClass="content-area">
-               <fx:include source="../components/available/sheets/available-sheets.fxml" fx:id="availableSheetsController"/>
-               <fx:include source="../components/permision/table/permission-table.fxml" />
+               <fx:include source="../components/available/sheets/available-sheets.fxml" fx:id="availableSheetsComponent" />
+               <fx:include source="../components/permission/table/permission-table.fxml" />
             </VBox>
          </center>
       </BorderPane>

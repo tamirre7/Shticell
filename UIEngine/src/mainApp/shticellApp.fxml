@@ -21,7 +21,7 @@
          <left>
             <VBox styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
                <fx:include source="../command/components/sortandfilter/sortandflter.fxml" />
-               <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" />
+               <fx:include source="../../../ShticellClient/src/shticell/client/sheetpanel/command/components/graphbuilder/builder/graphbuild.fxml" />
                <fx:include source="../range/rangescomponent.fxml" />
                <fx:include source="../misc/misccomponent.fxml" />
             </VBox>
