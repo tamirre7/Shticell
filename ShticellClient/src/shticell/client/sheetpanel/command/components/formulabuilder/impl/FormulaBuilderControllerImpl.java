@@ -1,6 +1,9 @@
 package shticell.client.sheetpanel.command.components.formulabuilder.impl;
 
+import com.google.gson.Gson;
+import dto.SheetDto;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -8,12 +11,20 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaBuilderController;
+import shticell.client.util.Constants;
+import shticell.client.util.http.HttpClientUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     @FXML
@@ -80,8 +91,8 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     private void setupFormulaEditorListener() {
         formulaEditor.textProperty().addListener((observable, oldValue, newValue) -> {
             updateFormulaPreview();
-          //  updateSubFormulaPreviews();
-          //  updateResultPreview();
+            updateSubFormulaPreviews();
+            updateResultPreview();
         });
     }
 
@@ -103,15 +114,68 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
         return formulas;
     }
+    private void updateSubFormulaPreviews() {
+        StringBuilder previews = new StringBuilder();
+        String formula = formulaEditor.getText();
 
-    private void sendTempEvaluateRequest(String formula) {
+        List<String> subFormulas = extractNestedFormulas(formula);
 
+        for (String subFormula : subFormulas) {
+            String result = sendEvaluationRequest(subFormula);
+
+            previews.append(subFormula).append(" = ").append(result).append("\n");
+        }
+
+        subFormulaPreviews.setText(previews.toString());
+    }
+
+    private void updateResultPreview() {
+        String result = sendEvaluationRequest(formulaPreview.getText());
+        resultPreview.setText(result);
+    }
+
+    private String sendEvaluationRequest(String formula) {
+        AtomicReference<String> result = new AtomicReference<>();
+        Gson gson = new Gson();
+        String newRangeJson = gson.toJson(formula);
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), newRangeJson);
+
+        Request request = new Request.Builder()
+                .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
+                .post(requestBody)
+                .build();
+
+        HttpClientUtil.runAsync(request, new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                      result.set(responseBody);
+                    });
+                } else {
+                    Platform.runLater(() ->
+                     result.set(response.message())
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        showAlert("Error", "Error: " + e.getMessage())
+                );
+            }
+        });
+
+        return result.get();
     }
 
     @FXML
     public void applyFormula() {
         String formula = formulaEditor.getText();
-       // actionLineController.updateCellValue(formula);
+        actionLineController.updateCellValue(formula);
         closeWindow();
     }
 

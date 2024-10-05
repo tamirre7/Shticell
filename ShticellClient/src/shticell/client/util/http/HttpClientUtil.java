@@ -3,6 +3,9 @@ package shticell.client.util.http;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dto.SheetDto;
+import javafx.scene.control.Alert;
+import javafx.scene.control.DialogPane;
+import javafx.scene.layout.Region;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -41,7 +44,7 @@ public class HttpClientUtil {
         call.enqueue(callback);
     }
 
-    public static SheetDto extractSheetFromResponse(String response) {
+    public static SheetDto extractSheetFromResponseBody(String response) {
         Gson gson = new Gson();
         try {
             // Parse the JSON response into a SheetDto object
@@ -57,5 +60,19 @@ public class HttpClientUtil {
         System.out.println("Shutting down HTTP CLIENT");
         HTTP_CLIENT.dispatcher().executorService().shutdown();
         HTTP_CLIENT.connectionPool().evictAll();
+    }
+
+    public static void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        // Resize the alert window by setting its width and height
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+
+        alert.showAndWait();
     }
 }

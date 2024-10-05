@@ -1,25 +1,30 @@
 package shticell.client.sheetpanel.action.line.impl;
 
+import com.google.gson.Gson;
+import dto.CellDto;
+import dto.SheetDto;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+import javafx.scene.control.*;
+import javafx.scene.layout.Region;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import shticell.client.sheetpanel.action.line.api.ActionLineController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ActionLineControllerImpl {
+import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
+import static shticell.client.util.http.HttpClientUtil.showAlert;
+
+public class ActionLineControllerImpl implements ActionLineController {
     @FXML
     private TextField cellidTF;
     @FXML
@@ -31,26 +36,33 @@ public class ActionLineControllerImpl {
     @FXML
     private ComboBox<String> versionSelector;
 
+    SpreadsheetController  spreadsheetController;
+
     @FXML
-    public void updateCellValue(ActionEvent event) {
+    @Override
+    public void updateCellValue(String preBuildOriginalValue) {
         String cellId = cellidTF.getText().toUpperCase();
         String newValue = originalvalueTF.getText();
 
-        //noinspection ConstantConditions
-        String finalUrl = HttpUrl
-                .parse(Constants.UPDATE_CELL_PAGE)
-                .newBuilder()
-                .addQueryParameter("cellid", cellId)
-                .addQueryParameter("originalvalue", newValue)
-                .build()
-                .toString();
+        Map<String,String> cellData = new HashMap<>();
+        cellData.put("cellid", cellId);
+        cellData.put("newvalue", newValue);
 
+        Gson gson = new Gson();
+        String cellDataJson = gson.toJson(cellData);
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), cellDataJson);
+
+        Request request = new Request.Builder()
+                .url(Constants.UPDATE_CELL_PAGE)
+                .patch(requestBody)
+                .build();
+
+        HttpClientUtil.runAsync(request, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showErrorAlert("Error", e.getMessage())
+                        showAlert("Error", e.getMessage())
                 );
             }
 
@@ -59,19 +71,22 @@ public class ActionLineControllerImpl {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            showErrorAlert("Error", responseBody)
+                            showAlert("Error", responseBody)
                     );
                 } else {
+                    String responseBody = response.body().string();
                     Platform.runLater(() -> {
                         populateVersionSelector();
-
+                        SheetDto updatedSheet = extractSheetFromResponseBody(responseBody);
+                        spreadsheetController.setCurrentSheet(updatedSheet);
                     });
                 }
             }
         });
     }
 
-    private void populateVersionSelector() {
+    @Override
+    public void populateVersionSelector() {
         int numOfVersions = getLatestVersion();
         versionSelector.getItems().clear();
         for (int i = 1; i <= numOfVersions; i++) {
@@ -94,7 +109,7 @@ public class ActionLineControllerImpl {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
                 Platform.runLater(() ->
-                        showErrorAlert("Error", e.getMessage())
+                        showAlert("Error", e.getMessage())
                 );
             }
 
@@ -103,7 +118,7 @@ public class ActionLineControllerImpl {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            showErrorAlert("Error", responseBody)
+                            showAlert("Error", responseBody)
                     );
                 } else {
                     String responseBody = response.body().string();
@@ -116,11 +131,45 @@ public class ActionLineControllerImpl {
         return latestVersion.get();
     }
 
-    private void showErrorAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    @Override
+    public void setCellData(CellDto cellDto, String cellId) {
+        cellidTF.setText(cellId);
+        if (cellDto != null && isActiveCell(cellDto.getCellId())) {
+            originalvalueTF.setText(cellDto.getOriginalValue());
+            lastmodverTF.setText(cellDto.getLastModifiedVersion().toString());
+        }
+        else {
+            originalvalueTF.setText("");
+            lastmodverTF.setText("");
+        }
+
     }
+
+    private boolean isActiveCell(String cellId) {
+        Map<String,CellDto>activeCells = spreadsheetController.getCurrentSheet().getCells();
+        return activeCells.containsKey(cellId);
+    }
+
+    @Override
+    public void disableEditing(boolean versionView){
+        updatevalbtn.setDisable(true);
+        originalvalueTF.setDisable(true);
+        if(!versionView) {versionSelector.setDisable(true);}
+    }
+
+    @Override
+    public void enableEditing(){
+        updatevalbtn.setDisable(false);
+        originalvalueTF.setDisable(false);
+        versionSelector.setDisable(false);
+    }
+    @Override
+    public void clearTextFields() {
+        cellidTF.clear();
+        originalvalueTF.clear();
+        lastmodverTF.clear();
+    }
+
+    @Override
+    public void setSpreadsheetController(SpreadsheetController spreadsheetController){this.spreadsheetController = spreadsheetController;}
 }

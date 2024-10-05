@@ -18,6 +18,8 @@ import shticell.client.util.Constants;
 import java.io.File;
 import java.io.IOException;
 
+import static shticell.client.util.http.HttpClientUtil.showAlert;
+
 public class LoadSheetControllerImpl implements LoadSheetController {
 
     @FXML
@@ -59,12 +61,12 @@ public class LoadSheetControllerImpl implements LoadSheetController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        SheetDto newSheet = HttpClientUtil.extractSheetFromResponse(responseBody);
+                        SheetDto newSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
                         availableSheetsController.addSheet(newSheet);
                     });
                 } else {
                     Platform.runLater(() ->
-                            showErrorAlert("Error", "Failed to load file: " + response.message())
+                            showAlert("Error", "Failed to load file: " + response.message())
                     );
                 }
             }
@@ -72,18 +74,10 @@ public class LoadSheetControllerImpl implements LoadSheetController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showErrorAlert("Error", "Error: " + e.getMessage())
+                        showAlert("Error", "Error: " + e.getMessage())
                 );
             }
         });
-    }
-
-    private void showErrorAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
     private void setGreetingLabel() {

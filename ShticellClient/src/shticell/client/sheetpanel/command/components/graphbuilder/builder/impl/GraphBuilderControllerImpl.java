@@ -25,6 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static shticell.client.util.http.HttpClientUtil.showAlert;
+
 
 public class GraphBuilderControllerImpl implements GraphBuilderController {
 
@@ -194,18 +196,4 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
         }
     }
 
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-
-        // Resize the alert window by setting its width and height
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
-        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
-
-        alert.showAndWait();
-    }
 }

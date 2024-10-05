@@ -51,10 +51,7 @@ public class SheetHubMainController {
 
     private void setMainPanelTo(Parent pane) {
         mainPanel.setContent(pane);
-        AnchorPane.setBottomAnchor(pane, 1.0);
-        AnchorPane.setTopAnchor(pane, 1.0);
-        AnchorPane.setLeftAnchor(pane, 1.0);
-        AnchorPane.setRightAnchor(pane, 1.0);
+
     }
 
     public void switchToHubPage(){

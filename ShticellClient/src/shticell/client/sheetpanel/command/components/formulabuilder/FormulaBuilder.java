@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaBuilderController;
 
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class FormulaBuilder {
             Parent root = loader.load();
 
             // Get the controller instance
-       //   FormulaBuilderController controller = loader.getController();
+          FormulaBuilderController controller = loader.getController();
 
             // Show the formula builder window
             Stage stage = new Stage();

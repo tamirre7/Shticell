@@ -28,5 +28,12 @@ public class Constants {
     //sheet view resources
     public final static String UPDATE_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecell";
     public final static String LATEST_VERSION_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/latestversion";
-
+    public final static String EVALUATE_ORIGINAL_VALUE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/evaluateoriginalvalue";
+    public final static String SORT_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/sort";
+    public final static String FILTER_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/filter";
+    public final static String ADD_RANGE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addrange";
+    public final static String DELETE_RANGE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/deleterange";
+    public final static String UPDATE_CELL_STYLE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecellstyle";
+    public final static String ADD_EMPTY_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addemptycell";
+    public final static String DYNAMIC_ANALYSIS_UPDATE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/dynamicanalysisupdate";
 }

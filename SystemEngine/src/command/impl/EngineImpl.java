@@ -141,6 +141,7 @@ public class EngineImpl implements Engine {
         String name = currentSheet.getSheetName();
         int version = sheetMap.get(currentSheet.getSheetName()).getLatestVersion();
         Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
@@ -148,7 +149,7 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
-        return new SheetDto(dimensions.getNumCols(), dimensions.getNumRows(), dimensions.getWidthCol(), dimensions.getHeightRow(), name, version, cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, name, version, cellDtos, cellsInRangeDto);
     }
 
     private List<String> convertToListOfStrings(List<CellIdentifierImpl> cellIdentifiers) {
@@ -199,11 +200,11 @@ public class EngineImpl implements Engine {
 
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
-               getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
 
     }
 
@@ -220,9 +221,11 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(sheet.getRanges());
 
+        Dimension dimensions = sheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getNumRows(), sheet.getSheetDimentions().getWidthCol(),
-                sheet.getSheetDimentions().getHeightRow(), sheet.getSheetName(), version, cellDtos,  cellsInRangeDto);
+        return new SheetDto(dimensionDto, sheet.getSheetName(), version, cellDtos,  cellsInRangeDto);
     }
 
     @Override
@@ -234,10 +237,11 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
-                getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
@@ -248,10 +252,12 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
+
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(),
-                currentSheet.getSheetDimentions().getWidthCol(), currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(),
-               getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
@@ -308,10 +314,7 @@ public class EngineImpl implements Engine {
             }
         }
 
-        return new SheetDto(sheet.getNumCols(),
-                sheet.getNumRows(),
-                sheet.getWidthCol(),
-                sheet.getHeightRow(),
+        return new SheetDto(sheet.getSheetDimension(),
                 sheet.getName(),
                 sheet.getVersion(),
                 updatedCells,
@@ -400,10 +403,7 @@ public class EngineImpl implements Engine {
 
 // Return the new SheetDto
         return new SheetDto(
-                sheet.getNumRows(),
-                sheet.getNumRows(),
-                sheet.getWidthCol(),
-                sheet.getHeightRow(),
+                sheet.getSheetDimension(),
                 sheet.getName(),
                 sheet.getVersion(),
                 updatedCells,
@@ -436,9 +436,11 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
         // Return a SheetDto with the SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
     }
 
     @Override
@@ -452,9 +454,11 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getNumRows(), currentSheet.getSheetDimentions().getWidthCol(),
-                currentSheet.getSheetDimentions().getHeightRow(), currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
 
     }
 

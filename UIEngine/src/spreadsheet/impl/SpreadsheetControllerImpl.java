@@ -149,6 +149,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
        disableEditing(versionView);
         updateAllCells(sheetDto.getCells());
     }
+
     private void disableEditing(boolean versionView)
     {
         disableCellClick();
