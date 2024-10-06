@@ -10,11 +10,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DialogPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,7 +28,7 @@ public class GraphBuilderControllerImpl implements GraphBuilderController {
 
     private SpreadsheetController spreadsheetController;
 
-    public GraphBuilderControllerImpl(SpreadsheetController spreadsheetController) {
+    public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
     }
 

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
@@ -108,7 +109,12 @@ public class RangeControllerImpl implements RangeController {
         Gson gson = new Gson();
         String newRangeJson = gson.toJson(newRange);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), newRangeJson);
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("rangeData", "newRange",
+                        RequestBody.create(newRangeJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.ADD_RANGE_PAGE)
@@ -191,12 +197,17 @@ public class RangeControllerImpl implements RangeController {
     @Override
     public void handleDeleteRange() {
         String rangeToDelete = rangeListView.getSelectionModel().getSelectedItem();
+        AtomicReference<String> rangeToDeleteRef = new AtomicReference<>(rangeToDelete);
         if (rangeToDelete != null)
         {
             Gson gson = new Gson();
-            String newRangeJson = gson.toJson(rangeToDelete);
+            rangeToDelete = gson.toJson(rangeToDelete);
 
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), newRangeJson);
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("rangeName", "rangeToRemove",
+                            RequestBody.create(rangeToDelete, MediaType.parse("application/json")))
+                    .build();
 
             Request request = new Request.Builder()
                     .url(Constants.DELETE_RANGE_PAGE)
@@ -211,7 +222,7 @@ public class RangeControllerImpl implements RangeController {
                         Platform.runLater(() -> {
                             SheetDto updatedSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
                             spreadsheetController.setCurrentSheet(updatedSheet);
-                            rangeItems.remove(rangeToDelete);
+                            rangeItems.remove(rangeToDeleteRef.get());
                             uiSheetModel.clearPreviousRangeHighlight();
                         });
                     } else {

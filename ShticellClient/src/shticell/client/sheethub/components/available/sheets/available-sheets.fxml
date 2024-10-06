@@ -7,8 +7,8 @@
 <VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl">
     <TableView fx:id="sheetsTable" styleClass="table-view">
         <columns>
-            <TableColumn fx:id="uploadedByColumn" prefWidth="150" text="Uploaded By" />
             <TableColumn fx:id="sheetNameColumn" prefWidth="150" text="Sheet Name" />
+            <TableColumn fx:id="uploadedByColumn" prefWidth="150" text="Uploaded By" />
             <TableColumn fx:id="sheetSizeColumn" prefWidth="150" text="Sheet Size (nxm)" />
             <TableColumn fx:id="permissionColumn" prefWidth="150" text="Permission" />
         </columns>

@@ -1,6 +1,8 @@
 package shticell.client.sheethub.components.available.sheets.impl;
 
+import com.google.gson.Gson;
 import dto.SheetDto;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +10,16 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
+import shticell.client.util.Constants;
+import shticell.client.util.http.HttpClientUtil;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class AvailableSheetsControllerImpl implements AvailableSheetsController {
 
@@ -62,8 +73,34 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     // Handles what happens when a sheet is selected from the table
     public void handleSheetSelection(SheetDto selectedSheet) {
         if (selectedSheet != null) {
+            Gson gson = new Gson();
+            String sheetToSetJson = gson.toJson(selectedSheet.getSheetName());
 
+            RequestBody requestBody = RequestBody.create(sheetToSetJson, MediaType.parse("application/json"));
+
+            Request request = new Request.Builder()
+                    .url(Constants.SET_SHEET)
+                    .post(requestBody)
+                    .build();
+
+            HttpClientUtil.runAsync(request, new Callback() {
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        showAlert("Error", "Failed to delete range: " + response.message());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Platform.runLater(() ->
+                            showAlert("Error", "Error: " + e.getMessage())
+                    );
+                }
+            });
 
         }
     }
 }
+

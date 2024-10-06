@@ -16,13 +16,12 @@ public class MiscControllerImpl implements MiscController {
     private ComboBox<String> skinComboBox;
     SkinManager skinManager;
 
-    private final Stage primaryStage;
+    private Stage primaryStage;
 
-    public MiscControllerImpl(Stage primaryStage, SkinManager skinManager) {
-        this.primaryStage = primaryStage;
-        this.skinManager = skinManager;
-
-    }
+    @Override
+    public void setSkinManager(SkinManager skinManager) {this.skinManager = skinManager;}
+    @Override
+    public void setPrimaryStage(Stage primaryStage) {this.primaryStage = primaryStage;}
 
     @FXML
     private void initialize() {

@@ -11,5 +11,6 @@ public interface LoadSheetController {
     void uploadFile(File file);
     void setLoginController(LoginController loginSheetController);
     void setAvailableSheetsController(AvailableSheetsController availableSheetsController);
+    void setGreetingLabel();
 
 }

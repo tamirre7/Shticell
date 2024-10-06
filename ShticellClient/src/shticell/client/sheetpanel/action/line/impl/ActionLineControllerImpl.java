@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import dto.CellDto;
 import dto.SheetDto;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.Region;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
@@ -39,6 +37,72 @@ public class ActionLineControllerImpl implements ActionLineController {
     SpreadsheetController  spreadsheetController;
 
     @FXML
+    public void initialize() {
+        updatevalbtn.setOnAction(event -> {
+            updateCellValue(null);
+        });
+
+        // Listen for version selection changes
+        versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                loadSpreadsheetVersion(Integer.valueOf(newValue));
+            }
+        });
+    }
+
+    private void loadSpreadsheetVersion(Integer version) {
+        SheetDto sheetByVersion = getSheetByVersion(version);
+        if(version != getLatestVersion())
+        {
+            spreadsheetController.displayTemporarySheet(sheetByVersion,true);
+        }
+        else
+        {
+            spreadsheetController.setCurrentSheet(sheetByVersion);
+            spreadsheetController.displayOriginalSheet(true);
+        }
+    }
+
+    private SheetDto getSheetByVersion(Integer version) {
+        AtomicReference<SheetDto> sheetByVersion = new AtomicReference<>();
+
+        String finalUrl = HttpUrl
+                .parse(Constants.SHEET_BY_VERSION_PAGE)
+                .newBuilder()
+                .addQueryParameter("version", String.valueOf(version))
+                .build()
+                .toString();
+
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                Platform.runLater(() ->
+                        showAlert("Error", e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            showAlert("Error", responseBody)
+                    );
+                } else {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                        sheetByVersion.set(extractSheetFromResponseBody(responseBody));
+                    });
+                }
+            }
+        });
+        return sheetByVersion.get();
+
+    }
+
+    @FXML
     @Override
     public void updateCellValue(String preBuildOriginalValue) {
         String cellId = cellidTF.getText().toUpperCase();
@@ -51,11 +115,15 @@ public class ActionLineControllerImpl implements ActionLineController {
         Gson gson = new Gson();
         String cellDataJson = gson.toJson(cellData);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), cellDataJson);
+       RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("cellval", "cellData",
+                        RequestBody.create(cellDataJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.UPDATE_CELL_PAGE)
-                .patch(requestBody)
+                .post(requestBody)
                 .build();
 
         HttpClientUtil.runAsync(request, new Callback() {
@@ -92,6 +160,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         for (int i = 1; i <= numOfVersions; i++) {
             versionSelector.getItems().add(String.valueOf(i));
         }
+
     }
 
     private int getLatestVersion() {
@@ -130,6 +199,8 @@ public class ActionLineControllerImpl implements ActionLineController {
         });
         return latestVersion.get();
     }
+
+
 
     @Override
     public void setCellData(CellDto cellDto, String cellId) {

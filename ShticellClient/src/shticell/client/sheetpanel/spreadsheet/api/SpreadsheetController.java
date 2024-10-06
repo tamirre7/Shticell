@@ -1,15 +1,17 @@
 package shticell.client.sheetpanel.spreadsheet.api;
 
-import action.line.api.ActionLineController;
+
 import dto.CellDto;
 import dto.SheetDto;
 import javafx.scene.control.Label;
-import range.api.RangeController;
 
+
+import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
 import shticell.client.sheetpanel.command.components.sortandfilter.api.SortAndFilterController;
 import shticell.client.sheetpanel.editingmanager.api.EditingManager;
 import shticell.client.sheetpanel.misc.api.MiscController;
+import shticell.client.sheetpanel.range.api.RangeController;
 import shticell.client.sheetpanel.spreadsheet.UISheetModel;
 
 import java.util.Map;

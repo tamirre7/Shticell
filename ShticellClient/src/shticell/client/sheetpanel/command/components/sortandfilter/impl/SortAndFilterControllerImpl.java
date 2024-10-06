@@ -33,7 +33,6 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     private Button resetButton;
     List<String> columnsToSortOrFilter;
     RangeDto sortOrFilterRange;
-    DimensionDto sheetDimension;
     SpreadsheetController spreadsheetController;
 
 
@@ -107,11 +106,19 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
     private void sendFilterRequest(Map<String, List<String>> selectedValuesForColumns) {
        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns);
+        DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
 
        Gson gson = new Gson();
        String dataToFilterJson = gson.toJson(dataToFilterDto);
+        String sheetDimensionsJson = gson.toJson(sheetDimensions);
 
-       RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataToFilterJson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("dataToSort", "dataToSort",
+                        RequestBody.create(dataToFilterJson, MediaType.parse("application/json")))
+                .addFormDataPart("sheetDimension", "dimension",
+                        RequestBody.create(sheetDimensionsJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.FILTER_PAGE)
@@ -124,8 +131,8 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        SheetDto sortedSheetDto = extractSheetFromResponseBody(responseBody);
-                        spreadsheetController.displayTemporarySheet(sortedSheetDto,false);
+                        SheetDto filterdSheetDto = extractSheetFromResponseBody(responseBody);
+                        spreadsheetController.displayTemporarySheet(filterdSheetDto,false);
                     });
                 } else {
                     Platform.runLater(() ->
@@ -160,11 +167,19 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
 
         DataToSortDto dataToSort = new DataToSortDto(columnsToSortOrFilter,sortOrFilterRange);
+        DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
 
         Gson gson = new Gson();
         String dataToSortJson = gson.toJson(dataToSort);
+        String sheetDimensionsJson = gson.toJson(sheetDimensions);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), dataToSortJson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("dataToSort", "dataToSort",
+                        RequestBody.create(dataToSortJson, MediaType.parse("application/json")))
+                .addFormDataPart("sheetDimension", "dimension",
+                        RequestBody.create(sheetDimensionsJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.SORT_PAGE)
@@ -399,8 +414,6 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     @Override
     public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
-        SheetDto currentSheet = spreadsheetController.getCurrentSheet();
-        sheetDimension = currentSheet.getSheetDimension();
     }
 
 

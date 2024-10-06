@@ -3,6 +3,7 @@ package shticell.client.util;
 public class Constants {
     //fxml locations
     public final static String SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/main/shticell-hub-main.fxml";
+    public final static String SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/main/shticellApp.fxml";
     public final static String LOGIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/login/login-page.fxml";
     public final static String LOAD_SHEET_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/loadsheet/load-sheet.fxml";
     public final static String AVAILABLE_SHEETS_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/available/sheets/available-sheets.fxml";
@@ -36,4 +37,6 @@ public class Constants {
     public final static String UPDATE_CELL_STYLE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecellstyle";
     public final static String ADD_EMPTY_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addemptycell";
     public final static String DYNAMIC_ANALYSIS_UPDATE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/dynamicanalysisupdate";
+    public final static String SHEET_BY_VERSION_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/sheetbyversion";
+    public final static String SET_SHEET = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/setsheet";
 }

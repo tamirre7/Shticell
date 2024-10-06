@@ -12,7 +12,7 @@
             <fx:include source="../components/loadsheet/load-sheet.fxml" fx:id="loadSheetComponent"/>
          </top>
          <left>
-            <fx:include source="../components/commands/components/commands-menu.fxml"/>
+            <fx:include source="../components/commands/components/commands-menu.fxml" fx:id="commandsMenuComponent"/>
          </left>
          <center>
             <VBox styleClass="content-area">

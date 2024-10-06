@@ -1,7 +1,6 @@
 package shticell.client.sheetpanel.command.components.formulabuilder.impl;
 
 import com.google.gson.Gson;
-import dto.SheetDto;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -137,9 +136,13 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     private String sendEvaluationRequest(String formula) {
         AtomicReference<String> result = new AtomicReference<>();
         Gson gson = new Gson();
-        String newRangeJson = gson.toJson(formula);
+        String formulaToEval = gson.toJson(formula);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), newRangeJson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("formula", "formulaToEval",
+                        RequestBody.create(formulaToEval, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)

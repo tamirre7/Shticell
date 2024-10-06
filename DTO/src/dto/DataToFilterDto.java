@@ -12,6 +12,7 @@ public class DataToFilterDto {
         this.selectedValuesForColumns = selectedValuesForColumns;
     }
 
-    public RangeDto getSortRange() {return sortRange;}
+    public RangeDto getFilterRange() {return sortRange;}
     public void setSortRange(RangeDto sortRange) {this.sortRange = sortRange;}
+    public Map<String, List<String>> getSelectedValuesForColumns() {return selectedValuesForColumns;}
 }

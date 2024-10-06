@@ -79,8 +79,8 @@ public class LoadSheetControllerImpl implements LoadSheetController {
             }
         });
     }
-
-    private void setGreetingLabel() {
+    @Override
+    public void setGreetingLabel() {
         if (loginController != null) {
             greetingLabel.setText("Hello, " + loginController.getLoggedUserName() + "!");
         }

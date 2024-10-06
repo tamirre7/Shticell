@@ -23,7 +23,7 @@ public class SheetDto {
     }
 
     // Getters
-    public String getName() {
+    public String getSheetName() {
         return name;
     }
 
@@ -40,6 +40,8 @@ public class SheetDto {
     }
 
     public Map<String, RangeDto> getSheetRanges() {return Collections.unmodifiableMap(sheetRanges);}
+
+    public String getSize(){return sheetDimension.getNumRows() + "x" + sheetDimension.getNumCols();}
 }
 
 

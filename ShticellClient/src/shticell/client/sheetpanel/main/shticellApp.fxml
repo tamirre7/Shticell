@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToHeight="true" fitToWidth="true" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fx:id="mainPane" fitToHeight="true" fitToWidth="true" styleClass="scroll-pane" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.main.SheetViewMainController">
    <content>
       <BorderPane styleClass="border-pane">
          <!-- Top section with VBox containing two GridPanes -->
@@ -16,7 +16,7 @@
             <VBox styleClass="top-vbox" BorderPane.alignment="CENTER">
                <!-- First GridPane included -->
                <!-- Second GridPane included -->
-               <fx:include source="../action/line/actionLineComponent.fxml" />
+               <fx:include source="../action/line/actionLineComponent.fxml" fx:id="actionLineComponent" />
             </VBox>
          </top>
 
@@ -24,16 +24,16 @@
          <left>
             <VBox minHeight="-Infinity" prefHeight="490.0" prefWidth="125.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
                <Separator prefWidth="200.0" />
-               <fx:include source="../command/components/sortandfilter/sortandflter.fxml" />
-               <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" />
-               <fx:include source="../range/rangescomponent.fxml" />
-               <fx:include source="../misc/misccomponent.fxml" />
+               <fx:include source="../command/components/sortandfilter/sortandflter.fxml" fx:id="sortAndFilterComponent" />
+               <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" fx:id="graphBuilderComponent" />
+               <fx:include source="../range/rangescomponent.fxml" fx:id="rangeComponent" />
+               <fx:include source="../misc/misccomponent.fxml" fx:id="miscComponent" />
             </VBox>
          </left>
 
          <!-- Center section for the Spreadsheet display -->
          <center>
-            <fx:include source="../spreadsheet/spreadsheetcomponent.fxml" />
+            <fx:include source="../spreadsheet/spreadsheetcomponent.fxml" fx:id="spreadsheetComponent"/>
          </center>
          <bottom>
             <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="1059.0" BorderPane.alignment="CENTER">

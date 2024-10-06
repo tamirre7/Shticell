@@ -1,6 +1,6 @@
 package shticell.client.sheetpanel.spreadsheet.impl;
 
-import action.line.api.ActionLineController;
+
 import com.google.gson.Gson;
 import dto.CellDto;
 import dto.DimensionDto;
@@ -18,9 +18,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import range.api.RangeController;
+
+import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
 import shticell.client.sheetpanel.editingmanager.api.EditingManager;
+import shticell.client.sheetpanel.range.api.RangeController;
 import shticell.client.sheetpanel.spreadsheet.UISheetModel;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.sheetpanel.misc.api.MiscController;
@@ -41,14 +43,14 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     @FXML private ScrollPane scrollPane;
     private SheetDto currentSheet;
     private SheetDto savedSheet;
-    UISheetModel uiSheetModel;
+    private UISheetModel uiSheetModel;
     private int currentSheetNumRows;
     private int currentSheetNumCols;
     private ActionLineController actionLineController;
     private RangeController rangeController;
     private MiscController miscController;
     private FormulaBuilder formulaBuilder;
-    EditingManager editingManager;
+    private EditingManager editingManager;
 
     @FXML
     public void initialize() {
@@ -67,8 +69,6 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             double width = newValue.getWidth();
             gridPane.setPrefWidth(Math.max(width, gridPane.getMinWidth()));
         });
-
-        uiSheetModel.modelSetUp(gridPane,this);
     }
 
     @Override
@@ -260,7 +260,10 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     public void setCurrentSheet(SheetDto sheet) {this.currentSheet = sheet;}
 
     @Override
-    public void setUiSheetModel(UISheetModel uiSheetModel){this.uiSheetModel = uiSheetModel;}
+    public void setUiSheetModel(UISheetModel uiSheetModel){
+        this.uiSheetModel = uiSheetModel;
+        uiSheetModel.modelSetUp(gridPane,this);
+    }
 
     @Override
     public void setActionLineController(ActionLineController actionLineController){this.actionLineController = actionLineController;}
@@ -365,11 +368,15 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellStyleParamsJson = gson.toJson(cellStyleParams);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), cellStyleParamsJson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("cellParams", "cellToUpdate",
+                        RequestBody.create(cellStyleParamsJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.UPDATE_CELL_STYLE_PAGE)
-                .patch(requestBody)
+                .post(requestBody)
                 .build();
 
         HttpClientUtil.runAsync(request, new Callback() {
@@ -450,7 +457,11 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellIdJson = gson.toJson(cellId);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), cellIdJson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("cellId", "cellToAdd",
+                        RequestBody.create(cellIdJson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.ADD_EMPTY_CELL_PAGE)
@@ -582,7 +593,11 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), cellUpdateDatajson);
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("cellData", "cellToUpdate",
+                        RequestBody.create(cellUpdateDatajson, MediaType.parse("application/json")))
+                .build();
 
         Request request = new Request.Builder()
                 .url(Constants.DYNAMIC_ANALYSIS_UPDATE_PAGE)

@@ -1,10 +1,10 @@
 package shticell.client.sheetpanel.editingmanager.impl;
 
-import range.api.RangeController;
+
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.sortandfilter.api.SortAndFilterController;
 import shticell.client.sheetpanel.editingmanager.api.EditingManager;
-import shticell.client.sheetpanel.spreadsheet.UISheetModel;
+import shticell.client.sheetpanel.range.api.RangeController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 public class EditingManagerImpl implements EditingManager {

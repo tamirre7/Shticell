@@ -315,7 +315,7 @@ public class EngineImpl implements Engine {
         }
 
         return new SheetDto(sheet.getSheetDimension(),
-                sheet.getName(),
+                sheet.getSheetName(),
                 sheet.getVersion(),
                 updatedCells,
                 sheet.getSheetRanges());
@@ -404,7 +404,7 @@ public class EngineImpl implements Engine {
 // Return the new SheetDto
         return new SheetDto(
                 sheet.getSheetDimension(),
-                sheet.getName(),
+                sheet.getSheetName(),
                 sheet.getVersion(),
                 updatedCells,
                 cellsInRangeDto
@@ -501,5 +501,12 @@ public class EngineImpl implements Engine {
             rangeDtos.put(entry.getKey(), rangeDto);
         }
         return rangeDtos;
+    }
+
+    @Override
+    public void setCurrentSheet(String sheetName) {
+       SheetManager sheetManager = sheetMap.get(sheetName);
+       currentSheet = sheetManager.getSheetByVersion(getLatestVersion());
+
     }
 }

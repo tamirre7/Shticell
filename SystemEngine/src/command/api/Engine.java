@@ -26,4 +26,5 @@ public interface Engine {
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns);
     String createCellId(int row, int col);
     String evaluateOriginalValue(String originalValue);
+    void setCurrentSheet(String sheetName);
 }
