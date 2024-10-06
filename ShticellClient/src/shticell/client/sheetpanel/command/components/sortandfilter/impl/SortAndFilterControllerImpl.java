@@ -105,20 +105,14 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     }
 
     private void sendFilterRequest(Map<String, List<String>> selectedValuesForColumns) {
-       DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns);
         DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
+        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns, sheetDimensions);
 
        Gson gson = new Gson();
        String dataToFilterJson = gson.toJson(dataToFilterDto);
-        String sheetDimensionsJson = gson.toJson(sheetDimensions);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("dataToSort", "dataToSort",
-                        RequestBody.create(dataToFilterJson, MediaType.parse("application/json")))
-                .addFormDataPart("sheetDimension", "dimension",
-                        RequestBody.create(sheetDimensionsJson, MediaType.parse("application/json")))
-                .build();
+
+        RequestBody requestBody = RequestBody.create(dataToFilterJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.FILTER_PAGE)
@@ -166,20 +160,14 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             return;
         }
 
-        DataToSortDto dataToSort = new DataToSortDto(columnsToSortOrFilter,sortOrFilterRange);
         DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
+        DataToSortDto dataToSort = new DataToSortDto(columnsToSortOrFilter,sortOrFilterRange,sheetDimensions);
 
         Gson gson = new Gson();
         String dataToSortJson = gson.toJson(dataToSort);
-        String sheetDimensionsJson = gson.toJson(sheetDimensions);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("dataToSort", "dataToSort",
-                        RequestBody.create(dataToSortJson, MediaType.parse("application/json")))
-                .addFormDataPart("sheetDimension", "dimension",
-                        RequestBody.create(sheetDimensionsJson, MediaType.parse("application/json")))
-                .build();
+
+        RequestBody requestBody = RequestBody.create(dataToSortJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.SORT_PAGE)

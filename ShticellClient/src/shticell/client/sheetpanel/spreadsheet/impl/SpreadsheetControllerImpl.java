@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
+import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class SpreadsheetControllerImpl implements SpreadsheetController {
     @FXML
@@ -368,11 +369,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellStyleParamsJson = gson.toJson(cellStyleParams);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("cellParams", "cellToUpdate",
-                        RequestBody.create(cellStyleParamsJson, MediaType.parse("application/json")))
-                .build();
+        RequestBody requestBody = RequestBody.create(cellStyleParamsJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.UPDATE_CELL_STYLE_PAGE)
@@ -457,11 +454,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellIdJson = gson.toJson(cellId);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("cellId", "cellToAdd",
-                        RequestBody.create(cellIdJson, MediaType.parse("application/json")))
-                .build();
+        RequestBody requestBody = RequestBody.create(cellIdJson,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.ADD_EMPTY_CELL_PAGE)
@@ -593,11 +586,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("cellData", "cellToUpdate",
-                        RequestBody.create(cellUpdateDatajson, MediaType.parse("application/json")))
-                .build();
+        RequestBody requestBody = RequestBody.create(cellUpdateDatajson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.DYNAMIC_ANALYSIS_UPDATE_PAGE)
@@ -629,19 +618,6 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         return updatedSheet.get();
     }
 
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-
-        // Resize the alert window by setting its width and height
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
-        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
-
-        alert.showAndWait();
-    }
 
 }
 

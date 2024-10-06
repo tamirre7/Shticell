@@ -138,11 +138,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         Gson gson = new Gson();
         String formulaToEval = gson.toJson(formula);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("formula", "formulaToEval",
-                        RequestBody.create(formulaToEval, MediaType.parse("application/json")))
-                .build();
+        RequestBody requestBody = RequestBody.create(formulaToEval,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)

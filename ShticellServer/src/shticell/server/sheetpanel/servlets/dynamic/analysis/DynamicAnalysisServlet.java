@@ -22,12 +22,11 @@ public class DynamicAnalysisServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part cellDataPart = req.getPart("cellData");
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream cellDataInputStream = cellDataPart.getInputStream();
+            InputStream cellDataInputStream = req.getInputStream();
             String cellDataJson = new String(cellDataInputStream.readAllBytes());
 
             Gson gson = new Gson();

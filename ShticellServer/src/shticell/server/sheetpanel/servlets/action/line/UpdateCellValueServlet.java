@@ -23,12 +23,11 @@ public class UpdateCellValueServlet extends HttpServlet {
        resp.setContentType("application/json");
 
         try {
-            Part cellDataJson = req.getPart("cellval");
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream cellDataIS = cellDataJson.getInputStream();
+            InputStream cellDataIS = req.getInputStream();
             String cellData = new String(cellDataIS.readAllBytes());
 
             Gson gson = new Gson();

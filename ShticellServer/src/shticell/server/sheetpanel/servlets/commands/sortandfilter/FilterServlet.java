@@ -11,7 +11,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 import shticell.server.utils.ServletUtils;
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.impl.CellIdentifierImpl;
@@ -31,24 +30,19 @@ public class FilterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part dataToFilterPart = req.getPart("dataToFilter");
-            Part sheetDimensionsPart = req.getPart("sheetDimension");
-
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream dataToFilterInputStream = dataToFilterPart.getInputStream();
-            InputStream sheetDimensionsInputStream = sheetDimensionsPart.getInputStream();
+            InputStream dataToFilterInputStream = req.getInputStream();
 
             String dataToFilterJson = new String(dataToFilterInputStream.readAllBytes());
-            String sheetDimensionsJson = new String(sheetDimensionsInputStream.readAllBytes());
 
             Gson gson = new Gson();
             DataToFilterDto dataToFilterDto = gson.fromJson(dataToFilterJson, DataToFilterDto.class);
-            RangeDto rangeDto = dataToFilterDto.getFilterRange();
 
-            DimensionDto sheetDimensionDto = gson.fromJson(sheetDimensionsJson, DimensionDto.class);
+            RangeDto rangeDto = dataToFilterDto.getFilterRange();
+            DimensionDto sheetDimensionDto = dataToFilterDto.getDimension();
             Dimension sheetDimensions = new DimensionImpl(sheetDimensionDto.getNumRows(),sheetDimensionDto.getNumCols(),sheetDimensionDto.getWidthCol(),sheetDimensionDto.getHeightRow());
 
             CellIdentifierImpl topLeft = new CellIdentifierImpl(rangeDto.getTopLeft());

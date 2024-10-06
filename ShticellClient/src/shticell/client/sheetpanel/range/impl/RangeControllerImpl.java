@@ -203,11 +203,7 @@ public class RangeControllerImpl implements RangeController {
             Gson gson = new Gson();
             rangeToDelete = gson.toJson(rangeToDelete);
 
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("rangeName", "rangeToRemove",
-                            RequestBody.create(rangeToDelete, MediaType.parse("application/json")))
-                    .build();
+            RequestBody requestBody = RequestBody.create(rangeToDelete, MediaType.parse("application/json"));
 
             Request request = new Request.Builder()
                     .url(Constants.DELETE_RANGE_PAGE)

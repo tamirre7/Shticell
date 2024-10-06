@@ -115,11 +115,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         Gson gson = new Gson();
         String cellDataJson = gson.toJson(cellData);
 
-       RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("cellval", "cellData",
-                        RequestBody.create(cellDataJson, MediaType.parse("application/json")))
-                .build();
+       RequestBody requestBody = RequestBody.create(cellDataJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.UPDATE_CELL_PAGE)

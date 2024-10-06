@@ -20,12 +20,12 @@ public class DeleteRangeServlet extends HttpServlet {
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part rangeDataPart = req.getPart("rangeName");
+
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream rangeDataInputStream = rangeDataPart.getInputStream();
+            InputStream rangeDataInputStream = req.getInputStream();
             String rangeDataJson = new String(rangeDataInputStream.readAllBytes());
 
             Gson gson = new Gson();

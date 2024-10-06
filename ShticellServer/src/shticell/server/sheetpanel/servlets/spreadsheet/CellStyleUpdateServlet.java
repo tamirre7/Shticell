@@ -24,12 +24,12 @@ public class CellStyleUpdateServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part cellParamPart = req.getPart("cellParam");
+
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream cellParamsInputStream  = cellParamPart.getInputStream();
+            InputStream cellParamsInputStream  = req.getInputStream();
 
             String cellParamJson = new String(cellParamsInputStream.readAllBytes());
 

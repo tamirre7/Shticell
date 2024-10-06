@@ -30,23 +30,19 @@ public class SortServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part dataToSortPart = req.getPart("dataToSort");
-            Part sheetDimensionsPart = req.getPart("sheetDimension");
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream dataToSortInputStream = dataToSortPart.getInputStream();
-            InputStream sheetDimensionsInputStream = sheetDimensionsPart.getInputStream();
+            InputStream dataToSortInputStream = req.getInputStream();
 
-            String sheetDimensionsJson = new String(sheetDimensionsInputStream.readAllBytes());
             String dataToSortJson = new String(dataToSortInputStream.readAllBytes());
 
             Gson gson = new Gson();
 
             DataToSortDto dataToSortDto = gson.fromJson(dataToSortJson, DataToSortDto.class);
 
-            DimensionDto sheetDimensionDto = gson.fromJson(sheetDimensionsJson, DimensionDto.class);
+            DimensionDto sheetDimensionDto = dataToSortDto.getDimensions();
             Dimension sheetDimensions = new DimensionImpl(sheetDimensionDto.getNumRows(),sheetDimensionDto.getNumCols(),sheetDimensionDto.getWidthCol(),sheetDimensionDto.getHeightRow());
 
             RangeDto rangeDto = dataToSortDto.getSortRange();

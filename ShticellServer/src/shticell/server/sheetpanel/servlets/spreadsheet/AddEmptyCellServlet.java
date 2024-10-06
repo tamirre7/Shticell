@@ -20,12 +20,12 @@ public class AddEmptyCellServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
-            Part cellIdPart = req.getPart("cellId");
+
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
             }
-            InputStream cellIdInputStream = cellIdPart.getInputStream();
+            InputStream cellIdInputStream = req.getInputStream();
             String cellIdJson = new String(cellIdInputStream.readAllBytes());
 
             Gson gson = new Gson();
