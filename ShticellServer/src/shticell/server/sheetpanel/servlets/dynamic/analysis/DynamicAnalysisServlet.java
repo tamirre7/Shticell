@@ -33,9 +33,11 @@ public class DynamicAnalysisServlet extends HttpServlet {
 
             Map<String, String> cellData = gson.fromJson(cellDataJson, new TypeToken<Map<String, String>>(){}.getType());
 
+            String sheetName = cellData.get("sheetName");
             String cellId = cellData.get("cellId");
             String cellOriginalValue = cellData.get("cellOriginalValue");
 
+            engine.setCurrentSheet(sheetName);
             SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);

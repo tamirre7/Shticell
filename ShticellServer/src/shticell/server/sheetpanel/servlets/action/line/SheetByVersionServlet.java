@@ -19,8 +19,10 @@ public class SheetByVersionServlet extends HttpServlet {
         resp.setContentType("application/json");
         try {
             String versionParam = req.getParameter("version");
+            String sheetNameParam = req.getParameter("sheetName");
             int version = Integer.parseInt(versionParam);
             Engine engine = ServletUtils.getEngine(getServletContext());
+            engine.setCurrentSheet(sheetNameParam);
             SheetDto sheetDto = engine.displaySheetByVersion(version);
             Gson gson = new Gson();
             String jsonResp = gson.toJson(sheetDto);

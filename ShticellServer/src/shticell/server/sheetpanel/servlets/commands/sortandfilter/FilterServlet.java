@@ -41,6 +41,7 @@ public class FilterServlet extends HttpServlet {
             Gson gson = new Gson();
             DataToFilterDto dataToFilterDto = gson.fromJson(dataToFilterJson, DataToFilterDto.class);
 
+            String sheetName = dataToFilterDto.getSheetName();
             RangeDto rangeDto = dataToFilterDto.getFilterRange();
             DimensionDto sheetDimensionDto = dataToFilterDto.getDimension();
             Dimension sheetDimensions = new DimensionImpl(sheetDimensionDto.getNumRows(),sheetDimensionDto.getNumCols(),sheetDimensionDto.getWidthCol(),sheetDimensionDto.getHeightRow());
@@ -52,6 +53,7 @@ public class FilterServlet extends HttpServlet {
 
             Map<String, List<String>> selectedValuesForCols = dataToFilterDto.getSelectedValuesForColumns();
 
+            engine.setCurrentSheet(sheetName);
             SheetDto sheetDto = engine.filterRangeByColumnsAndValues(range, selectedValuesForCols);
             String jsonResp = gson.toJson(sheetDto);
             resp.getWriter().write(jsonResp);

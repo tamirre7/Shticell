@@ -40,7 +40,9 @@ public class CellStyleUpdateServlet extends HttpServlet {
 
             String cellId = cellParams.get("cellId");
             String style = cellParams.get("style");
+            String sheetName = cellParams.get("sheetName");
 
+            engine.setCurrentSheet(sheetName);
             SheetDto updatedSheet = engine.setCellStyle(cellId, style);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);

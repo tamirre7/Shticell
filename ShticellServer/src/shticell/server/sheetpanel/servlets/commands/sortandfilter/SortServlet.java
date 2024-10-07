@@ -42,6 +42,7 @@ public class SortServlet extends HttpServlet {
 
             DataToSortDto dataToSortDto = gson.fromJson(dataToSortJson, DataToSortDto.class);
 
+            String sheetName = dataToSortDto.getSheetName();
             DimensionDto sheetDimensionDto = dataToSortDto.getDimensions();
             Dimension sheetDimensions = new DimensionImpl(sheetDimensionDto.getNumRows(),sheetDimensionDto.getNumCols(),sheetDimensionDto.getWidthCol(),sheetDimensionDto.getHeightRow());
 
@@ -53,7 +54,7 @@ public class SortServlet extends HttpServlet {
 
             Range range = new RangeImpl(rangeDto.getName(),topLeft,bottomRight,sheetDimensions);
 
-
+            engine.setCurrentSheet(sheetName);
             SheetDto sheetDto = engine.sortRange(range, colsToSort);
             String jsonResp = gson.toJson(sheetDto);
             resp.getWriter().write(jsonResp);

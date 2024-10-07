@@ -381,6 +381,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Map<String,String> cellStyleParams = new HashMap<>();
         cellStyleParams.put("cellId", cellId);
         cellStyleParams.put("style", cellStyle);
+        cellStyleParams.put("sheetName", currentSheet.getSheetName());
 
         Gson gson = new Gson();
         String cellStyleParamsJson = gson.toJson(cellStyleParams);
@@ -466,9 +467,12 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     }
 
     private void sendAddEmptyCellRequest(String cellId) {
+        Map<String,String> cellParams = new HashMap<>();
+        cellParams.put("cellId", cellId);
+        cellParams.put("sheetName", currentSheet.getSheetName());
 
         Gson gson = new Gson();
-        String cellIdJson = gson.toJson(cellId);
+        String cellIdJson = gson.toJson(cellParams);
 
         RequestBody requestBody = RequestBody.create(cellIdJson,MediaType.parse("application/json"));
 
@@ -598,6 +602,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Map<String,String> cellUpdateData = new HashMap<>();
         cellUpdateData.put("cellId", cellId);
         cellUpdateData.put("cellOriginalValue", cellOriginalValue);
+        cellUpdateData.put("sheetName", currentSheet.getSheetName());
 
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);

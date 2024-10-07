@@ -1,6 +1,7 @@
 package shticell.server.sheetpanel.servlets.commands.formulabuilder;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import command.api.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 @WebServlet(name = "FormulaBuilderServlet", urlPatterns = {"/sheetview/evaluateoriginalvalue"})
 public class FormulaBuilderServlet extends HttpServlet {
@@ -24,8 +26,11 @@ public class FormulaBuilderServlet extends HttpServlet {
 
             Gson gson = new Gson();
 
-            String formula = gson.fromJson(formulaJson, String.class);
+            Map<String, String> formulaData = gson.fromJson(formulaJson, new TypeToken<Map<String, String>>(){}.getType());
+            String formula = formulaData.get("formula");
+            String sheetName = formulaData.get("sheetName");
 
+            engine.setCurrentSheet(sheetName);
             String result = engine.evaluateOriginalValue(formula);
             resp.getWriter().print(result);
 

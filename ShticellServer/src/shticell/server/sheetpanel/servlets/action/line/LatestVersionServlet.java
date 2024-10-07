@@ -16,7 +16,9 @@ public class LatestVersionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain;charset=UTF-8");
         try{
+            String sheetName = req.getParameter("sheetName");
             Engine engine = ServletUtils.getEngine(getServletContext());
+            engine.setCurrentSheet(sheetName);
             int latestVersion = engine.getLatestVersion();
             resp.getWriter().print(latestVersion);
 

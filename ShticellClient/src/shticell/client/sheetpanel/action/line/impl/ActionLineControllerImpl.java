@@ -80,6 +80,7 @@ public class ActionLineControllerImpl implements ActionLineController {
                 .parse(Constants.SHEET_BY_VERSION_PAGE)
                 .newBuilder()
                 .addQueryParameter("version", String.valueOf(version))
+                .addQueryParameter("sheetName",spreadsheetController.getCurrentSheet().getSheetName())
                 .build()
                 .toString();
 
@@ -120,6 +121,7 @@ public class ActionLineControllerImpl implements ActionLineController {
 
         Map<String,String> cellData = new HashMap<>();
         cellData.put("cellid", cellId);
+        cellData.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
         if (preBuildOriginalValue == null) { cellData.put("newvalue", newValue);}
         else{cellData.put("newvalue", preBuildOriginalValue);}
 
@@ -175,9 +177,11 @@ public class ActionLineControllerImpl implements ActionLineController {
 
     private void getLatestVersion() {
         //noinspection ConstantConditions
+
         String finalUrl = HttpUrl
                 .parse(Constants.LATEST_VERSION_PAGE)
                 .newBuilder()
+                .addQueryParameter("sheetName",spreadsheetController.getCurrentSheet().getSheetName())
                 .build()
                 .toString();
 

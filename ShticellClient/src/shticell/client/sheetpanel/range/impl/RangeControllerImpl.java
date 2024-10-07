@@ -105,6 +105,7 @@ public class RangeControllerImpl implements RangeController {
         newRange.put("rangeName", rangeName);
         newRange.put("topLeftCell", topLeftCell);
         newRange.put("bottomRightCell", bottomRightCell);
+        newRange.put("sheetName",spreadsheetController.getCurrentSheet().getSheetName());
 
         Gson gson = new Gson();
         String newRangeJson = gson.toJson(newRange);
@@ -197,9 +198,13 @@ public class RangeControllerImpl implements RangeController {
         if (rangeToDelete != null)
         {
             Gson gson = new Gson();
-            rangeToDelete = gson.toJson(rangeToDelete);
+            Map<String,String> rangeToDeleteMap = new HashMap<>();
+            rangeToDeleteMap.put("rangeName", rangeToDeleteRef.get());
+            rangeToDeleteMap.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
-            RequestBody requestBody = RequestBody.create(rangeToDelete, MediaType.parse("application/json"));
+            String rangeToDeletejson = gson.toJson(rangeToDeleteMap);
+
+            RequestBody requestBody = RequestBody.create(rangeToDeletejson, MediaType.parse("application/json"));
 
             Request request = new Request.Builder()
                     .url(Constants.DELETE_RANGE_PAGE)

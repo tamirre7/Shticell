@@ -46,6 +46,7 @@ public class SheetViewMainController {
         skinManager = new SkinManager();
         graphBuilderComponentController.setSpreadsheetController(spreadsheetComponentController);
         formulaBuilder.setActionLineController(actionLineComponentController);
+        formulaBuilder.setSpreadsheetController(spreadsheetComponentController);
         actionLineComponentController.setSpreadsheetController(spreadsheetComponentController);
         sortAndFilterComponentController.setSpreadsheetController(spreadsheetComponentController);
         rangeComponentController.setSpreadsheetController(spreadsheetComponentController);

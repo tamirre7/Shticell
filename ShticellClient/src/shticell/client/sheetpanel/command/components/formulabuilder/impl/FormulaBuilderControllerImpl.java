@@ -16,13 +16,12 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaBuilderController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
@@ -41,6 +40,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     private StringProperty finalResultProperty = new SimpleStringProperty();
 
     private ActionLineController actionLineController;
+    private SpreadsheetController spreadsheetController;
 
     @FXML
     private void initialize() {
@@ -129,10 +129,14 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     }
 
     private void sendEvaluationRequestForSubFormulas(StringBuilder previews, String subFormula) {
-        Gson gson = new Gson();
-        String formulaToEval = gson.toJson(subFormula);
+        Map<String,String> formulaToEval = new HashMap<>();
+        formulaToEval.put("formula", subFormula);
+        formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
-        RequestBody requestBody = RequestBody.create(formulaToEval, MediaType.parse("application/json"));
+        Gson gson = new Gson();
+        String formulaToEvalJson = gson.toJson(subFormula);
+
+        RequestBody requestBody = RequestBody.create(formulaToEvalJson, MediaType.parse("application/json"));
         Request request = new Request.Builder()
                 .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
                 .post(requestBody)
@@ -173,10 +177,14 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     }
 
     private void sendEvaluationRequestForFinalResult(String formula) {
-        Gson gson = new Gson();
-        String formulaToEval = gson.toJson(formula);
+        Map<String,String> formulaToEval = new HashMap<>();
+        formulaToEval.put("formula", formula);
+        formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
-        RequestBody requestBody = RequestBody.create(formulaToEval,MediaType.parse("application/json"));
+        Gson gson = new Gson();
+        String formulaToEvalJson = gson.toJson(formula);
+
+        RequestBody requestBody = RequestBody.create(formulaToEvalJson,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
@@ -230,4 +238,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
     @Override
     public void setActionLineController(ActionLineController actionLineController) {this.actionLineController = actionLineController;}
+
+    @Override
+    public void setSpreadsheetController(SpreadsheetController spreadsheetController){this.spreadsheetController = spreadsheetController;}
 }

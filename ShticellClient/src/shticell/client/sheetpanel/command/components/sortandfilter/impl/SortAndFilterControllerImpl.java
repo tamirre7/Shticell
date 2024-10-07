@@ -107,7 +107,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
     private void sendFilterRequest(Map<String, List<String>> selectedValuesForColumns) {
         DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
-        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns, sheetDimensions);
+        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns, sheetDimensions,spreadsheetController.getCurrentSheet().getSheetName());
 
        Gson gson = new Gson();
        String dataToFilterJson = gson.toJson(dataToFilterDto);
@@ -163,7 +163,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
 
         DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
-        DataToSortDto dataToSort = new DataToSortDto(columnsToSortOrFilter,sortOrFilterRange,sheetDimensions);
+        DataToSortDto dataToSort = new DataToSortDto(columnsToSortOrFilter,sortOrFilterRange,sheetDimensions,spreadsheetController.getCurrentSheet().getSheetName());
 
         Gson gson = new Gson();
         String dataToSortJson = gson.toJson(dataToSort);

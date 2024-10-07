@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaBuilderController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 
 import java.io.IOException;
@@ -16,7 +17,8 @@ import static shticell.client.util.Constants.FORMULA_BUILDER_FXML_RESOURCE_LOCAT
 
 
 public class FormulaBuilder {
-    ActionLineController actionLineController;
+    private ActionLineController actionLineController;
+    private SpreadsheetController spreadsheetController;
 
     public void buildFormula() {
         try {
@@ -27,6 +29,7 @@ public class FormulaBuilder {
             // Get the controller instance
           FormulaBuilderController controller = loader.getController();
           controller.setActionLineController(actionLineController);
+          controller.setSpreadsheetController(spreadsheetController);
 
             // Show the formula builder window
             Stage stage = new Stage();
@@ -38,4 +41,5 @@ public class FormulaBuilder {
         }
     }
     public void setActionLineController(ActionLineController actionLineController) {this.actionLineController = actionLineController;}
+    public void setSpreadsheetController(SpreadsheetController spreadsheetController) {this.spreadsheetController = spreadsheetController;}
 }

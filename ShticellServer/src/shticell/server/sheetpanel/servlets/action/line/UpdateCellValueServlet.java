@@ -33,10 +33,11 @@ public class UpdateCellValueServlet extends HttpServlet {
             Gson gson = new Gson();
 
             Map<String, String> cellDetails = gson.fromJson(cellData, new TypeToken<Map<String, String>>(){}.getType());
-
+            String sheetName = cellDetails.get("sheetName");
             String cellId = cellDetails.get("cellid");
             String value = cellDetails.get("newvalue");
 
+            engine.setCurrentSheet(sheetName);
             SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);

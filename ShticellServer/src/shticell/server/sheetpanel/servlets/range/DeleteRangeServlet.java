@@ -1,6 +1,7 @@
 package shticell.server.sheetpanel.servlets.range;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import command.api.Engine;
 import dto.SheetDto;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 @WebServlet(name = "DeleteRangeServlet", urlPatterns = {"/sheetview/deleterange"})
 public class DeleteRangeServlet extends HttpServlet {
@@ -30,8 +32,12 @@ public class DeleteRangeServlet extends HttpServlet {
 
             Gson gson = new Gson();
 
-            String rangeName = gson.fromJson(rangeDataJson, String.class);
+            Map<String, String> rangeData = gson.fromJson(rangeDataJson, new TypeToken<Map<String, String>>(){}.getType());
 
+            String rangeName = rangeData.get("rangeName");
+            String sheetName = rangeData.get("sheetName");
+
+            engine.setCurrentSheet(sheetName);
             SheetDto updatedSheet = engine.removeRange(rangeName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);

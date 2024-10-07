@@ -1,6 +1,7 @@
 package shticell.server.sheetpanel.servlets.spreadsheet;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import command.api.Engine;
 import dto.SheetDto;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 @WebServlet(name = "AddEmptyCellServlet", urlPatterns = {"/sheetview/addemptycell"})
 public class AddEmptyCellServlet extends HttpServlet {
@@ -29,8 +31,12 @@ public class AddEmptyCellServlet extends HttpServlet {
             String cellIdJson = new String(cellIdInputStream.readAllBytes());
 
             Gson gson = new Gson();
-            String cellId = gson.fromJson(cellIdJson, String.class);
+            Map<String, String> cellParams = gson.fromJson(cellIdJson, new TypeToken<Map<String, String>>(){}.getType());
 
+            String cellId = cellParams.get("cellId");
+            String sheetName = cellParams.get("sheetName");
+
+            engine.setCurrentSheet(sheetName);
             SheetDto updatedSheet = engine.addEmptyCell(cellId);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
