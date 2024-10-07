@@ -12,6 +12,8 @@ import shticell.client.sheetpanel.command.components.formulabuilder.api.FormulaB
 
 import java.io.IOException;
 
+import static shticell.client.util.Constants.FORMULA_BUILDER_FXML_RESOURCE_LOCATION;
+
 
 public class FormulaBuilder {
     ActionLineController actionLineController;
@@ -19,7 +21,7 @@ public class FormulaBuilder {
     public void buildFormula() {
         try {
             // Load the FXML file for the formula builder dialog
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/command/components/formulabuilder/formulabuilder.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(FORMULA_BUILDER_FXML_RESOURCE_LOCATION));
             Parent root = loader.load();
 
             // Get the controller instance

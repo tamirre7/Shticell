@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import dto.CellDto;
 import dto.SheetDto;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import okhttp3.*;
@@ -34,12 +36,20 @@ public class ActionLineControllerImpl implements ActionLineController {
     @FXML
     private ComboBox<String> versionSelector;
 
+    private IntegerProperty latestVersion = new SimpleIntegerProperty(0);
+
     SpreadsheetController  spreadsheetController;
 
     @FXML
     public void initialize() {
         updatevalbtn.setOnAction(event -> {
             updateCellValue(null);
+        });
+
+        latestVersion.addListener((obs, oldVersion, newVersion) -> {
+            if (newVersion != null && newVersion.intValue() > 0) {
+                populateVersionSelector();  // Populate the ComboBox when the latest version is retrieved
+            }
         });
 
         // Listen for version selection changes
@@ -52,7 +62,7 @@ public class ActionLineControllerImpl implements ActionLineController {
 
     private void loadSpreadsheetVersion(Integer version) {
         SheetDto sheetByVersion = getSheetByVersion(version);
-        if(version != getLatestVersion())
+        if(version != latestVersion.get())
         {
             spreadsheetController.displayTemporarySheet(sheetByVersion,true);
         }
@@ -110,7 +120,9 @@ public class ActionLineControllerImpl implements ActionLineController {
 
         Map<String,String> cellData = new HashMap<>();
         cellData.put("cellid", cellId);
-        cellData.put("newvalue", newValue);
+        if (preBuildOriginalValue == null) { cellData.put("newvalue", newValue);}
+        else{cellData.put("newvalue", preBuildOriginalValue);}
+
 
         Gson gson = new Gson();
         String cellDataJson = gson.toJson(cellData);
@@ -140,9 +152,11 @@ public class ActionLineControllerImpl implements ActionLineController {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        populateVersionSelector();
+
                         SheetDto updatedSheet = extractSheetFromResponseBody(responseBody);
                         spreadsheetController.setCurrentSheet(updatedSheet);
+                        spreadsheetController.updateAllCells(updatedSheet.getCells());
+                        populateVersionSelector();
                     });
                 }
             }
@@ -151,16 +165,15 @@ public class ActionLineControllerImpl implements ActionLineController {
 
     @Override
     public void populateVersionSelector() {
-        int numOfVersions = getLatestVersion();
+        getLatestVersion();
         versionSelector.getItems().clear();
-        for (int i = 1; i <= numOfVersions; i++) {
+        for (int i = 1; i <=  latestVersion.get(); i++) {
             versionSelector.getItems().add(String.valueOf(i));
         }
 
     }
 
-    private int getLatestVersion() {
-        AtomicInteger latestVersion = new AtomicInteger(0);
+    private void getLatestVersion() {
         //noinspection ConstantConditions
         String finalUrl = HttpUrl
                 .parse(Constants.LATEST_VERSION_PAGE)
@@ -172,7 +185,6 @@ public class ActionLineControllerImpl implements ActionLineController {
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
                 Platform.runLater(() ->
                         showAlert("Error", e.getMessage())
                 );
@@ -188,12 +200,12 @@ public class ActionLineControllerImpl implements ActionLineController {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        latestVersion.set(Integer.parseInt(responseBody));
+                        int latest = Integer.parseInt(responseBody);
+                        latestVersion.set(latest);
                     });
                 }
             }
         });
-        return latestVersion.get();
     }
 
 

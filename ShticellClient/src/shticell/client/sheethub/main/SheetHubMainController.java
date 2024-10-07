@@ -3,13 +3,20 @@ package shticell.client.sheethub.main;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl;
 import shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl;
 import shticell.client.sheethub.components.loadsheet.impl.LoadSheetControllerImpl;
 import shticell.client.sheethub.components.login.api.LoginController;
+import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
+import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
 
@@ -20,13 +27,19 @@ public class SheetHubMainController {
     @FXML
     private ScrollPane mainPanel;
     
-    ScrollPane loginComponent;
+    private ScrollPane loginComponent;
     @FXML
     private LoadSheetControllerImpl loadSheetComponentController;
     @FXML
     private AvailableSheetsControllerImpl availableSheetsComponentController;
     @FXML
     private CommandsMenuControllerImpl commandsMenuComponentController;
+
+    private SheetViewMainController sheetViewMainController;
+
+    private ScrollPane sheetViewMainPane;
+
+    private Scene scene;
 
 
     @FXML
@@ -58,9 +71,24 @@ public class SheetHubMainController {
 
     public void switchToHubPage(){
         loadSheetComponentController.setGreetingLabel();
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(getClass().getResource("sheet-hub-styles.css").toExternalForm());
         setMainPanelTo(sheetHubComponent);
+
     }
-    public void switchToSheetViewPage(ScrollPane sheetViewComponent){
-        setMainPanelTo(sheetViewComponent);}
+    public void switchToLoginPage(){
+        setMainPanelTo(loginComponent);
+    }
+    public void switchToSheetViewPage(){
+        sheetViewMainController.setDefaultSkin(scene);
+        setMainPanelTo(sheetViewMainPane);}
+
+    public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){
+        this.sheetViewMainController = sheetViewMainController;
+        sheetViewMainController.setSheetHubMainController(this);
+        availableSheetsComponentController.setSpreadsheetController(sheetViewMainController.getSpreadsheetController());
+        this.sheetViewMainPane = sheetViewMainPane;
+        this.scene = scene;
+    }
 
 }

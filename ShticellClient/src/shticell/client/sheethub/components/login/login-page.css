@@ -5,6 +5,8 @@
 
 .scroll-pane {
     -fx-background-color: #F9F9F9;
+    -fx-fit-to-width: true;
+    -fx-fill-height: true;
 }
 
 .scroll-pane > .viewport {
@@ -70,4 +72,7 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-opacity: 0.8;
+    -fx-wrap-text: true;
+    -fx-max-width: Infinity;
+
 }

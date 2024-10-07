@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.command.components.sortandfilter.api.SortAndFilterController;
+import shticell.client.sheetpanel.editingmanager.api.EditingManager;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
@@ -150,6 +151,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     @Override
     public void handleResetSortFilter() {
         spreadsheetController.displayOriginalSheet(false);
+
     }
 
     @Override

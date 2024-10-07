@@ -13,12 +13,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class AvailableSheetsControllerImpl implements AvailableSheetsController {
@@ -39,6 +41,8 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     private TableColumn<SheetDto, String> permissionColumn;
 
     private ObservableList<SheetDto> sheetList = FXCollections.observableArrayList();
+
+    SpreadsheetController spreadsheetController;
 
     @FXML
     public void initialize() {
@@ -62,6 +66,42 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
 
         // Bind the observable list to the table
         sheetsTable.setItems(sheetList);
+
+         loadAvailableSheets();
+    }
+    private void loadAvailableSheets() {
+        Request request = new Request.Builder()
+                .url(Constants.GET_AVAILABLE_SHEETS)  // Replace with the correct URL for fetching sheets
+                .get()
+                .build();
+
+
+        HttpClientUtil.runAsync(request, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                Platform.runLater(() ->
+                        showAlert("Error", e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            showAlert("Error", responseBody)
+                    );
+                } else {
+                    String responseBody = response.body().string();
+                    SheetDto[] availableSheets = new Gson().fromJson(responseBody, SheetDto[].class);
+                    Platform.runLater(() -> {
+                        sheetList.clear();  // Clear any old data
+                        sheetList.addAll(availableSheets);  // Add the new sheets to the list
+                    });
+                }
+            }
+        });
     }
 
     // Adds a new sheet to the map and the observable list
@@ -86,7 +126,17 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
             HttpClientUtil.runAsync(request, new Callback() {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (!response.isSuccessful()) {
+                    if (response.isSuccessful()) {
+                        String responseBody = response.body().string();
+                        Platform.runLater(() -> {
+                            SheetDto currentSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
+                            spreadsheetController.setCurrentSheet(currentSheet);
+                            spreadsheetController.displaySheet(currentSheet);
+                        });
+                    }
+
+
+                    else {
                         showAlert("Error", "Failed to delete range: " + response.message());
                     }
 
@@ -101,6 +151,9 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
             });
 
         }
+    }
+    public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
+        this.spreadsheetController = spreadsheetController;
     }
 }
 

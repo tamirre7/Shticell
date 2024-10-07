@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+@WebServlet(name = "CellStyleServlet", urlPatterns = {"/sheetview/updatecellstyle"})
 public class CellStyleUpdateServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

@@ -1,6 +1,9 @@
 package shticell.client.sheetpanel.main;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
 import shticell.client.sheetpanel.command.components.graphbuilder.builder.impl.GraphBuilderControllerImpl;
@@ -11,6 +14,7 @@ import shticell.client.sheetpanel.misc.impl.MiscControllerImpl;
 import shticell.client.sheetpanel.range.impl.RangeControllerImpl;
 import shticell.client.sheetpanel.skinmanager.SkinManager;
 import shticell.client.sheetpanel.spreadsheet.UISheetModel;
+import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.sheetpanel.spreadsheet.impl.SpreadsheetControllerImpl;
 import javafx.scene.control.ScrollPane;
 
@@ -28,12 +32,18 @@ public class SheetViewMainController {
     @FXML
     private SpreadsheetControllerImpl spreadsheetComponentController;
 
+    private Scene scene;
+
+    private SkinManager skinManager;
+
+    private SheetHubMainController sheetHubMainController;
+
     @FXML
     public void initialize() {
         UISheetModel uiSheetModel = new UISheetModel();
         EditingManager editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController);
         FormulaBuilder formulaBuilder = new FormulaBuilder();
-        SkinManager skinManager = new SkinManager();
+        skinManager = new SkinManager();
         graphBuilderComponentController.setSpreadsheetController(spreadsheetComponentController);
         formulaBuilder.setActionLineController(actionLineComponentController);
         actionLineComponentController.setSpreadsheetController(spreadsheetComponentController);
@@ -48,4 +58,19 @@ public class SheetViewMainController {
         spreadsheetComponentController.setMiscController(miscComponentController);
         miscComponentController.setSkinManager(skinManager);
     }
+    public SpreadsheetController getSpreadsheetController() {return spreadsheetComponentController;}
+
+    public void setSheetHubMainController(SheetHubMainController sheetHubMainController) {
+        this.sheetHubMainController = sheetHubMainController;
+    }
+
+    @FXML
+    private void returnToHub(){sheetHubMainController.switchToHubPage();}
+
+    public void setDefaultSkin(Scene scene) {
+        miscComponentController.setScene(scene);
+        skinManager.applySkin(scene,"Default");
+   }
+
+
 }

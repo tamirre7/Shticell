@@ -504,9 +504,42 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void setCurrentSheet(String sheetName) {
+    public SheetDto setCurrentSheet(String sheetName) {
        SheetManager sheetManager = sheetMap.get(sheetName);
        currentSheet = sheetManager.getSheetByVersion(getLatestVersion());
+        // Convert cells from Cell to CellDto
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
+        // Convert Ranges from Ranges to RangesDto
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
+
+        Dimension dimensions = currentSheet.getSheetDimentions();
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
+        // Return a SheetDto with the retrieved SpreadSheet
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+    }
+    @Override
+    public SheetDto[] getAllSheets()
+    {
+        List<SheetDto> sheetDtos = new ArrayList<>();
+        for(Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
+            SheetManager sheetManager = entry.getValue();
+            SpreadSheet sheet = sheetManager.getSheetByVersion(sheetManager.getLatestVersion());
+
+            Map<String, CellDto> cellDtos = convertCellsToCellDtos(sheet.getActiveCells());
+
+            // Convert Ranges from Ranges to RangesDto
+            Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(sheet.getRanges());
+
+            Dimension dimensions = sheet.getSheetDimentions();
+            DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+
+            // Return a SheetDto with the retrieved SpreadSheet
+            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto));
+
+        }
+
+        return sheetDtos.toArray(new SheetDto[0]);
     }
 }

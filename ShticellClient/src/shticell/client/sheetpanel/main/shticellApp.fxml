@@ -16,7 +16,7 @@
             <VBox styleClass="top-vbox" BorderPane.alignment="CENTER">
                <!-- First GridPane included -->
                <!-- Second GridPane included -->
-               <fx:include source="../action/line/actionLineComponent.fxml" fx:id="actionLineComponent" />
+               <fx:include fx:id="actionLineComponent" source="../action/line/actionLineComponent.fxml" />
             </VBox>
          </top>
 
@@ -24,21 +24,21 @@
          <left>
             <VBox minHeight="-Infinity" prefHeight="490.0" prefWidth="125.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
                <Separator prefWidth="200.0" />
-               <fx:include source="../command/components/sortandfilter/sortandflter.fxml" fx:id="sortAndFilterComponent" />
-               <fx:include source="../command/components/graphbuilder/builder/graphbuild.fxml" fx:id="graphBuilderComponent" />
-               <fx:include source="../range/rangescomponent.fxml" fx:id="rangeComponent" />
-               <fx:include source="../misc/misccomponent.fxml" fx:id="miscComponent" />
+               <fx:include fx:id="sortAndFilterComponent" source="../command/components/sortandfilter/sortandflter.fxml" />
+               <fx:include fx:id="graphBuilderComponent" source="../command/components/graphbuilder/builder/graphbuild.fxml" />
+               <fx:include fx:id="rangeComponent" source="../range/rangescomponent.fxml" />
+               <fx:include fx:id="miscComponent" source="../misc/misccomponent.fxml" />
             </VBox>
          </left>
 
          <!-- Center section for the Spreadsheet display -->
          <center>
-            <fx:include source="../spreadsheet/spreadsheetcomponent.fxml" fx:id="spreadsheetComponent"/>
+            <fx:include fx:id="spreadsheetComponent" source="../spreadsheet/spreadsheetcomponent.fxml" />
          </center>
          <bottom>
             <HBox alignment="CENTER_RIGHT" prefHeight="43.0" prefWidth="1059.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button mnemonicParsing="false" text="Main Screen">
+                  <Button mnemonicParsing="false" onAction="#returnToHub" text="Main Screen">
                      <HBox.margin>
                         <Insets bottom="5.0" right="7.0" top="3.0" />
                      </HBox.margin></Button>

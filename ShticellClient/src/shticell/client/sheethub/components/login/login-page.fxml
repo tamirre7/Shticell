@@ -30,8 +30,7 @@
                   <Button id="quitButton" onAction="#quitButtonClicked" text="Quit" />
                </children>
             </HBox>
-            <!-- Error message label, initially hidden -->
-            <Label fx:id="errorLabel" styleClass="error-label" visible="false" />
+            <Label fx:id="errorLabel" styleClass="error-label" wrapText="true" maxWidth="Infinity" />
          </children>
          <padding>
             <Insets bottom="20" left="20" right="20" top="20" />

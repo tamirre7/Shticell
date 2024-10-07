@@ -6,6 +6,8 @@ import dto.CellDto;
 import dto.DimensionDto;
 import dto.SheetDto;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -15,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +46,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private GridPane gridPane;
     @FXML private ScrollPane scrollPane;
     private SheetDto currentSheet;
+    private ObjectProperty<SheetDto> currentSheetProperty;
     private SheetDto savedSheet;
     private UISheetModel uiSheetModel;
     private int currentSheetNumRows;
@@ -55,6 +59,17 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
     @FXML
     public void initialize() {
+        currentSheetProperty = new SimpleObjectProperty<>(currentSheet);
+        currentSheetProperty.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                currentSheet = newValue;
+
+
+            }
+        });
+
+
+
         scrollPane.setContent(gridPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
@@ -258,7 +273,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     public void setFormulaBuilder(FormulaBuilder formulaBuilder) {this.formulaBuilder = formulaBuilder;}
 
     @Override
-    public void setCurrentSheet(SheetDto sheet) {this.currentSheet = sheet;}
+    public void setCurrentSheet(SheetDto sheet) {currentSheetProperty.set(sheet);}
 
     @Override
     public void setUiSheetModel(UISheetModel uiSheetModel){
@@ -319,46 +334,47 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
         String prevStyle = currentSheet.getCells().get(cellId).getStyle();
 
-        backgroundColorPicker.setOnAction(event -> {
-            String newStyle = currentSheet.getCells().get(cellId).getStyle() +
-                    "-fx-background-color: " + uiSheetModel.toRgbString(backgroundColorPicker.getValue()) + ";";
-            sendCellStyleUpdateRequest(cellId, newStyle);
-        });
-
-        textColorPicker.setOnAction(event -> {
-            String newStyle = currentSheet.getCells().get(cellId).getStyle() +
-                    "-fx-text-fill: " + uiSheetModel.toRgbString(textColorPicker.getValue()) + ";";
-            sendCellStyleUpdateRequest(cellId, newStyle);
-        });
-
         previewButton.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
-            uiSheetModel.applyStyle(cellLabel, cellId);
+            String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
+            cellLabel.setStyle(newStyle);
             isPrev.set(true);
-
         });
 
         okButton.addEventFilter(ActionEvent.ACTION, event -> {
-            uiSheetModel.applyStyle(cellLabel, cellId);
+            String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
+            sendCellStyleUpdateRequest(cellId, newStyle);
+            cellLabel.setStyle(newStyle);
             isPrev.set(false);
             dialog.close();
-
         });
 
         cancelButton.addEventFilter(ActionEvent.ACTION, event -> {
-            sendCellStyleUpdateRequest (cellId, prevStyle);
-            uiSheetModel.applyStyle(cellLabel, cellId);
+            cellLabel.setStyle(prevStyle); // שחזור הסטייל הקודם
+            isPrev.set(false);
             dialog.close();
         });
 
         dialog.setOnHidden(event -> {
             if (dialog.getResult() == null || isPrev.get()) {
-                sendCellStyleUpdateRequest (cellId, prevStyle);
-                uiSheetModel.applyStyle(cellLabel, cellId);
+                cellLabel.setStyle(prevStyle);
             }
         });
 
         dialog.showAndWait();
+    }
+
+    private String generateNewStyle(Color backgroundColor, Color textColor, String prevStyle) {
+        StringBuilder newStyle = new StringBuilder(prevStyle);
+
+        if (backgroundColor != null) {
+            newStyle.append("-fx-background-color: ").append(uiSheetModel.toRgbString(backgroundColor)).append(";");
+        }
+        if (textColor != null) {
+            newStyle.append("-fx-text-fill: ").append(uiSheetModel.toRgbString(textColor)).append(";");
+        }
+
+        return newStyle.toString();
     }
 
     private void sendCellStyleUpdateRequest(String cellId,String cellStyle) {
@@ -381,7 +397,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
+                    Platform.runLater(() -> currentSheetProperty.set(extractSheetFromResponseBody(responseBody)));
                 } else {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to set the cell style: " + response.message())
@@ -466,7 +482,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
+                    Platform.runLater(() -> currentSheetProperty.set(extractSheetFromResponseBody(responseBody)));
                 } else {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to add cell: " + response.message())

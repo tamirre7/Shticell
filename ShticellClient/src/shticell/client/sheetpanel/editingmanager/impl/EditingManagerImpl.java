@@ -26,14 +26,13 @@ public class EditingManagerImpl implements EditingManager {
         rangeController.enableEditing();
         sortAndFilterController.enableSortAndFilter();
         spreadsheetController.enableCellClick();
+        actionLineController.enableEditing();
     }
 
     @Override
     public void disableSheetViewEditing(boolean versionView) {
         spreadsheetController.disableCellClick();
-
         actionLineController.disableEditing(versionView);
-
         sortAndFilterController.disableSortAndFilter(versionView);
         rangeController.disableEditing();
 

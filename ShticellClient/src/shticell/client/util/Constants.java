@@ -9,6 +9,7 @@ public class Constants {
     public final static String AVAILABLE_SHEETS_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/available/sheets/available-sheets.fxml";
     public final static String PERMISSION_TABLE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/permission/table/permission-table.fxml";
     public final static String COMMANDS_MENU_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/commands-menu.fxml";
+    public final static String FORMULA_BUILDER_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/command/components/formulabuilder/formulabuilder.fxml";
 
 
     //server resources locations
@@ -22,9 +23,10 @@ public class Constants {
 
     //sheet hub resources
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
-    public final static String LOGOUT_PAGE = FULL_SERVER_PATH + HUB_SERVER_PATH + "/logout";
+    public final static String LOGOUT_PAGE = FULL_SERVER_PATH + "/logout";
     public final static String LOAD_SHEET_PAGE = FULL_SERVER_PATH + HUB_SERVER_PATH + "/loadsheet";
-
+    public final static String SET_SHEET = FULL_SERVER_PATH + HUB_SERVER_PATH + "/setsheet";
+    public final static String GET_AVAILABLE_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/availablesheets";
 
     //sheet view resources
     public final static String UPDATE_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecell";
@@ -38,5 +40,5 @@ public class Constants {
     public final static String ADD_EMPTY_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addemptycell";
     public final static String DYNAMIC_ANALYSIS_UPDATE_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/dynamicanalysisupdate";
     public final static String SHEET_BY_VERSION_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/sheetbyversion";
-    public final static String SET_SHEET = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/setsheet";
+
 }

@@ -1,6 +1,7 @@
 package shticell.client.sheetpanel.misc.impl;
 
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import shticell.client.sheetpanel.misc.api.MiscController;
@@ -14,14 +15,14 @@ public class MiscControllerImpl implements MiscController {
 
     @FXML
     private ComboBox<String> skinComboBox;
-    SkinManager skinManager;
+    private SkinManager skinManager;
 
-    private Stage primaryStage;
+    private Scene scene;
 
     @Override
     public void setSkinManager(SkinManager skinManager) {this.skinManager = skinManager;}
     @Override
-    public void setPrimaryStage(Stage primaryStage) {this.primaryStage = primaryStage;}
+    public void setScene(Scene scene) {this.scene = scene;}
 
     @FXML
     private void initialize() {
@@ -47,7 +48,7 @@ public class MiscControllerImpl implements MiscController {
 
     @Override
     public void applySkin(String skinFileName) {
-        skinManager.applySkin(primaryStage.getScene(), skinFileName);
+        skinManager.applySkin(scene, skinFileName);
     }
 
 }

@@ -3,6 +3,8 @@ package shticell.client.sheetpanel.command.components.formulabuilder.impl;
 import com.google.gson.Gson;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -21,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
@@ -37,10 +38,13 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     @FXML
     private TextField resultPreview;
 
+    private StringProperty finalResultProperty = new SimpleStringProperty();
+
     private ActionLineController actionLineController;
 
     @FXML
     private void initialize() {
+        resultPreview.textProperty().bind(finalResultProperty);
         setupFunctionTree();
         setupTreeViewListener();
         setupFormulaEditorListener();
@@ -116,25 +120,59 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     private void updateSubFormulaPreviews() {
         StringBuilder previews = new StringBuilder();
         String formula = formulaEditor.getText();
-
         List<String> subFormulas = extractNestedFormulas(formula);
 
+        // Loop through each subFormula and send evaluation request
         for (String subFormula : subFormulas) {
-            String result = sendEvaluationRequest(subFormula);
-
-            previews.append(subFormula).append(" = ").append(result).append("\n");
+            sendEvaluationRequestForSubFormulas(previews, subFormula);
         }
+    }
 
-        subFormulaPreviews.setText(previews.toString());
+    private void sendEvaluationRequestForSubFormulas(StringBuilder previews, String subFormula) {
+        Gson gson = new Gson();
+        String formulaToEval = gson.toJson(subFormula);
+
+        RequestBody requestBody = RequestBody.create(formulaToEval, MediaType.parse("application/json"));
+        Request request = new Request.Builder()
+                .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
+                .post(requestBody)
+                .build();
+
+        HttpClientUtil.runAsync(request, new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                        // Append each subFormula result when it's received
+                        previews.append(subFormula).append(" = ").append(responseBody).append("\n");
+                        // Update the TextArea with the new preview
+                        subFormulaPreviews.setText(previews.toString());
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        previews.append(subFormula).append(" = ").append(response.message()).append("\n");
+                        subFormulaPreviews.setText(previews.toString());
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> {
+                    previews.append(subFormula).append(" = Error: ").append(e.getMessage()).append("\n");
+                    subFormulaPreviews.setText(previews.toString());
+                });
+            }
+        });
     }
 
     private void updateResultPreview() {
-        String result = sendEvaluationRequest(formulaPreview.getText());
-        resultPreview.setText(result);
+        sendEvaluationRequestForFinalResult(formulaPreview.getText());
+
     }
 
-    private String sendEvaluationRequest(String formula) {
-        AtomicReference<String> result = new AtomicReference<>();
+    private void sendEvaluationRequestForFinalResult(String formula) {
         Gson gson = new Gson();
         String formulaToEval = gson.toJson(formula);
 
@@ -151,11 +189,11 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                      result.set(responseBody);
+                      finalResultProperty.set(responseBody);
                     });
                 } else {
                     Platform.runLater(() ->
-                     result.set(response.message())
+                     finalResultProperty.set(response.message())
                     );
                 }
             }
@@ -167,8 +205,6 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
                 );
             }
         });
-
-        return result.get();
     }
 
     @FXML

@@ -110,11 +110,7 @@ public class RangeControllerImpl implements RangeController {
         String newRangeJson = gson.toJson(newRange);
 
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("rangeData", "newRange",
-                        RequestBody.create(newRangeJson, MediaType.parse("application/json")))
-                .build();
+        RequestBody requestBody = RequestBody.create(newRangeJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.ADD_RANGE_PAGE)

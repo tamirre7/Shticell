@@ -10,7 +10,7 @@ import usermanager.api.UserManager;
 
 import java.io.IOException;
 
-@WebServlet(name = "LogoutServlet", urlPatterns = {"/sheethub/logout"})
+@WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
