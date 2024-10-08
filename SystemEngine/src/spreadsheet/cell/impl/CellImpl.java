@@ -24,11 +24,12 @@ public class CellImpl implements Cell, Serializable
     private List<CellIdentifierImpl> influences;
     private ReadOnlySpreadSheet sheet;
     private CellStyle style;
+    private String modifiedBy;
 
 
     public CellImpl(CellIdentifierImpl identifier, String originalValue,
                     int lastModifiedVersion,
-                     ReadOnlySpreadSheet sheet) {
+                     ReadOnlySpreadSheet sheet,String modifiedBy) {
         this.identifier = identifier;
         this.originalValue = originalValue;
         this.effectiveValue = null;
@@ -37,6 +38,7 @@ public class CellImpl implements Cell, Serializable
         this.influences = new ArrayList<>();
         this.sheet = sheet;
         this.style = new CellStyleImpl("");
+        this.modifiedBy = modifiedBy;
     }
     @Override
     public CellIdentifierImpl getIdentifier() {
@@ -108,6 +110,16 @@ public class CellImpl implements Cell, Serializable
 
     @Override
     public CellStyle getCellStyle() {return style;}
+
+    @Override
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    @Override
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
 
     @Override
     public void setCellStyle(CellStyle style) {

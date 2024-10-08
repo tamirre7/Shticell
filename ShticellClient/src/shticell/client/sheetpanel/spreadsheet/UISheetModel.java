@@ -75,8 +75,7 @@ public class UISheetModel {
         }
     }
 
-    public void applyStyle(Label cellLabel, String cellId) {
-        String style = spreadSheetController.getCurrentSheet().getCells().get(cellId).getStyle();
+    public void applyStyle(Label cellLabel, String cellId,String style) {
         if (style != null) {
             cellLabel.setStyle(style);
         }

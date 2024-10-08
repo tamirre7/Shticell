@@ -7,71 +7,100 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<HBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl">
+<VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl">
    <children>
-      <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
-         <HBox.margin>
-            <Insets left="5.0" top="5.0" />
-         </HBox.margin>
-      </TextField>
-      <TextField fx:id="originalvalueTF" minWidth="108.0" prefHeight="24.0" promptText="Original Value">
-         <HBox.margin>
-            <Insets left="15.0" top="5.0" />
-         </HBox.margin>
-      </TextField>
-      <Button fx:id="updatevalbtn" minHeight="25.0" minWidth="98.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" text="Update Value">
-         <HBox.margin>
-            <Insets left="15.0" top="4.0" />
-         </HBox.margin>
-      </Button>
-      <HBox>
+      <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-width: 0 0 1 0;">
          <children>
-            <Label prefHeight="18.0" prefWidth="153.0" text="Cell's Last Modified Version:">
+            <Label fx:id="usernameLabel" text="Username:" style="-fx-font-weight: bold;">
+               <font>
+                  <Font size="14.0" />
+               </font>
                <HBox.margin>
-                  <Insets top="9.0" />
+                  <Insets right="10.0" />
                </HBox.margin>
             </Label>
-            <TextField fx:id="lastmodverTF" editable="false" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="Version">
+            <Label fx:id="usernameValueLabel" text="User Name" style="-fx-font-weight: normal;">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+         </padding>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+      </HBox>
+      <HBox>
+         <children>
+            <TextField fx:id="cellidTF" minWidth="40.0" prefHeight="26.0" promptText="Cell ID">
                <HBox.margin>
                   <Insets left="5.0" top="5.0" />
                </HBox.margin>
             </TextField>
+            <TextField fx:id="originalvalueTF" minWidth="108.0" prefHeight="24.0" promptText="Original Value">
+               <HBox.margin>
+                  <Insets left="15.0" top="5.0" />
+               </HBox.margin>
+            </TextField>
+            <Button fx:id="updatevalbtn" minHeight="25.0" minWidth="98.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="98.0" text="Update Value">
+               <HBox.margin>
+                  <Insets left="15.0" top="4.0" />
+               </HBox.margin>
+            </Button>
             <HBox>
                <children>
-                  <Label prefHeight="18.0" prefWidth="70.0" text="Modified by:">
+                  <Label prefHeight="18.0" prefWidth="153.0" text="Cell's Last Modified Version:">
                      <HBox.margin>
                         <Insets top="9.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="lastmodverTF1" editable="false" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="User Name">
+                  <TextField fx:id="lastmodverTF" editable="false" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="Version">
                      <HBox.margin>
                         <Insets left="5.0" top="5.0" />
                      </HBox.margin>
                   </TextField>
+                  <HBox>
+                     <children>
+                        <Label prefHeight="18.0" prefWidth="70.0" text="Modified by:">
+                           <HBox.margin>
+                              <Insets top="9.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="modifiedBy" editable="false" minWidth="30.0" prefHeight="26.0" prefWidth="110.0" promptText="User Name">
+                           <HBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </HBox>
                </children>
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
             </HBox>
+            <VBox alignment="CENTER_LEFT" prefHeight="18.0" prefWidth="126.0" spacing="2">
+               <HBox.margin>
+                  <Insets left="15.0" top="5.0" />
+               </HBox.margin>
+               <children>
+                  <ComboBox fx:id="versionSelector" promptText="Choose version" styleClass="combo-box">
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </ComboBox>
+               </children>
+            </VBox>
          </children>
-         <HBox.margin>
-            <Insets left="10.0" />
-         </HBox.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
       </HBox>
-      <VBox alignment="CENTER_LEFT" prefHeight="18.0" prefWidth="126.0" spacing="2">
-         <HBox.margin>
-            <Insets left="15.0" top="5.0" />
-         </HBox.margin>
-         <children>
-            <ComboBox fx:id="versionSelector" promptText="Choose version" styleClass="combo-box">
-               <VBox.margin>
-                  <Insets bottom="5.0" />
-               </VBox.margin></ComboBox>
-         </children>
-      </VBox>
    </children>
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
-</HBox>
+</VBox>

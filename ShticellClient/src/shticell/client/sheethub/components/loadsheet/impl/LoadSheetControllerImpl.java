@@ -5,7 +5,6 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +47,7 @@ public class LoadSheetControllerImpl implements LoadSheetController {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(),
                         RequestBody.create(file, MediaType.parse("application/xml")))
+                .addFormDataPart("username", loginController.getLoggedUserName())
                 .build();
 
         Request request = new Request.Builder()

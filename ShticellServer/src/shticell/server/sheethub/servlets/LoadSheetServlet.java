@@ -24,6 +24,7 @@ public class LoadSheetServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
+            String username = req.getParameter("username");
             Part filePart = req.getPart("file");
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
@@ -31,7 +32,7 @@ public class LoadSheetServlet extends HttpServlet {
             }
 
             try (InputStream fileContent = filePart.getInputStream()) {
-                SaveLoadFileDto saveLoadFileDto = engine.loadFile(fileContent);
+                SaveLoadFileDto saveLoadFileDto = engine.loadFile(fileContent, username);
                 if(saveLoadFileDto.isSucceeded()) {
                     SheetDto uploadedSheet = engine.displayCurrentSpreadsheet();
                     Gson gson = new Gson();

@@ -134,7 +134,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
         Gson gson = new Gson();
-        String formulaToEvalJson = gson.toJson(subFormula);
+        String formulaToEvalJson = gson.toJson(formulaToEval);
 
         RequestBody requestBody = RequestBody.create(formulaToEvalJson, MediaType.parse("application/json"));
         Request request = new Request.Builder()
@@ -182,7 +182,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
         Gson gson = new Gson();
-        String formulaToEvalJson = gson.toJson(formula);
+        String formulaToEvalJson = gson.toJson(formulaToEval);
 
         RequestBody requestBody = RequestBody.create(formulaToEvalJson,MediaType.parse("application/json"));
 

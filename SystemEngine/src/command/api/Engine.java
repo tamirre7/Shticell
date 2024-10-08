@@ -11,10 +11,10 @@ import java.util.Map;
 
 public interface Engine {
 
-    SaveLoadFileDto loadFile(InputStream fileContent);
+    SaveLoadFileDto loadFile(InputStream fileContent,String username);
     SheetDto displayCurrentSpreadsheet();
-    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue);
-    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue);
+    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifiedBy);
+    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifiedBy);
     SheetDto displaySheetByVersion(int version);
     boolean isFileLoaded();
     SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);

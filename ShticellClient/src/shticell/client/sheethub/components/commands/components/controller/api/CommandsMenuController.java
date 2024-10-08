@@ -5,4 +5,5 @@ import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 public interface CommandsMenuController {
     void setMainController(SheetHubMainController mainController);
+    void refreshList();
 }

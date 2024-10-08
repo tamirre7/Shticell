@@ -1,32 +1,31 @@
 package dto;
 
-
-
 import java.util.Map;
 import java.util.Collections;
-
 
 public class SheetDto {
     private final DimensionDto sheetDimension;
     private final String name;
     private final int version;
     private final Map<String, CellDto> cells;
-
+    private final String uploadedBy;
     private final Map<String,RangeDto> sheetRanges;
 
-    public SheetDto(DimensionDto sheetDimension, String name, int version, Map<String, CellDto> cells, Map<String, RangeDto> sheetRanges) {
+    public SheetDto(DimensionDto sheetDimension, String name, int version, Map<String, CellDto> cells, Map<String, RangeDto> sheetRanges, String uploadedBy) {
         this.name = name;
         this.version = version;
         this.sheetDimension = sheetDimension;
         this.sheetRanges = sheetRanges;
         this.cells = cells;
+        this.uploadedBy = uploadedBy;
     }
 
     // Getters
+    public String getUploadedBy() {return uploadedBy;}
+
     public String getSheetName() {
         return name;
     }
-
 
     public Integer getVersion() {
         return version;

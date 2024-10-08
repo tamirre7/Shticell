@@ -15,7 +15,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -46,7 +45,6 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private GridPane gridPane;
     @FXML private ScrollPane scrollPane;
     private SheetDto currentSheet;
-    private ObjectProperty<SheetDto> currentSheetProperty;
     private SheetDto savedSheet;
     private UISheetModel uiSheetModel;
     private int currentSheetNumRows;
@@ -56,19 +54,12 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private MiscController miscController;
     private FormulaBuilder formulaBuilder;
     private EditingManager editingManager;
+    private ObjectProperty<SheetDto> updatedSheetProperty;
+
 
     @FXML
     public void initialize() {
-        currentSheetProperty = new SimpleObjectProperty<>(currentSheet);
-        currentSheetProperty.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                currentSheet = newValue;
-
-
-            }
-        });
-
-
+        updatedSheetProperty = new SimpleObjectProperty<>();
 
         scrollPane.setContent(gridPane);
         scrollPane.setFitToWidth(true);
@@ -209,7 +200,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Label cellLabel = uiSheetModel.getCellLabel(cellId);
         if (cellLabel != null) {
             cellLabel.setText(cellDto != null ? cellDto.getEffectiveValue() : "");
-            uiSheetModel.applyStyle(cellLabel, cellId);
+            String style = cellDto.getStyle();
+            uiSheetModel.applyStyle(cellLabel, cellId,style);
         }
     }
 
@@ -273,7 +265,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     public void setFormulaBuilder(FormulaBuilder formulaBuilder) {this.formulaBuilder = formulaBuilder;}
 
     @Override
-    public void setCurrentSheet(SheetDto sheet) {currentSheetProperty.set(sheet);}
+    public void setCurrentSheet(SheetDto sheet) {currentSheet = sheet;}
 
     @Override
     public void setUiSheetModel(UISheetModel uiSheetModel){
@@ -296,7 +288,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private void resetCellStyle(Label cellLabel, String cellId) {
         if (currentSheet.getCells().get(cellId) != null) {
             sendCellStyleUpdateRequest (cellId, "");
-            uiSheetModel.applyStyle(cellLabel, cellId);
+            cellLabel.setStyle("");
         }
     }
 
@@ -328,36 +320,39 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         Node previewButton = dialog.getDialogPane().lookupButton(previewButtonType);
 
         AtomicBoolean isPrev = new AtomicBoolean(false);
-
+        String prevStyle;
         if (currentSheet.getCells().get(cellId) == null) {
+            prevStyle = "";
             sendAddEmptyCellRequest(cellId);
         }
-        String prevStyle = currentSheet.getCells().get(cellId).getStyle();
+        else {
+            prevStyle = currentSheet.getCells().get(cellId).getStyle();
+        }
 
         previewButton.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
             String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
-            cellLabel.setStyle(newStyle);
+            uiSheetModel.applyStyle(cellLabel,cellId,newStyle);
             isPrev.set(true);
         });
 
         okButton.addEventFilter(ActionEvent.ACTION, event -> {
             String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
             sendCellStyleUpdateRequest(cellId, newStyle);
-            cellLabel.setStyle(newStyle);
+            uiSheetModel.applyStyle(cellLabel,cellId,newStyle);
             isPrev.set(false);
             dialog.close();
         });
 
         cancelButton.addEventFilter(ActionEvent.ACTION, event -> {
-            cellLabel.setStyle(prevStyle); // שחזור הסטייל הקודם
+            uiSheetModel.applyStyle(cellLabel,cellId,prevStyle);
             isPrev.set(false);
             dialog.close();
         });
 
         dialog.setOnHidden(event -> {
             if (dialog.getResult() == null || isPrev.get()) {
-                cellLabel.setStyle(prevStyle);
+                uiSheetModel.applyStyle(cellLabel,cellId,prevStyle);
             }
         });
 
@@ -383,6 +378,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         cellStyleParams.put("style", cellStyle);
         cellStyleParams.put("sheetName", currentSheet.getSheetName());
 
+
         Gson gson = new Gson();
         String cellStyleParamsJson = gson.toJson(cellStyleParams);
 
@@ -398,7 +394,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> currentSheetProperty.set(extractSheetFromResponseBody(responseBody)));
+                    Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
                 } else {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to set the cell style: " + response.message())
@@ -437,14 +433,14 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                         String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
                         sendCellStyleUpdateRequest (cellId, newStyle);
                         Label cell = uiSheetModel.getCellLabel(cellId);
-                        uiSheetModel.applyStyle(cell, cellId);
+                        uiSheetModel.applyStyle(cell, cellId,newStyle);
                     }
                     else {
                         sendAddEmptyCellRequest(cellId);
                         String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
                         sendCellStyleUpdateRequest (cellId, newStyle);
                         Label cell = uiSheetModel.getCellLabel(cellId);
-                        uiSheetModel.applyStyle(cell, cellId);
+                        uiSheetModel.applyStyle(cell, cellId,newStyle);
                     }
                 }
             } else {
@@ -486,7 +482,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> currentSheetProperty.set(extractSheetFromResponseBody(responseBody)));
+                    Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
                 } else {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to add cell: " + response.message())
@@ -569,9 +565,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             sliderValueLabel.setText(String.format("%.2f", roundedValue));
 
             String newvalueStr = String.format("%.2f", roundedValue);
-            SheetDto tempSheet = sendDynamicAnalysisUpdateRequest(cellID, newvalueStr);
+            sendDynamicAnalysisUpdateRequest(cellID, newvalueStr);
             editingManager.disableSheetViewEditing(false);
-            updateAllCells(tempSheet.getCells());
+            updateAllCells(updatedSheetProperty.get().getCells());
         });
 
         Button doneButton = new Button("Done");
@@ -592,18 +588,19 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         dialog.setTitle("Update Cell Value");
         dialog.setScene(scene);
 
-        dialog.setOnCloseRequest(e -> { savedSheet = sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue);
+        dialog.setOnCloseRequest(e -> {
+            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue);
+            savedSheet = updatedSheetProperty.get();
             displayOriginalSheet(false);});
         dialog.show();
     }
 
-    private SheetDto sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue){
-        AtomicReference<SheetDto> updatedSheet = new AtomicReference<>();
+    private void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue){
         Map<String,String> cellUpdateData = new HashMap<>();
         cellUpdateData.put("cellId", cellId);
         cellUpdateData.put("cellOriginalValue", cellOriginalValue);
         cellUpdateData.put("sheetName", currentSheet.getSheetName());
-
+        cellUpdateData.put("userName",actionLineController.getLoggedUser());
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);
 
@@ -619,24 +616,20 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> updatedSheet.set(extractSheetFromResponseBody(responseBody)));
+                    Platform.runLater(() -> updatedSheetProperty.set(extractSheetFromResponseBody(responseBody)));
                 } else {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to update cell: " + response.message())
-                    );
-                }
+                    );}
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
                         showAlert("Error", "Error: " + e.getMessage())
-                );
-            }
+                );}
         });
 
-
-        return updatedSheet.get();
     }
 
 

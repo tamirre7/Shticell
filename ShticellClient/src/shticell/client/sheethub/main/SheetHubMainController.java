@@ -6,17 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl;
 import shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl;
 import shticell.client.sheethub.components.loadsheet.impl.LoadSheetControllerImpl;
 import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
-import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
 
@@ -41,6 +36,8 @@ public class SheetHubMainController {
 
     private Scene scene;
 
+    private LoginController loginController;
+
 
     @FXML
     public void initialize() {
@@ -55,7 +52,7 @@ public class SheetHubMainController {
             // Load the login page
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Constants.LOGIN_PAGE_FXML_RESOURCE_LOCATION));
             loginComponent = loader.load();
-            LoginController loginController = loader.getController();
+            loginController = loader.getController();
             loadSheetComponentController.setLoginController(loginController);
             loginController.setSheetHubMainController(this);
             setMainPanelTo(loginComponent);
@@ -71,6 +68,8 @@ public class SheetHubMainController {
 
     public void switchToHubPage(){
         loadSheetComponentController.setGreetingLabel();
+        commandsMenuComponentController.refreshList();
+        // availableSheetsComponentController.startTableRefresher();
         scene.getStylesheets().clear();
         scene.getStylesheets().add(getClass().getResource("sheet-hub-styles.css").toExternalForm());
         setMainPanelTo(sheetHubComponent);
@@ -80,7 +79,8 @@ public class SheetHubMainController {
         setMainPanelTo(loginComponent);
     }
     public void switchToSheetViewPage(){
-        sheetViewMainController.setDefaultSkin(scene);
+        availableSheetsComponentController.stopTableRefresher();
+        sheetViewMainController.initSheet(scene,loginController.getLoggedUserName());
         setMainPanelTo(sheetViewMainPane);}
 
     public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){
@@ -89,6 +89,12 @@ public class SheetHubMainController {
         availableSheetsComponentController.setSpreadsheetController(sheetViewMainController.getSpreadsheetController());
         this.sheetViewMainPane = sheetViewMainPane;
         this.scene = scene;
+    }
+
+    public void logout()
+    {
+        availableSheetsComponentController.stopTableRefresher();
+        commandsMenuComponentController.logoutButtonClicked();
     }
 
 }

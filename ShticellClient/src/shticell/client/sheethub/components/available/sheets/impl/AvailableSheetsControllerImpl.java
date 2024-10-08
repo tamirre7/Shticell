@@ -2,7 +2,9 @@ package shticell.client.sheethub.components.available.sheets.impl;
 
 import com.google.gson.Gson;
 import dto.SheetDto;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,14 +14,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static shticell.client.util.Constants.REFRESH_RATE;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
@@ -40,6 +46,9 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     @FXML
     private TableColumn<SheetDto, String> permissionColumn;
 
+    private SheetTableRefresher  tableRefresher;
+    private Timer timer;
+
     private ObservableList<SheetDto> sheetList = FXCollections.observableArrayList();
 
     SpreadsheetController spreadsheetController;
@@ -51,6 +60,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         sheetNameColumn.setCellValueFactory(new PropertyValueFactory<>("sheetName"));
         sheetSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
         permissionColumn.setCellValueFactory(new PropertyValueFactory<>("permission"));
+
 
         // Set up row selection behavior
         sheetsTable.setRowFactory(tv -> {
@@ -152,8 +162,33 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
 
         }
     }
+    private void updateTable(SheetDto[] availableSheets){
+        Platform.runLater(() -> {
+            sheetList.clear();  // Clear any old data
+            sheetList.addAll(availableSheets);  // Add the new sheets to the list
+        });
+    }
+    public void startTableRefresher() {
+        stopTableRefresher();
+
+        tableRefresher = new SheetTableRefresher(this::updateTable);
+        timer = new Timer();
+        timer.schedule(tableRefresher, REFRESH_RATE, REFRESH_RATE);
+    }
+
+    public void stopTableRefresher() {
+        if (tableRefresher != null) {
+            tableRefresher.setActive(false);
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+    }
+
     public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
     }
+
 }
 

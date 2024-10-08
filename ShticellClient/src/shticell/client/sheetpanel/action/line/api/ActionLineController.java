@@ -12,4 +12,6 @@ public interface ActionLineController {
     void clearTextFields();
     void disableEditing(boolean versionView);
     void enableEditing();
+    void setUsernameLabel(String usernameLabel);
+    String getLoggedUser();
 }

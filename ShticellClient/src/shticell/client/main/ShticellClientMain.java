@@ -15,6 +15,8 @@ import java.awt.*;
 import java.io.IOException;
 
 public class ShticellClientMain extends Application {
+    SheetHubMainController sheetHubMainController;
+    SheetViewMainController sheetViewMainController;
 
     @Override
     public void start(Stage primaryStage) {
@@ -22,15 +24,20 @@ public class ShticellClientMain extends Application {
             // Load the main page (Sheet Hub) and its controller once
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Constants.SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION));
             Parent mainView = loader.load();
-            SheetHubMainController sheetHubMainController = loader.getController();
+            sheetHubMainController = loader.getController();
 
             FXMLLoader sheetViewLoader = new FXMLLoader(getClass().getResource(Constants.SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION));
             ScrollPane sheetViewPane = sheetViewLoader.load();
-            SheetViewMainController sheetViewMainController = sheetViewLoader.getController();
+            sheetViewMainController = sheetViewLoader.getController();
 
             Scene scene = new Scene(mainView);
 
             sheetHubMainController.setupSheetView(sheetViewMainController,sheetViewPane,scene);
+
+            primaryStage.setOnCloseRequest(event -> {
+                // Call the logout method before closing
+                sheetHubMainController.logout();
+            });
 
             primaryStage.setScene(scene);
             primaryStage.setTitle("Sheet Hub");
@@ -38,6 +45,11 @@ public class ShticellClientMain extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() {
+        sheetHubMainController.logout();
     }
 
 

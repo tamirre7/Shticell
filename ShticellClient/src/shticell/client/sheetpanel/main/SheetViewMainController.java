@@ -2,7 +2,6 @@ package shticell.client.sheetpanel.main;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
@@ -16,7 +15,6 @@ import shticell.client.sheetpanel.skinmanager.SkinManager;
 import shticell.client.sheetpanel.spreadsheet.UISheetModel;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.sheetpanel.spreadsheet.impl.SpreadsheetControllerImpl;
-import javafx.scene.control.ScrollPane;
 
 public class SheetViewMainController {
     @FXML
@@ -68,10 +66,13 @@ public class SheetViewMainController {
     @FXML
     private void returnToHub(){sheetHubMainController.switchToHubPage();}
 
-    public void setDefaultSkin(Scene scene) {
+    public void initSheet(Scene scene, String loggedUserName) {
+        actionLineComponentController.setUsernameLabel(loggedUserName);
         miscComponentController.setScene(scene);
         skinManager.applySkin(scene,"Default");
+        actionLineComponentController.populateVersionSelector();
    }
+
 
 
 }

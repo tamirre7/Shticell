@@ -7,4 +7,5 @@ public interface SheetManager {
     SpreadSheet getSheetByVersion(int version);
     void updateSheetVersion(SpreadSheet sheet);
     int getLatestVersion();
+    String getUploadedBy();
 }

@@ -5,7 +5,9 @@ import dto.CellDto;
 import dto.SheetDto;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import okhttp3.*;
@@ -32,16 +34,22 @@ public class ActionLineControllerImpl implements ActionLineController {
     @FXML
     private TextField lastmodverTF;
     @FXML
+    private TextField modifiedBy;
+    @FXML
     private Button updatevalbtn;
     @FXML
     private ComboBox<String> versionSelector;
+    @FXML
+    private Label usernameValueLabel;
 
     private IntegerProperty latestVersion = new SimpleIntegerProperty(0);
-
+    private ObjectProperty<SheetDto> sheetByVersionProperty = new SimpleObjectProperty<>();
     SpreadsheetController  spreadsheetController;
 
     @FXML
     public void initialize() {
+
+
         updatevalbtn.setOnAction(event -> {
             updateCellValue(null);
         });
@@ -52,16 +60,27 @@ public class ActionLineControllerImpl implements ActionLineController {
             }
         });
 
-        // Listen for version selection changes
         versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                loadSpreadsheetVersion(Integer.valueOf(newValue));
+                getSheetByVersion(Integer.valueOf(newValue));  // Retrieve the sheet for the selected version
+            }
+        });
+
+        // Add a single listener to the sheetByVersionProperty to update the display
+        sheetByVersionProperty.addListener((obs, oldSheetValue, newSheetValue) -> {
+            if (newSheetValue != null) {
+                int selectedVersion = Integer.parseInt(versionSelector.getSelectionModel().getSelectedItem());
+                displaySheetByVersion(newSheetValue, selectedVersion);
             }
         });
     }
+    @Override
+    public String getLoggedUser(){return usernameValueLabel.getText();}
 
-    private void loadSpreadsheetVersion(Integer version) {
-        SheetDto sheetByVersion = getSheetByVersion(version);
+    @Override
+    public void setUsernameLabel(String usernameLabel) {this.usernameValueLabel.setText(usernameLabel);}
+
+    private void displaySheetByVersion(SheetDto sheetByVersion,Integer version) {
         if(version != latestVersion.get())
         {
             spreadsheetController.displayTemporarySheet(sheetByVersion,true);
@@ -73,8 +92,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         }
     }
 
-    private SheetDto getSheetByVersion(Integer version) {
-        AtomicReference<SheetDto> sheetByVersion = new AtomicReference<>();
+    private void getSheetByVersion(Integer version) {
 
         String finalUrl = HttpUrl
                 .parse(Constants.SHEET_BY_VERSION_PAGE)
@@ -104,13 +122,11 @@ public class ActionLineControllerImpl implements ActionLineController {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        sheetByVersion.set(extractSheetFromResponseBody(responseBody));
+                        sheetByVersionProperty.set(extractSheetFromResponseBody(responseBody));
                     });
                 }
             }
         });
-        return sheetByVersion.get();
-
     }
 
     @FXML
@@ -124,7 +140,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         cellData.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
         if (preBuildOriginalValue == null) { cellData.put("newvalue", newValue);}
         else{cellData.put("newvalue", preBuildOriginalValue);}
-
+        cellData.put("userName",getLoggedUser());
 
         Gson gson = new Gson();
         String cellDataJson = gson.toJson(cellData);
@@ -154,7 +170,6 @@ public class ActionLineControllerImpl implements ActionLineController {
                 } else {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-
                         SheetDto updatedSheet = extractSheetFromResponseBody(responseBody);
                         spreadsheetController.setCurrentSheet(updatedSheet);
                         spreadsheetController.updateAllCells(updatedSheet.getCells());
@@ -220,10 +235,12 @@ public class ActionLineControllerImpl implements ActionLineController {
         if (cellDto != null && isActiveCell(cellDto.getCellId())) {
             originalvalueTF.setText(cellDto.getOriginalValue());
             lastmodverTF.setText(cellDto.getLastModifiedVersion().toString());
+            modifiedBy.setText(cellDto.getModifiedBy());
         }
         else {
             originalvalueTF.setText("");
             lastmodverTF.setText("");
+            modifiedBy.setText("");
         }
 
     }

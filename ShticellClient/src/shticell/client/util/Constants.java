@@ -1,6 +1,7 @@
 package shticell.client.util;
 
 public class Constants {
+
     //fxml locations
     public final static String SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/main/shticell-hub-main.fxml";
     public final static String SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/main/shticellApp.fxml";
@@ -27,6 +28,9 @@ public class Constants {
     public final static String LOAD_SHEET_PAGE = FULL_SERVER_PATH + HUB_SERVER_PATH + "/loadsheet";
     public final static String SET_SHEET = FULL_SERVER_PATH + HUB_SERVER_PATH + "/setsheet";
     public final static String GET_AVAILABLE_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/availablesheets";
+
+    //sheethub general constants
+    public final static int REFRESH_RATE = 1500;
 
     //sheet view resources
     public final static String UPDATE_CELL_PAGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecell";

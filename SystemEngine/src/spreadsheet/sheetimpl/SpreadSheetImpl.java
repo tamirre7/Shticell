@@ -72,7 +72,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
     @Override
     public void addEmptyCell (CellIdentifierImpl identifier){
-        CellImpl newCell = new CellImpl(identifier, "",sheetManager.getLatestVersion(),this);
+        CellImpl newCell = new CellImpl(identifier, "",sheetManager.getLatestVersion(),this,"");
         newCell.calculateEffectiveValue();
         activeCells.put(identifier, newCell);
         this.updateDependenciesAndInfluences();
@@ -97,11 +97,11 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate) {
+    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
         newSheetVersion.updateDependenciesAndInfluences();
         int versionUpdate = isDynamicUpdate ? 0 : 1;
-        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.sheetManager.getLatestVersion() + versionUpdate, newSheetVersion);
+        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.sheetManager.getLatestVersion() + versionUpdate, newSheetVersion,modifyingUserName);
         Cell beforeUpdateCell = activeCells.get(cellId);
         if(beforeUpdateCell != null) {newCell.setCellStyle(beforeUpdateCell.getCellStyle());}
         newSheetVersion.activeCells.put(cellId, newCell);

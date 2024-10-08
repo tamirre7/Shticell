@@ -33,7 +33,7 @@ public class EngineImpl implements Engine {
     private Map<String, SheetManager> sheetMap = new HashMap<>();
 
     @Override
-    public SaveLoadFileDto loadFile(InputStream fileContent) {
+    public SaveLoadFileDto loadFile(InputStream fileContent,String username) {
         try {
             // Initialize JAXB context and unmarshaller
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
@@ -66,7 +66,7 @@ public class EngineImpl implements Engine {
             );
 
             // Create a new SpreadSheet instance with the provided dimensions
-            SheetManager sheetManager = new SheetManagerImpl(stlSheet.getName());
+            SheetManager sheetManager = new SheetManagerImpl(stlSheet.getName(),username);
             SpreadSheet spreadSheet = new SpreadSheetImpl(sheetDimensions, sheetManager);
             sheetManager.updateSheetVersion(spreadSheet);
 
@@ -112,7 +112,7 @@ public class EngineImpl implements Engine {
                 }
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
-                CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet);
+                CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet,username);
                 cell.setEffectiveValue(effectiveValue);
 
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
@@ -140,6 +140,7 @@ public class EngineImpl implements Engine {
 
         String name = currentSheet.getSheetName();
         int version = sheetMap.get(currentSheet.getSheetName()).getLatestVersion();
+        String uploadedBy = sheetMap.get(currentSheet.getSheetName()).getUploadedBy();
         Dimension dimensions = currentSheet.getSheetDimentions();
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
@@ -149,7 +150,7 @@ public class EngineImpl implements Engine {
         // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
 
-        return new SheetDto(dimensionDto, name, version, cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, name, version, cellDtos, cellsInRangeDto, uploadedBy);
     }
 
     private List<String> convertToListOfStrings(List<CellIdentifierImpl> cellIdentifiers) {
@@ -160,20 +161,20 @@ public class EngineImpl implements Engine {
         return result;
     }
     @Override
-     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue)
+     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName)
     {
-        return updateCell(cellid, originalValue, false);
+        return updateCell(cellid, originalValue, false,modifyingUserName);
     }
 
     @Override
-    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue)
+    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName)
     {
-        return updateCell(cellid, originalValue, true);
+        return updateCell(cellid, originalValue, true,modifyingUserName);
     }
 
 
 
-    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate) {
+    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName) {
 
         if (originalValue == null) {
             throw new IllegalArgumentException("Original value must be entered (can also be empty)");}
@@ -187,7 +188,7 @@ public class EngineImpl implements Engine {
 
         UpdateResult updateRes;
         SpreadSheet updateSpreadSheet;
-        updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate);
+        updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName);
         if (updateRes.isSuccess()) {
             updateSpreadSheet = updateRes.getSheet();
             if(!isDynamicUpdate) {sheetMap.get(currentSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}
@@ -204,7 +205,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
 
     }
 
@@ -225,7 +226,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, sheet.getSheetName(), version, cellDtos,  cellsInRangeDto);
+        return new SheetDto(dimensionDto, sheet.getSheetName(), version, cellDtos,  cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy());
     }
 
     @Override
@@ -241,7 +242,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
     }
 
     @Override
@@ -257,7 +258,7 @@ public class EngineImpl implements Engine {
 
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
     }
 
     @Override
@@ -302,23 +303,25 @@ public class EngineImpl implements Engine {
                 CellDto cell = sheet.getCells().get(cellId);
                 if (cell == null) {
                     cell = new CellDto(cellId,"","",0,new ArrayList<>(),new ArrayList<>(),
-                            "");
+                            "","John Dow");
                 }
 
                 if (rowMatches) {
                     updatedCells.put(cellId, cell);
                 } else {
                     updatedCells.put(cellId, new CellDto(cellId, "", "",
-                            0, new ArrayList<>(), new ArrayList<>(), ""));
+                            0, new ArrayList<>(), new ArrayList<>(), "",""));
                 }
             }
         }
+
 
         return new SheetDto(sheet.getSheetDimension(),
                 sheet.getSheetName(),
                 sheet.getVersion(),
                 updatedCells,
-                sheet.getSheetRanges());
+                sheet.getSheetRanges(),
+                sheet.getUploadedBy());
     }
 
     @Override
@@ -338,7 +341,7 @@ public class EngineImpl implements Engine {
             List<CellDto> rowCells = new ArrayList<>();
             for (int col = (topLeft.getCol() - 'A'); col <= (bottomRight.getCol() - 'A'); col++) {
                 String cellId = createCellId(row, col);  // Create a cell identifier
-                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, "", "", 0, new ArrayList<>(), new ArrayList<>(),"")));  // Fetch the cell or empty
+                rowCells.add(sheet.getCells().getOrDefault(cellId, new CellDto(cellId, "", "", 0, new ArrayList<>(), new ArrayList<>(),"","")));  // Fetch the cell or empty
             }
             rowsInRange.add(rowCells);  // Add the row to the list
         }
@@ -391,7 +394,8 @@ public class EngineImpl implements Engine {
                         sortedCell.getLastModifiedVersion(),
                         sortedCell.getDependencies(),  // Assuming this remains the same
                         sortedCell.getInfluences(),
-                        sortedCell.getStyle()
+                        sortedCell.getStyle(),
+                        sortedCell.getModifiedBy()
                 );
 
                 updatedCells.put(cellId, cellDto);
@@ -407,7 +411,8 @@ public class EngineImpl implements Engine {
                 sheet.getSheetName(),
                 sheet.getVersion(),
                 updatedCells,
-                cellsInRangeDto
+                cellsInRangeDto,
+                sheet.getUploadedBy()
         );
 
     }
@@ -440,7 +445,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
     }
 
     @Override
@@ -458,7 +463,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
 
     }
 
@@ -481,7 +486,8 @@ public class EngineImpl implements Engine {
                     sheetCell.getLastModifiedVersion(),
                     convertToListOfStrings(sheetCell.getDependencies()),
                     convertToListOfStrings(sheetCell.getInfluences()),
-                    sheetCell.getCellStyle().getStyle()
+                    sheetCell.getCellStyle().getStyle(),
+                    sheetCell.getModifiedBy()
             );
             cellDtos.put(entry.getKey().toString(), cellDto);
         }
@@ -506,7 +512,7 @@ public class EngineImpl implements Engine {
     @Override
     public SheetDto setCurrentSheet(String sheetName) {
        SheetManager sheetManager = sheetMap.get(sheetName);
-       currentSheet = sheetManager.getSheetByVersion(getLatestVersion());
+       currentSheet = sheetManager.getSheetByVersion(sheetManager.getLatestVersion());
         // Convert cells from Cell to CellDto
         Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
@@ -517,7 +523,7 @@ public class EngineImpl implements Engine {
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto);
+        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
     }
     @Override
     public SheetDto[] getAllSheets()
@@ -536,7 +542,7 @@ public class EngineImpl implements Engine {
             DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
             // Return a SheetDto with the retrieved SpreadSheet
-            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto));
+            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy()));
 
         }
 

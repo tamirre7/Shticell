@@ -31,5 +31,7 @@ public interface Cell
     void resetInfluences();
     void setCellStyle(CellStyle style);
     CellStyle getCellStyle();
+    void setModifiedBy(String modifiedBy);
+    String getModifiedBy();
 
 }

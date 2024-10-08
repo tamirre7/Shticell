@@ -9,7 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
@@ -36,9 +35,10 @@ public class UpdateCellValueServlet extends HttpServlet {
             String sheetName = cellDetails.get("sheetName");
             String cellId = cellDetails.get("cellid");
             String value = cellDetails.get("newvalue");
+            String userName = cellDetails.get("userName");
 
             engine.setCurrentSheet(sheetName);
-            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value);
+            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value,userName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

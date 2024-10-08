@@ -9,7 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
@@ -36,9 +35,10 @@ public class DynamicAnalysisServlet extends HttpServlet {
             String sheetName = cellData.get("sheetName");
             String cellId = cellData.get("cellId");
             String cellOriginalValue = cellData.get("cellOriginalValue");
+            String userName = cellData.get("userName");
 
             engine.setCurrentSheet(sheetName);
-            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue);
+            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue,userName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

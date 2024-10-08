@@ -25,7 +25,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     private ListView<String> commandsList;
 
     @FXML
-    public void initialize() throws IOException {
+    public void initialize() {
         commandsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if ("View Selected Sheet".equals(newValue)) {
                 viewSelectedSheet();
@@ -38,6 +38,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         if (mainController != null) {
             mainController.switchToSheetViewPage();
         }
+    }
+    @Override
+    public void refreshList()
+    {
+        commandsList.getSelectionModel().clearSelection();
     }
 
     @Override
@@ -64,4 +69,6 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         });
 
     }
+
+
 }
