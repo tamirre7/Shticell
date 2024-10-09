@@ -6,8 +6,6 @@ import dto.CellDto;
 import dto.DimensionDto;
 import dto.SheetDto;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -35,6 +33,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
@@ -54,13 +53,10 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private MiscController miscController;
     private FormulaBuilder formulaBuilder;
     private EditingManager editingManager;
-    private ObjectProperty<SheetDto> updatedSheetProperty;
 
 
     @FXML
     public void initialize() {
-        updatedSheetProperty = new SimpleObjectProperty<>();
-
         scrollPane.setContent(gridPane);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
@@ -558,6 +554,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         slider.setMinorTickCount(0);
         Label sliderValueLabel = new Label(Double.toString(slider.getValue()));
         String realOriginalValue = currentSheet.getCells().get(cellID).getOriginalValue();
+        SheetDto tempSheet = new SheetDto(currentSheet.getSheetDimension(),currentSheet.getSheetName(),currentSheet.getVersion(),currentSheet.getCells(),currentSheet.getSheetRanges(),currentSheet.getUploadedBy());
 
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double roundedValue = Math.round(newValue.doubleValue() / step) * step;
@@ -565,17 +562,16 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             sliderValueLabel.setText(String.format("%.2f", roundedValue));
 
             String newvalueStr = String.format("%.2f", roundedValue);
-            sendDynamicAnalysisUpdateRequest(cellID, newvalueStr);
+            //slider.setDisable(true);
+            sendDynamicAnalysisUpdateRequest(cellID, newvalueStr,slider,tempSheet);
             editingManager.disableSheetViewEditing(false);
-            updateAllCells(updatedSheetProperty.get().getCells());
         });
 
         Button doneButton = new Button("Done");
 
         doneButton.setOnAction(e -> {
-            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue);
+            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue,slider,currentSheet);
             editingManager.enableSheetViewEditing();
-            updateAllCells(currentSheet.getCells());
             Stage stage = (Stage) doneButton.getScene().getWindow();
             stage.close();
         });
@@ -589,17 +585,18 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         dialog.setScene(scene);
 
         dialog.setOnCloseRequest(e -> {
-            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue);
-            savedSheet = updatedSheetProperty.get();
+            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue,slider, tempSheet);
+            savedSheet = tempSheet;
             displayOriginalSheet(false);});
         dialog.show();
     }
 
-    private void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue){
+    private void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue,Slider slider,SheetDto sheetToUpdate){
+        AtomicReference<SheetDto> sheetToUpdateRef = new AtomicReference<>(sheetToUpdate);
         Map<String,String> cellUpdateData = new HashMap<>();
         cellUpdateData.put("cellId", cellId);
         cellUpdateData.put("cellOriginalValue", cellOriginalValue);
-        cellUpdateData.put("sheetName", currentSheet.getSheetName());
+        cellUpdateData.put("sheetName", sheetToUpdate.getSheetName());
         cellUpdateData.put("userName",actionLineController.getLoggedUser());
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);
@@ -616,11 +613,17 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() -> updatedSheetProperty.set(extractSheetFromResponseBody(responseBody)));
+                    Platform.runLater(() -> {
+                        sheetToUpdateRef.set(extractSheetFromResponseBody(responseBody));
+                        updateAllCells(sheetToUpdateRef.get().getCells());
+                        // slider.setDisable(false);
+                    });
                 } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to update cell: " + response.message())
-                    );}
+                    Platform.runLater(() -> {
+                        showAlert("Error", "Failed to update cell: " + response.message());
+                        slider.setDisable(false); // Re-enable slider even if there's an error
+                    });
+                }
             }
 
             @Override

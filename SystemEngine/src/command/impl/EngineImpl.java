@@ -29,7 +29,6 @@ import java.util.*;
 import static expressions.parser.FunctionParser.parseExpression;
 
 public class EngineImpl implements Engine {
-    private SpreadSheet currentSheet = null;
     private Map<String, SheetManager> sheetMap = new HashMap<>();
 
     @Override
@@ -123,8 +122,7 @@ public class EngineImpl implements Engine {
             // Update dependencies and influences
             spreadSheet.updateDependenciesAndInfluences();
 
-            // Update the current sheet and version map
-            this.currentSheet = spreadSheet;
+            // Update the map
             sheetMap.put(stlSheet.getName(), sheetManager);
 
             return new SaveLoadFileDto(true, "File loaded successfully.");
@@ -135,20 +133,21 @@ public class EngineImpl implements Engine {
         }
     }
 
-    @Override
-    public SheetDto displayCurrentSpreadsheet() {
 
-        String name = currentSheet.getSheetName();
-        int version = sheetMap.get(currentSheet.getSheetName()).getLatestVersion();
-        String uploadedBy = sheetMap.get(currentSheet.getSheetName()).getUploadedBy();
-        Dimension dimensions = currentSheet.getSheetDimentions();
+    private SheetDto convertSheetToSheetDto(SpreadSheet spreadSheet) {
+
+
+        String name = spreadSheet.getSheetName();
+        int version = sheetMap.get(spreadSheet.getSheetName()).getLatestVersion();
+        String uploadedBy = sheetMap.get(spreadSheet.getSheetName()).getUploadedBy();
+        Dimension dimensions = spreadSheet.getSheetDimentions();
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(spreadSheet.getActiveCells());
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(spreadSheet.getRanges());
 
         return new SheetDto(dimensionDto, name, version, cellDtos, cellsInRangeDto, uploadedBy);
     }
@@ -161,20 +160,22 @@ public class EngineImpl implements Engine {
         return result;
     }
     @Override
-     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName)
+     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName)
     {
-        return updateCell(cellid, originalValue, false,modifyingUserName);
+        return updateCell(cellid, originalValue, false,modifyingUserName,sheetName);
     }
 
     @Override
-    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName)
+    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName)
     {
-        return updateCell(cellid, originalValue, true,modifyingUserName);
+        return updateCell(cellid, originalValue, true,modifyingUserName,sheetName);
     }
 
 
 
-    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName) {
+    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
         if (originalValue == null) {
             throw new IllegalArgumentException("Original value must be entered (can also be empty)");}
@@ -183,95 +184,82 @@ public class EngineImpl implements Engine {
         if (cellid == null || cellid.isEmpty()) {
             throw new IllegalArgumentException("Cell ID cannot be empty");}
 
-        currentSheet.isValidCellID(cellid);
+        relevantSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
 
         UpdateResult updateRes;
         SpreadSheet updateSpreadSheet;
-        updateRes = currentSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName);
+        updateRes = relevantSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName);
         if (updateRes.isSuccess()) {
             updateSpreadSheet = updateRes.getSheet();
-            if(!isDynamicUpdate) {sheetMap.get(currentSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}
-            currentSheet = sheetMap.get(currentSheet.getSheetName()).getSheetByVersion(getLatestVersion());
+            if(!isDynamicUpdate) {sheetMap.get(relevantSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}
+            relevantSheet = updateSpreadSheet;
         } else {
             throw new RuntimeException(updateRes.getErrorMessage());}
 
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
-
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
-        Dimension dimensions = currentSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
+        return convertSheetToSheetDto(relevantSheet);
 
     }
 
     @Override
-    public SheetDto displaySheetByVersion(int version) {
+    public SheetDto displaySheetByVersion(int version,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
+
         // Retrieve the SpreadSheet from the version map
-        SpreadSheet sheet = sheetMap.get(currentSheet.getSheetName()).getSheetByVersion(version);
+        SpreadSheet sheet = sheetMap.get(relevantSheet.getSheetName()).getSheetByVersion(version);
         if (sheet == null) {
             throw new IllegalArgumentException("No spreadsheet found for the specified version");}
 
+       return convertSheetToSheetDto(sheet);
+    }
+
+    @Override
+    public SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
+
+        relevantSheet.addRange(name, topLeft, bottomRight);
         // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(sheet.getActiveCells());
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(relevantSheet.getActiveCells());
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(sheet.getRanges());
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(relevantSheet.getRanges());
 
-        Dimension dimensions = sheet.getSheetDimentions();
+        Dimension dimensions = relevantSheet.getSheetDimentions();
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, sheet.getSheetName(), version, cellDtos,  cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy());
+        return new SheetDto(dimensionDto, relevantSheet.getSheetName(), relevantManager.getLatestVersion(), cellDtos, cellsInRangeDto,relevantManager.getUploadedBy());
     }
 
     @Override
-    public SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
-        currentSheet.addRange(name, topLeft, bottomRight);
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
+    public SheetDto removeRange(String rangeName,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
+
+        relevantSheet.removeRange(rangeName);
+        Map<String, CellDto> cellDtos = convertCellsToCellDtos(relevantSheet.getActiveCells());
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(relevantSheet.getRanges());
 
-        Dimension dimensions = currentSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
-    }
-
-    @Override
-    public SheetDto removeRange(String rangeName) {
-        currentSheet.removeRange(rangeName);
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
-
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
-
-        Dimension dimensions = currentSheet.getSheetDimentions();
+        Dimension dimensions = relevantSheet.getSheetDimentions();
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
 
         // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(),getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
+        return new SheetDto(dimensionDto, relevantSheet.getSheetName(), relevantManager.getLatestVersion(), cellDtos, cellsInRangeDto,relevantManager.getUploadedBy());
     }
 
     @Override
-    public Integer getLatestVersion() {return sheetMap.get(currentSheet.getSheetName()).getLatestVersion();}
+    public SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName) {
 
-    @Override
-    public boolean isFileLoaded() {
-        return currentSheet != null;
-    }
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
-    @Override
-    public SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns) {
-        SheetDto sheet = displayCurrentSpreadsheet();
+        // Get the existing SheetDto from the engine
+        SheetDto sheet = convertSheetToSheetDto(relevantSheet);
 
         CellIdentifierImpl topLeft = range.getTopLeft();
         CellIdentifierImpl bottomRight = range.getBottomRight();
@@ -325,9 +313,12 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public SheetDto sortRange(Range range, List<String> colsToSort) {
+    public SheetDto sortRange(Range range, List<String> colsToSort,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
+
         // Get the existing SheetDto from the engine
-        SheetDto sheet = displayCurrentSpreadsheet();
+        SheetDto sheet = convertSheetToSheetDto(relevantSheet);
 
         // Extract the range boundaries (top-left and bottom-right)
         CellIdentifierImpl topLeft = range.getTopLeft();
@@ -403,7 +394,7 @@ public class EngineImpl implements Engine {
         }
 
         // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
+        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(relevantSheet.getRanges());
 
 // Return the new SheetDto
         return new SheetDto(
@@ -432,46 +423,37 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public SheetDto addEmptyCell (String cellId) {
+    public SheetDto addEmptyCell (String cellId,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
-        currentSheet.addEmptyCell(cellIdentifier);
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
-
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
-
-        Dimension dimensions = currentSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
+        relevantSheet.addEmptyCell(cellIdentifier);
+        return convertSheetToSheetDto(relevantSheet);
     }
 
     @Override
-    public SheetDto setCellStyle(String cellid, String style) {
+    public SheetDto setCellStyle(String cellid, String style,String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-        currentSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
+        relevantSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
 
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
-
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
-
-        Dimension dimensions = currentSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
-
+        return convertSheetToSheetDto(relevantSheet);
     }
 
     @Override
-    public String evaluateOriginalValue(String originalValue)
+    public int getLatestVersion(String sheetName){
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        return relevantManager.getLatestVersion();
+    }
+
+    @Override
+    public String evaluateOriginalValue(String originalValue,String sheetName)
     {
-        Expression expression = parseExpression(originalValue, currentSheet);
-        EffectiveValue newEffectiveValue = expression.evaluate(currentSheet);
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
+        Expression expression = parseExpression(originalValue, relevantSheet);
+        EffectiveValue newEffectiveValue = expression.evaluate(relevantSheet);
         return newEffectiveValue.getValue().toString();
     }
 
@@ -509,22 +491,7 @@ public class EngineImpl implements Engine {
         return rangeDtos;
     }
 
-    @Override
-    public SheetDto setCurrentSheet(String sheetName) {
-       SheetManager sheetManager = sheetMap.get(sheetName);
-       currentSheet = sheetManager.getSheetByVersion(sheetManager.getLatestVersion());
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(currentSheet.getActiveCells());
 
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(currentSheet.getRanges());
-
-        Dimension dimensions = currentSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, currentSheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(currentSheet.getSheetName()).getUploadedBy());
-    }
     @Override
     public SheetDto[] getAllSheets()
     {
@@ -542,7 +509,7 @@ public class EngineImpl implements Engine {
             DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
 
             // Return a SheetDto with the retrieved SpreadSheet
-            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy()));
+            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), sheetManager.getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy()));
 
         }
 

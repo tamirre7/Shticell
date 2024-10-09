@@ -35,8 +35,7 @@ public class AddEmptyCellServlet extends HttpServlet {
             String cellId = cellParams.get("cellId");
             String sheetName = cellParams.get("sheetName");
 
-            engine.setCurrentSheet(sheetName);
-            SheetDto updatedSheet = engine.addEmptyCell(cellId);
+            SheetDto updatedSheet = engine.addEmptyCell(cellId,sheetName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

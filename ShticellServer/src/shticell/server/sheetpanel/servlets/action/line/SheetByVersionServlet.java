@@ -22,8 +22,7 @@ public class SheetByVersionServlet extends HttpServlet {
             String sheetNameParam = req.getParameter("sheetName");
             int version = Integer.parseInt(versionParam);
             Engine engine = ServletUtils.getEngine(getServletContext());
-            engine.setCurrentSheet(sheetNameParam);
-            SheetDto sheetDto = engine.displaySheetByVersion(version);
+            SheetDto sheetDto = engine.displaySheetByVersion(version,sheetNameParam);
             Gson gson = new Gson();
             String jsonResp = gson.toJson(sheetDto);
             resp.getWriter().write(jsonResp);

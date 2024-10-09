@@ -41,8 +41,7 @@ public class AddRangeServlet extends HttpServlet {
             CellIdentifierImpl topLeft = new CellIdentifierImpl(topLeftCellStr);
             CellIdentifierImpl bottomRight = new CellIdentifierImpl(bottomRightCellStr);
 
-            engine.setCurrentSheet(sheetName);
-            SheetDto updatedSheet = engine.addRange(rangeName,topLeft,bottomRight);
+            SheetDto updatedSheet = engine.addRange(rangeName,topLeft,bottomRight,sheetName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

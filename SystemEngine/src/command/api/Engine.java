@@ -12,20 +12,17 @@ import java.util.Map;
 public interface Engine {
 
     SaveLoadFileDto loadFile(InputStream fileContent,String username);
-    SheetDto displayCurrentSpreadsheet();
-    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifiedBy);
-    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifiedBy);
-    SheetDto displaySheetByVersion(int version);
-    boolean isFileLoaded();
-    SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight);
-    SheetDto removeRange(String rangeName);
-    Integer getLatestVersion();
-    SheetDto sortRange(Range range, List<String>colsToSort);
-    SheetDto addEmptyCell (String cellid);
-    SheetDto setCellStyle(String cellid, String style);
-    SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns);
+    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName);
+    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName);
+    SheetDto displaySheetByVersion(int version,String sheetName);
+    SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight,String sheetName);
+    int getLatestVersion(String sheetName);
+    SheetDto removeRange(String rangeName,String sheetName);
+    SheetDto sortRange(Range range, List<String>colsToSort,String sheetName);
+    SheetDto addEmptyCell (String cellid,String sheetName);
+    SheetDto setCellStyle(String cellid, String style,String sheetName);
+    SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName);
     String createCellId(int row, int col);
-    String evaluateOriginalValue(String originalValue);
-    SheetDto setCurrentSheet(String sheetName);
+    String evaluateOriginalValue(String originalValue,String sheetName);
     SheetDto[] getAllSheets();
 }

@@ -30,8 +30,7 @@ public class FormulaBuilderServlet extends HttpServlet {
             String formula = formulaData.get("formula");
             String sheetName = formulaData.get("sheetName");
 
-            engine.setCurrentSheet(sheetName);
-            String result = engine.evaluateOriginalValue(formula);
+            String result = engine.evaluateOriginalValue(formula,sheetName);
             resp.getWriter().print(result);
 
         }catch (Exception e) {

@@ -53,8 +53,7 @@ public class FilterServlet extends HttpServlet {
 
             Map<String, List<String>> selectedValuesForCols = dataToFilterDto.getSelectedValuesForColumns();
 
-            engine.setCurrentSheet(sheetName);
-            SheetDto sheetDto = engine.filterRangeByColumnsAndValues(range, selectedValuesForCols);
+            SheetDto sheetDto = engine.filterRangeByColumnsAndValues(range, selectedValuesForCols,sheetName);
             String jsonResp = gson.toJson(sheetDto);
             resp.getWriter().write(jsonResp);
 

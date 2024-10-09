@@ -18,8 +18,7 @@ public class LatestVersionServlet extends HttpServlet {
         try{
             String sheetName = req.getParameter("sheetName");
             Engine engine = ServletUtils.getEngine(getServletContext());
-            engine.setCurrentSheet(sheetName);
-            int latestVersion = engine.getLatestVersion();
+            int latestVersion = engine.getLatestVersion(sheetName);
             resp.getWriter().print(latestVersion);
 
         }catch (Exception e){

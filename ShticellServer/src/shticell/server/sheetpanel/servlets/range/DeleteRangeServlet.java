@@ -36,8 +36,7 @@ public class DeleteRangeServlet extends HttpServlet {
             String rangeName = rangeData.get("rangeName");
             String sheetName = rangeData.get("sheetName");
 
-            engine.setCurrentSheet(sheetName);
-            SheetDto updatedSheet = engine.removeRange(rangeName);
+            SheetDto updatedSheet = engine.removeRange(rangeName,sheetName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

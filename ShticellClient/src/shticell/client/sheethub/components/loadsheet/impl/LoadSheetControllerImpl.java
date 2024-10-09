@@ -25,7 +25,7 @@ public class LoadSheetControllerImpl implements LoadSheetController {
     private Label greetingLabel;
 
     private LoginController loginController;
-    private AvailableSheetsController availableSheetsController;
+
 
 
     @Override
@@ -58,13 +58,7 @@ public class LoadSheetControllerImpl implements LoadSheetController {
         HttpClientUtil.runAsync(request, new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        SheetDto newSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
-                        availableSheetsController.addSheet(newSheet);
-                    });
-                } else {
+                if (!response.isSuccessful()) {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to load file: " + response.message())
                     );
@@ -89,7 +83,4 @@ public class LoadSheetControllerImpl implements LoadSheetController {
     public void setLoginController(LoginController loginController) {
         this.loginController = loginController;}
 
-    @Override
-    public void setAvailableSheetsController(AvailableSheetsController availableSheetsController) {
-        this.availableSheetsController = availableSheetsController;}
 }

@@ -10,7 +10,6 @@ public interface LoadSheetController {
     void loadButtonClicked(ActionEvent event);
     void uploadFile(File file);
     void setLoginController(LoginController loginSheetController);
-    void setAvailableSheetsController(AvailableSheetsController availableSheetsController);
     void setGreetingLabel();
 
 }

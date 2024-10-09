@@ -33,14 +33,8 @@ public class LoadSheetServlet extends HttpServlet {
 
             try (InputStream fileContent = filePart.getInputStream()) {
                 SaveLoadFileDto saveLoadFileDto = engine.loadFile(fileContent, username);
-                if(saveLoadFileDto.isSucceeded()) {
-                    SheetDto uploadedSheet = engine.displayCurrentSpreadsheet();
-                    Gson gson = new Gson();
-                    String jsonResp = gson.toJson(uploadedSheet);
-                    resp.getWriter().write(jsonResp);}
-                else{
-                    throw new ServletException("Error loading file" + saveLoadFileDto.getMessage());
-                }
+                String json = new Gson().toJson(saveLoadFileDto);
+                resp.getWriter().write(json);
             }
         }
         catch (Exception e){

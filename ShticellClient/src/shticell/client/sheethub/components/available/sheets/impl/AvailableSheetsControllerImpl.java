@@ -76,98 +76,40 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
 
         // Bind the observable list to the table
         sheetsTable.setItems(sheetList);
-
-         loadAvailableSheets();
-    }
-    private void loadAvailableSheets() {
-        Request request = new Request.Builder()
-                .url(Constants.GET_AVAILABLE_SHEETS)  // Replace with the correct URL for fetching sheets
-                .get()
-                .build();
-
-
-        HttpClientUtil.runAsync(request, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
-                Platform.runLater(() ->
-                        showAlert("Error", e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                            showAlert("Error", responseBody)
-                    );
-                } else {
-                    String responseBody = response.body().string();
-                    SheetDto[] availableSheets = new Gson().fromJson(responseBody, SheetDto[].class);
-                    Platform.runLater(() -> {
-                        sheetList.clear();  // Clear any old data
-                        sheetList.addAll(availableSheets);  // Add the new sheets to the list
-                    });
-                }
-            }
-        });
-    }
-
-    // Adds a new sheet to the map and the observable list
-    public void addSheet(SheetDto sheetDto) {
-        sheetList.add(sheetDto);
     }
 
     @Override
     // Handles what happens when a sheet is selected from the table
     public void handleSheetSelection(SheetDto selectedSheet) {
         if (selectedSheet != null) {
-            Gson gson = new Gson();
-            String sheetToSetJson = gson.toJson(selectedSheet.getSheetName());
-
-            RequestBody requestBody = RequestBody.create(sheetToSetJson, MediaType.parse("application/json"));
-
-            Request request = new Request.Builder()
-                    .url(Constants.SET_SHEET)
-                    .post(requestBody)
-                    .build();
-
-            HttpClientUtil.runAsync(request, new Callback() {
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String responseBody = response.body().string();
-                        Platform.runLater(() -> {
-                            SheetDto currentSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
-                            spreadsheetController.setCurrentSheet(currentSheet);
-                            spreadsheetController.displaySheet(currentSheet);
-                        });
-                    }
-
-
-                    else {
-                        showAlert("Error", "Failed to delete range: " + response.message());
-                    }
-
-                }
-
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Error: " + e.getMessage())
-                    );
-                }
-            });
-
+            spreadsheetController.setCurrentSheet(selectedSheet);
+            spreadsheetController.displaySheet(selectedSheet);
         }
     }
-    private void updateTable(SheetDto[] availableSheets){
+    private void updateTable(SheetDto[] availableSheets) {
         Platform.runLater(() -> {
-            sheetList.clear();  // Clear any old data
-            sheetList.addAll(availableSheets);  // Add the new sheets to the list
+            // Check if the size of available sheets is different from the current list
+            if (sheetList.size() != availableSheets.length) {
+                // Save the currently selected sheet (if any)
+                SheetDto selectedSheet = sheetsTable.getSelectionModel().getSelectedItem();
+
+                // Clear and update the sheet list
+                sheetList.clear();
+                sheetList.addAll(availableSheets);
+
+                // Try to re-select the previously selected sheet (if still available)
+                if (selectedSheet != null) {
+                    for (SheetDto sheet : sheetList) {
+                        if (sheet.getSheetName().equals(selectedSheet.getSheetName())) {
+                            sheetsTable.getSelectionModel().select(sheet);
+                            break;
+                        }
+                    }
+                }
+            }
         });
     }
+
     public void startTableRefresher() {
         stopTableRefresher();
 
