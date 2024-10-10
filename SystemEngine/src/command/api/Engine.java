@@ -25,4 +25,9 @@ public interface Engine {
     String createCellId(int row, int col);
     String evaluateOriginalValue(String originalValue,String sheetName);
     SheetDto[] getAllSheets();
+    PermissionDto getUserPermissionFromSheet(String username,String sheetName);
+    PermissionDto[] getSheetPermissions(String sheetName);
+    void permissionRequest(String sheetName, Permission permissionType, String message,String username);
+    void permissionApproval(String sheetName,String userName);
+    void permissionDenial(String sheetName, String userName);
 }

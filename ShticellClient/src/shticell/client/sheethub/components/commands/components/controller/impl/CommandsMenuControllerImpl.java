@@ -10,6 +10,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
+import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
@@ -20,6 +21,7 @@ import java.io.IOException;
 
 public class CommandsMenuControllerImpl implements CommandsMenuController {
     private SheetHubMainController mainController;
+    private PermissionTableController permissionTableController;
 
     @FXML
     private ListView<String> commandsList;
@@ -30,7 +32,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             if ("View Selected Sheet".equals(newValue)) {
                 viewSelectedSheet();
             }
-            // Add other command handlers here
+
         });
     }
 
@@ -39,6 +41,14 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             mainController.switchToSheetViewPage();
         }
     }
+
+    @FXML
+    public void returnToHub(){mainController.switchToLoginPage();}
+
+
+
+
+
     @Override
     public void refreshList()
     {
@@ -48,6 +58,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     @Override
     public void setMainController(SheetHubMainController mainController) {
         this.mainController = mainController;
+    }
+
+    @Override
+    public void setPermissionTableController(PermissionTableController permissionTableController) {
+        this.permissionTableController = permissionTableController;
     }
 
     @FXML
@@ -62,13 +77,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful() || response.isRedirect()) {
                     HttpClientUtil.removeCookiesOf(Constants.BASE_DOMAIN);
-                    Platform.runLater(() -> mainController.switchToLoginPage());
+                    Platform.runLater(() -> returnToHub());
 
                 }
             }
         });
 
     }
-
-
 }

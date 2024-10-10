@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shticell.server.utils.ServletUtils;
+import shticell.server.utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ public class DynamicAnalysisServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         try {
+            String userNameFromSession = SessionUtils.getUsername(req);
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
@@ -35,9 +37,8 @@ public class DynamicAnalysisServlet extends HttpServlet {
             String sheetName = cellData.get("sheetName");
             String cellId = cellData.get("cellId");
             String cellOriginalValue = cellData.get("cellOriginalValue");
-            String userName = cellData.get("userName");
 
-            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue,userName,sheetName);
+            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue,userNameFromSession,sheetName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

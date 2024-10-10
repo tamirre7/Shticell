@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.command.components.sortandfilter.api.SortAndFilterController;
-import shticell.client.sheetpanel.editingmanager.api.EditingManager;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
@@ -116,7 +115,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         RequestBody requestBody = RequestBody.create(dataToFilterJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.FILTER_PAGE)
+                .url(Constants.FILTER)
                 .post(requestBody)
                 .build();
 
@@ -172,7 +171,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         RequestBody requestBody = RequestBody.create(dataToSortJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.SORT_PAGE)
+                .url(Constants.SORT)
                 .post(requestBody)
                 .build();
 
@@ -252,7 +251,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
         String StrBottomRight = bottomRightResult.get().toUpperCase();
 
-        RangeDto range = new RangeDto(rangeName, StrTopLeft, StrBottomRight,null,false);
+        RangeDto range = new RangeDto(rangeName, StrTopLeft, StrBottomRight,false);
         return Optional.of(range);
     }
 

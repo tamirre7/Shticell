@@ -1,5 +1,6 @@
 package dto;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -9,6 +10,14 @@ public class RangeDto {
     private final String bottomRight;
     private final List<String> cellsInRange;
     private final boolean isActive;
+
+    public RangeDto(String name, String topLeft, String bottomRight, boolean isActive) {
+        this.name = name;
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+        this.isActive = isActive;
+        this.cellsInRange = new ArrayList<>();
+    }
 
     public RangeDto(String name, String topLeft, String bottomRight, List<String> cellsInRange, boolean isActive) {
         this.name = name;

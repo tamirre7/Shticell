@@ -18,6 +18,8 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
+import dto.Permission;
+import spreadsheet.sheetmanager.Permission.PermissionRequest;
 import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.impl.SheetManagerImpl;
 import spreadsheet.util.UpdateResult;
@@ -515,4 +517,64 @@ public class EngineImpl implements Engine {
 
         return sheetDtos.toArray(new SheetDto[0]);
     }
+
+    @Override
+    public PermissionDto getUserPermissionFromSheet(String username,String sheetName)
+    {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        return new PermissionDto(username,relevantManager.getPermission(username),sheetName,false);
+    }
+
+    @Override
+    public PermissionDto[] getSheetPermissions(String sheetName) {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+
+        Map<String, Permission> approvedPermissions = relevantManager.getApprovedPermissions();
+        Map<String, PermissionRequest> pendingPermissions = relevantManager.getPendingPermissionRequests();
+
+        // Create a list to hold all PermissionDto objects
+        List<PermissionDto> permissionDtos = new ArrayList<>();
+
+        // Add approved permissions to the list
+        for (Map.Entry<String, Permission> entry : approvedPermissions.entrySet()) {
+            String userName = entry.getKey();
+            Permission permission = entry.getValue();
+
+            // Create PermissionDto for approved permissions
+            permissionDtos.add(new PermissionDto(userName, permission, sheetName, false)); // Not pending
+        }
+
+        // Add pending permissions to the list
+        for (Map.Entry<String, PermissionRequest> entry : pendingPermissions.entrySet()) {
+            String userName = entry.getKey();
+            Permission permission = entry.getValue().getPermission();
+
+            // Create PermissionDto for pending permissions
+            permissionDtos.add(new PermissionDto(userName, permission, sheetName, true)); // Is pending
+        }
+
+        // Convert the list to an array and return
+        return permissionDtos.toArray(new PermissionDto[0]);
+    }
+    @Override
+    public void permissionRequest(String sheetName, Permission permissionType, String message,String username){
+        SheetManager relevantManager = sheetMap.get(sheetName);
+
+        PermissionRequest request = new PermissionRequest(permissionType,username);
+        if(!message.isEmpty()){request.setMessage(message);}
+        relevantManager.addPendingPermissionRequest(username,request);
+    }
+    @Override
+    public void permissionApproval(String sheetName,String userName){
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        relevantManager.ApprovePermission(userName);
+    }
+    @Override
+    public void permissionDenial(String sheetName, String userName)
+    {
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        relevantManager.removePendingRequest(userName);
+    }
+
+
 }

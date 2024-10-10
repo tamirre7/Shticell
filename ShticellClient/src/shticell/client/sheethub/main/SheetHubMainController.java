@@ -11,6 +11,8 @@ import shticell.client.sheethub.components.available.sheets.impl.AvailableSheets
 import shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl;
 import shticell.client.sheethub.components.loadsheet.impl.LoadSheetControllerImpl;
 import shticell.client.sheethub.components.login.api.LoginController;
+import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
+import shticell.client.sheethub.components.permission.table.impl.PermissionTableControllerImpl;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
 
@@ -31,6 +33,9 @@ public class SheetHubMainController {
     @FXML
     private CommandsMenuControllerImpl commandsMenuComponentController;
 
+    @FXML
+    private PermissionTableControllerImpl permissionTableComponentController;
+
     private SheetViewMainController sheetViewMainController;
 
     private ScrollPane sheetViewMainPane;
@@ -43,6 +48,8 @@ public class SheetHubMainController {
     @FXML
     public void initialize() {
         commandsMenuComponentController.setMainController(this);
+        availableSheetsComponentController.setPermissionTableController(permissionTableComponentController);
+        commandsMenuComponentController.setPermissionTableController(permissionTableComponentController);
         startUpLoginPage();
     }
 

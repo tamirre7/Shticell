@@ -20,8 +20,6 @@ import shticell.client.util.http.HttpClientUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
@@ -95,7 +93,7 @@ public class ActionLineControllerImpl implements ActionLineController {
     private void getSheetByVersion(Integer version) {
 
         String finalUrl = HttpUrl
-                .parse(Constants.SHEET_BY_VERSION_PAGE)
+                .parse(Constants.SHEET_BY_VERSION)
                 .newBuilder()
                 .addQueryParameter("version", String.valueOf(version))
                 .addQueryParameter("sheetName",spreadsheetController.getCurrentSheet().getSheetName())
@@ -140,7 +138,6 @@ public class ActionLineControllerImpl implements ActionLineController {
         cellData.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
         if (preBuildOriginalValue == null) { cellData.put("newvalue", newValue);}
         else{cellData.put("newvalue", preBuildOriginalValue);}
-        cellData.put("userName",getLoggedUser());
 
         Gson gson = new Gson();
         String cellDataJson = gson.toJson(cellData);
@@ -148,7 +145,7 @@ public class ActionLineControllerImpl implements ActionLineController {
        RequestBody requestBody = RequestBody.create(cellDataJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.UPDATE_CELL_PAGE)
+                .url(Constants.UPDATE_CELL)
                 .post(requestBody)
                 .build();
 
@@ -194,7 +191,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         //noinspection ConstantConditions
 
         String finalUrl = HttpUrl
-                .parse(Constants.LATEST_VERSION_PAGE)
+                .parse(Constants.LATEST_VERSION)
                 .newBuilder()
                 .addQueryParameter("sheetName",spreadsheetController.getCurrentSheet().getSheetName())
                 .build()

@@ -1,6 +1,5 @@
 package shticell.client.sheethub.components.loadsheet.impl;
 
-import dto.SheetDto;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.loadsheet.api.LoadSheetController;
 import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.util.http.HttpClientUtil;
@@ -47,11 +45,10 @@ public class LoadSheetControllerImpl implements LoadSheetController {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(),
                         RequestBody.create(file, MediaType.parse("application/xml")))
-                .addFormDataPart("username", loginController.getLoggedUserName())
                 .build();
 
         Request request = new Request.Builder()
-                .url(Constants.LOAD_SHEET_PAGE)
+                .url(Constants.LOAD_SHEET)
                 .post(requestBody)
                 .build();
 

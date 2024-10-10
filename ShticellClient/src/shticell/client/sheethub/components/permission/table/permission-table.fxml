@@ -5,11 +5,11 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.permission.table.impl.PermissionTableControllerImpl">
-    <TableView styleClass="table-view">
+    <TableView styleClass="table-view" fx:id="permissionTable">
         <columns>
-            <TableColumn prefWidth="200" text="User Name" />
-            <TableColumn prefWidth="200" text="Permission Type" />
-            <TableColumn prefWidth="200" text="Permission Status" />
+            <TableColumn fx:id="userNameColumn" prefWidth="200" text="User Name" style="-fx-alignment: CENTER;"/>
+            <TableColumn fx:id="permissionTypeColumn" prefWidth="200" text="Permission Type" style="-fx-alignment: CENTER;" />
+            <TableColumn fx:id="permissionStatusColumn" prefWidth="200" text="Permission Status" style="-fx-alignment: CENTER;" />
         </columns>
     </TableView>
 </VBox>

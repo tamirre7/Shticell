@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane styleClass="main-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="com.example.PermissionRequestListController">
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <top>
+        <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" styleClass="header-label" text="Pending Permission Requests" BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="15" styleClass="content-box">
+            <TableView fx:id="requestTableView" prefHeight="329.0" prefWidth="478.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn prefWidth="150" text="Sheet Name">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="sheetName" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn prefWidth="175.19989013671875" text="Permission Type">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="permissionType" />
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn prefWidth="151.2000732421875" text="Requester">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="requester" />
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableView>
+
+            <TextArea fx:id="messageArea" editable="false" prefHeight="102.0" prefRowCount="3" prefWidth="478.0" promptText="Request message" wrapText="true" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="15" styleClass="button-box">
+            <Button fx:id="approveButton" onAction="#handleApprove" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Approve">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
+            <Button fx:id="denyButton" onAction="#handleDeny" style="-fx-background-color: #f44336; -fx-text-fill: white;" text="Deny">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
+            <Button fx:id="returnButton" onAction="#handleReturn" style="-fx-background-color: #2196F3; -fx-text-fill: white;" text="Return">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
+        </HBox>
+    </bottom>
+</BorderPane>

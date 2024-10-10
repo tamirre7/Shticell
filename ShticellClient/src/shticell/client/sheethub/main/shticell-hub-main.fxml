@@ -17,7 +17,7 @@
          <center>
             <VBox styleClass="content-area">
                <fx:include source="../components/available/sheets/available-sheets.fxml" fx:id="availableSheetsComponent" />
-               <fx:include source="../components/permission/table/permission-table.fxml" />
+               <fx:include source="../components/permission/table/permission-table.fxml" fx:id="permissionTableComponent" />
             </VBox>
          </center>
       </BorderPane>

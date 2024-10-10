@@ -114,7 +114,7 @@ public class RangeControllerImpl implements RangeController {
         RequestBody requestBody = RequestBody.create(newRangeJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.ADD_RANGE_PAGE)
+                .url(Constants.ADD_RANGE)
                 .post(requestBody)
                 .build();
 
@@ -207,7 +207,7 @@ public class RangeControllerImpl implements RangeController {
             RequestBody requestBody = RequestBody.create(rangeToDeletejson, MediaType.parse("application/json"));
 
             Request request = new Request.Builder()
-                    .url(Constants.DELETE_RANGE_PAGE)
+                    .url(Constants.DELETE_RANGE)
                     .delete(requestBody)
                     .build();
 

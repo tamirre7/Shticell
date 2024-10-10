@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
@@ -381,7 +380,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         RequestBody requestBody = RequestBody.create(cellStyleParamsJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.UPDATE_CELL_STYLE_PAGE)
+                .url(Constants.UPDATE_CELL_STYLE)
                 .post(requestBody)
                 .build();
 
@@ -469,7 +468,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         RequestBody requestBody = RequestBody.create(cellIdJson,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.ADD_EMPTY_CELL_PAGE)
+                .url(Constants.ADD_EMPTY_CELL)
                 .post(requestBody)
                 .build();
 
@@ -597,14 +596,13 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         cellUpdateData.put("cellId", cellId);
         cellUpdateData.put("cellOriginalValue", cellOriginalValue);
         cellUpdateData.put("sheetName", sheetToUpdate.getSheetName());
-        cellUpdateData.put("userName",actionLineController.getLoggedUser());
         Gson gson = new Gson();
         String cellUpdateDatajson = gson.toJson(cellUpdateData);
 
         RequestBody requestBody = RequestBody.create(cellUpdateDatajson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.DYNAMIC_ANALYSIS_UPDATE_PAGE)
+                .url(Constants.DYNAMIC_ANALYSIS_UPDATE)
                 .post(requestBody)
                 .build();
 

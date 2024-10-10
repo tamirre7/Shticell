@@ -138,7 +138,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
         RequestBody requestBody = RequestBody.create(formulaToEvalJson, MediaType.parse("application/json"));
         Request request = new Request.Builder()
-                .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
+                .url(Constants.EVALUATE_ORIGINAL_VALUE)
                 .post(requestBody)
                 .build();
 
@@ -187,7 +187,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         RequestBody requestBody = RequestBody.create(formulaToEvalJson,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.EVALUATE_ORIGINAL_VALUE_PAGE)
+                .url(Constants.EVALUATE_ORIGINAL_VALUE)
                 .post(requestBody)
                 .build();
 

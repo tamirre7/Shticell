@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shticell.server.utils.ServletUtils;
+import shticell.server.utils.SessionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +23,7 @@ public class UpdateCellValueServlet extends HttpServlet {
        resp.setContentType("application/json");
 
         try {
+            String userNameFromSession = SessionUtils.getUsername(req);
             Engine engine = ServletUtils.getEngine(getServletContext());
             if (engine == null) {
                 throw new ServletException("No engine found");
@@ -35,9 +37,8 @@ public class UpdateCellValueServlet extends HttpServlet {
             String sheetName = cellDetails.get("sheetName");
             String cellId = cellDetails.get("cellid");
             String value = cellDetails.get("newvalue");
-            String userName = cellDetails.get("userName");
 
-            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value,userName,sheetName);
+            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value,userNameFromSession,sheetName);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

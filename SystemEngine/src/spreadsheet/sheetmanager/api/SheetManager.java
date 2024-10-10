@@ -1,6 +1,10 @@
 package spreadsheet.sheetmanager.api;
 
 import spreadsheet.api.SpreadSheet;
+import dto.Permission;
+import spreadsheet.sheetmanager.Permission.PermissionRequest;
+
+import java.util.Map;
 
 public interface SheetManager {
     String getSheetName();
@@ -8,4 +12,10 @@ public interface SheetManager {
     void updateSheetVersion(SpreadSheet sheet);
     int getLatestVersion();
     String getUploadedBy();
+    void ApprovePermission(String username);
+    void addPendingPermissionRequest(String username,PermissionRequest request);
+    Permission getPermission(String username);
+    Map<String, Permission> getApprovedPermissions();
+    Map<String, PermissionRequest>getPendingPermissionRequests();
+    void removePendingRequest(String username);
 }
