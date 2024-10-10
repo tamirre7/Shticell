@@ -51,5 +51,6 @@ public class Constants {
     public final static String SHEET_PERMISSIONS = FULL_SERVER_PATH + PERMISSION_PATH + "/sheetpermissions";
     public final static String REQUEST_PERMISSION = FULL_SERVER_PATH + PERMISSION_PATH + "/requestpermission";
     public final static String PERMISSION_REQUEST_RESPONSE = FULL_SERVER_PATH + PERMISSION_PATH + "/requestresponse";
+    public final static String SHEET_PERMISSIONS_REQUESTS = FULL_SERVER_PATH + PERMISSION_PATH + "/sheetpermissionsrequests";
 
 }
