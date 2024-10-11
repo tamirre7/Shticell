@@ -13,7 +13,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+        import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
@@ -22,8 +22,10 @@ import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static shticell.client.util.Constants.REFRESH_RATE;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
@@ -190,6 +192,12 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     }
     public void setPermissionTableController(PermissionTableController permissionTableController) {
         this.permissionTableController = permissionTableController;
+    }
+    @Override
+    public List<String> getAvailableSheetsNames(){
+        return sheetList.stream()
+                .map(SheetDto::getSheetName)
+                .collect(Collectors.toList());
     }
 
 }

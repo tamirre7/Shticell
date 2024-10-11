@@ -1,50 +1,56 @@
-package shticell.client.sheethub.components.commands.components.askpermission.impl;
+package shticell.client.sheethub.components.commands.components.permissionrequest.impl;
 
 import com.google.gson.Gson;
 import dto.Permission;
-import dto.PermissionDto;
 import dto.PermissionRequestDto;
-import dto.SheetDto;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import shticell.client.sheethub.components.commands.components.askpermission.api.PermissionRequestController;
+import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
+import shticell.client.sheethub.components.commands.components.permissionrequest.api.PermissionRequestController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class PermissionRequestControllerImpl implements PermissionRequestController {
 
-    @FXML private TextField sheetNameField;
+    @FXML private ComboBox<String> sheetNamesBox;
     @FXML
     private ComboBox<String> permissionTypeBox;
     @FXML private TextArea messageField;
 
     private CommandsMenuController commandsMenuController;
+    private AvailableSheetsController availableSheetsController;
 
     @FXML
     private void initialize() {
         // Set up the ComboBox options
         permissionTypeBox.setItems(FXCollections.observableArrayList("READER", "WRITER"));
+
+    }
+    @Override
+    public void populateSheetNames() {
+        ObservableList<String> sheetNames = FXCollections.observableArrayList();
+        List<String> availableSheetsNames = availableSheetsController.getAvailableSheetsNames();
+        sheetNames.addAll(availableSheetsNames);
     }
 
     @FXML
     public void handleSubmit(ActionEvent event){
         if(validateInput()){
-            sendPermissionRequest(sheetNameField.getText(), permissionTypeBox.getValue(), messageField.getText());
+            sendPermissionRequest(sheetNamesBox.getValue(), permissionTypeBox.getValue(), messageField.getText());
         }
         else
         {
@@ -55,7 +61,7 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
     @FXML
     public void handleCancel(ActionEvent event) {
         // Clear all fields
-        sheetNameField.clear();
+        sheetNamesBox.getSelectionModel().clearSelection();
         permissionTypeBox.getSelectionModel().clearSelection();
         messageField.clear();
         // Return to hub page
@@ -64,8 +70,8 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
 
 
     private boolean validateInput() {
-        return !sheetNameField.getText().isEmpty() &&
-                permissionTypeBox.getValue() != null;
+        return !((sheetNamesBox.getValue() != null) &&
+                (permissionTypeBox.getValue() != null));
     }
 
     private void sendPermissionRequest(String sheetName, String permissionType, String message) {
@@ -103,4 +109,6 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
     public void setCommandsMenuController(CommandsMenuController commandsMenuController) {
         this.commandsMenuController = commandsMenuController;
     }
+    @Override
+    public void setAvailableSheetsController(AvailableSheetsController availableSheetsController){this.availableSheetsController = availableSheetsController;}
 }

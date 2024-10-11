@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane styleClass="main-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="com.example.PermissionRequestListController">
+<BorderPane styleClass="main-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="shticell.client.sheethub.components.commands.components.permissionresponse.impl.PermissionResponseControllerImpl">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>

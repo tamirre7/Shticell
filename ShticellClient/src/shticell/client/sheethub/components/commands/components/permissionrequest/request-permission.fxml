@@ -7,7 +7,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -15,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane styleClass="main-container" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="shticell.client.sheethub.components.commands.components.askpermission.impl.PermissionRequestControllerImpl">
+<BorderPane styleClass="main-container" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.permissionrequest.impl.PermissionRequestControllerImpl">
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
@@ -35,7 +34,7 @@
                 </columnConstraints>
 
                 <Label text="Sheet Name:*" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <TextField fx:id="sheetNameField" promptText="Enter sheet name" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <ComboBox fx:id="sheetNamesBox" promptText="Select a Sheet" GridPane.columnIndex="1" />
 
                 <Label text="Permission Type:*" GridPane.columnIndex="0" GridPane.rowIndex="1" />
                 <ComboBox fx:id="permissionTypeBox" promptText="Select permission type" GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -55,16 +54,20 @@
                <RowConstraints />
             </rowConstraints>
             </GridPane>
-
-            <Label style="-fx-font-size: 12px; -fx-font-style: italic;" text="* Required fields" />
+         <Label style="-fx-font-size: 12px; -fx-font-style: italic;" text="* Required fields" />
         </VBox>
     </center>
 
     <bottom>
         <HBox alignment="CENTER" spacing="15" styleClass="button-box">
-            <Button fx:id="submitButton" onAction="#handleSubmit" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Submit" />
-            <Button fx:id="cancelButton" onAction="#handleCancel" style="-fx-background-color: #f44336; -fx-text-fill: white;" text="Cancel" />
+            <Button fx:id="submitButton" onAction="#handleSubmit" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Submit">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
+            <Button fx:id="cancelButton" onAction="#handleCancel" style="-fx-background-color: #f44336; -fx-text-fill: white;" text="Cancel">
+            <HBox.margin>
+               <Insets top="10.0" />
+            </HBox.margin></Button>
         </HBox>
     </bottom>
-
 </BorderPane>

@@ -11,7 +11,8 @@ public class Constants {
     public final static String PERMISSION_TABLE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/permission/table/permission-table.fxml";
     public final static String COMMANDS_MENU_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/commands-menu.fxml";
     public final static String FORMULA_BUILDER_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/command/components/formulabuilder/formulabuilder.fxml";
-
+    public final static String PERMISSION_REQUEST_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionrequest/request-permission.fxml";
+    public final static String PERMISSION_RESPONSE_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionresponse/permission-response.fxml";
 
     //server resources locations
     public final static String BASE_DOMAIN = "localhost";

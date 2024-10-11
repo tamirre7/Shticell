@@ -50,6 +50,7 @@ public class SheetHubMainController {
         commandsMenuComponentController.setMainController(this);
         availableSheetsComponentController.setPermissionTableController(permissionTableComponentController);
         commandsMenuComponentController.setPermissionTableController(permissionTableComponentController);
+        commandsMenuComponentController.setAvailableSheetsControllerTableController(availableSheetsComponentController);
         startUpLoginPage();
     }
 
@@ -102,6 +103,15 @@ public class SheetHubMainController {
         stage.setWidth(1200);
         stage.setHeight(800);
         stage.centerOnScreen();  // Centers the stage on the screen
+    }
+    public void switchToPermissionRequestPage(Parent pane)
+    {
+        setMainPanelTo(pane);
+
+    }
+    public void switchToPermissionResponsePage(Parent pane)
+    {
+        setMainPanelTo(pane);
     }
 
     public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){

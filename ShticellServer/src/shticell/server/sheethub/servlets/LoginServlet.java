@@ -1,10 +1,8 @@
 package shticell.server.sheethub.servlets;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import shticell.server.utils.ServletUtils;
 import shticell.server.utils.SessionUtils;
 import shticell.server.utils.constants.Constants;
