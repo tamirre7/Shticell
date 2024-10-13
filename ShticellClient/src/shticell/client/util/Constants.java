@@ -24,11 +24,13 @@ public class Constants {
     private final static String SHEET_VIEW_SERVER_PATH = "/sheetview";
     private final static String PERMISSION_PATH = "/permissions";
 
+
     //sheet hub resources
     public final static String LOGIN_PAGE = FULL_SERVER_PATH + "/login";
     public final static String LOGOUT_PAGE = FULL_SERVER_PATH + "/logout";
     public final static String LOAD_SHEET = FULL_SERVER_PATH + HUB_SERVER_PATH + "/loadsheet";
     public final static String AVAILABLE_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/availablesheets";
+    public final static String OWNED_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/ownedsheets";
 
     //sheethub general constants
     public final static int REFRESH_RATE = 500;
@@ -51,7 +53,7 @@ public class Constants {
     public final static String USER_PERMISSON_FOR_SHEET = FULL_SERVER_PATH + PERMISSION_PATH + "/userpermission";
     public final static String SHEET_PERMISSIONS = FULL_SERVER_PATH + PERMISSION_PATH + "/sheetpermissions";
     public final static String REQUEST_PERMISSION = FULL_SERVER_PATH + PERMISSION_PATH + "/requestpermission";
-    public final static String PERMISSION_REQUEST_RESPONSE = FULL_SERVER_PATH + PERMISSION_PATH + "/requestresponse";
-    public final static String SHEET_PERMISSIONS_REQUESTS = FULL_SERVER_PATH + PERMISSION_PATH + "/sheetpermissionsrequests";
+    public final static String PERMISSION_RESPONSE = FULL_SERVER_PATH + PERMISSION_PATH + "/response";
+    public final static String SHEET_PENDING_PERMISSIONS_REQUESTS = FULL_SERVER_PATH + PERMISSION_PATH + "/pendingrequests";
 
 }

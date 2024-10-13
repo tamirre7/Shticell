@@ -2,6 +2,10 @@ package command.impl;
 
 import command.api.Engine;
 import dto.*;
+
+import dto.permission.PermissionInfoDto;
+import dto.permission.PermissionRequestDto;
+import dto.permission.RequestStatus;
 import expressions.api.Expression;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -18,8 +22,8 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
-import dto.Permission;
-import spreadsheet.sheetmanager.Permission.PermissionRequest;
+import dto.permission.Permission;
+import spreadsheet.sheetmanager.permissionrequest.PermissionRequest;
 import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.impl.SheetManagerImpl;
 import spreadsheet.util.UpdateResult;
@@ -519,29 +523,29 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public PermissionDto getUserPermissionFromSheet(String username,String sheetName)
+    public PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName)
     {
         SheetManager relevantManager = sheetMap.get(sheetName);
-        return new PermissionDto(username,relevantManager.getPermission(username),sheetName,false);
+        return new PermissionInfoDto(username,relevantManager.getPermission(username),sheetName, RequestStatus.APPROVED);
     }
 
     @Override
-    public PermissionDto[] getSheetPermissions(String sheetName) {
+    public PermissionInfoDto[] getAllSheetPermissions(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
 
         Map<String, Permission> approvedPermissions = relevantManager.getApprovedPermissions();
         Map<String, PermissionRequest> pendingPermissions = relevantManager.getPendingPermissionRequests();
 
-        // Create a list to hold all PermissionDto objects
-        List<PermissionDto> permissionDtos = new ArrayList<>();
+        // Create a list to hold all PermissionInfoDto objects
+        List<PermissionInfoDto> permissionInfoDtos = new ArrayList<>();
 
         // Add approved permissions to the list
         for (Map.Entry<String, Permission> entry : approvedPermissions.entrySet()) {
             String userName = entry.getKey();
             Permission permission = entry.getValue();
 
-            // Create PermissionDto for approved permissions
-            permissionDtos.add(new PermissionDto(userName, permission, sheetName, false)); // Not pending
+            // Create PermissionInfoDto for approved permissions
+            permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.APPROVED)); // Not pending
         }
 
         // Add pending permissions to the list
@@ -549,18 +553,18 @@ public class EngineImpl implements Engine {
             String userName = entry.getKey();
             Permission permission = entry.getValue().getPermission();
 
-            // Create PermissionDto for pending permissions
-            permissionDtos.add(new PermissionDto(userName, permission, sheetName, true)); // Is pending
+            // Create PermissionInfoDto for pending permissions
+            permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.PENDING)); // Is pending
         }
 
         // Convert the list to an array and return
-        return permissionDtos.toArray(new PermissionDto[0]);
+        return permissionInfoDtos.toArray(new PermissionInfoDto[0]);
     }
     @Override
-    public void permissionRequest(String sheetName, Permission permissionType, String message,String username){
+    public void permissionRequest(int requestId,String sheetName, Permission permissionType, String message,String username){
         SheetManager relevantManager = sheetMap.get(sheetName);
 
-        PermissionRequest request = new PermissionRequest(permissionType,username);
+        PermissionRequest request = new PermissionRequest(requestId,permissionType,username);
         if(!message.isEmpty()){request.setMessage(message);}
         relevantManager.addPendingPermissionRequest(username,request);
     }
@@ -574,6 +578,31 @@ public class EngineImpl implements Engine {
     {
         SheetManager relevantManager = sheetMap.get(sheetName);
         relevantManager.removePendingRequest(userName);
+    }
+
+    @Override
+    public List<SheetDto> getOwnedSheets(String username) {
+        List<SheetDto> ownedSheets = new ArrayList<>();
+
+        for (Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
+            SheetManager manager = entry.getValue();
+            if (manager.getUploadedBy().equals(username))
+                ownedSheets.add(convertSheetToSheetDto(manager.getSheetByVersion(manager.getLatestVersion())));
+        }
+        return ownedSheets;
+    }
+    @Override
+    public List<PermissionRequestDto> getPendingRequests(String sheetName){
+        SheetManager relevantManager = sheetMap.get(sheetName);
+        Map<String,PermissionRequest> pendingPermissions = relevantManager.getPendingPermissionRequests();
+        List<PermissionRequestDto> pendingRequests = new ArrayList<>();
+        for (Map.Entry<String,PermissionRequest> entry : pendingPermissions.entrySet()) {
+            String userName = entry.getKey();
+            PermissionRequest request = entry.getValue();
+           PermissionRequestDto permissionRequestDto = new PermissionRequestDto(request.getId(),sheetName,request.getPermission(),request.getMessage(),userName);
+           pendingRequests.add(permissionRequestDto);
+        }
+        return pendingRequests;
     }
 
 

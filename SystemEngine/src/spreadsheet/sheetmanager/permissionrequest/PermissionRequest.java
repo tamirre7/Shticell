@@ -1,13 +1,15 @@
-package spreadsheet.sheetmanager.Permission;
+package spreadsheet.sheetmanager.permissionrequest;
 
-import dto.Permission;
+import dto.permission.Permission;
 
 public class PermissionRequest {
+    private final int id;
     private final Permission permission;
     private String message;
     private final String requester;
 
-    public PermissionRequest(Permission permission,String requester) {
+    public PermissionRequest(int id,Permission permission,String requester) {
+        this.id = id;
         this.permission = permission;
         this.requester = requester;
     }
@@ -23,5 +25,9 @@ public class PermissionRequest {
 
     public String getRequester() {
         return requester;
+    }
+
+    public int getId() {
+        return id;
     }
 }

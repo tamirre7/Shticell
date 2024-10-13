@@ -2,6 +2,9 @@ package command.api;
 
 
 import dto.*;
+import dto.permission.Permission;
+import dto.permission.PermissionInfoDto;
+import dto.permission.PermissionRequestDto;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 
@@ -25,9 +28,11 @@ public interface Engine {
     String createCellId(int row, int col);
     String evaluateOriginalValue(String originalValue,String sheetName);
     SheetDto[] getAllSheets();
-    PermissionDto getUserPermissionFromSheet(String username,String sheetName);
-    PermissionDto[] getSheetPermissions(String sheetName);
-    void permissionRequest(String sheetName, Permission permissionType, String message,String username);
+    PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName);
+    PermissionInfoDto[] getAllSheetPermissions(String sheetName);
+    void permissionRequest(int requestId, String sheetName, Permission permissionType, String message, String username);
     void permissionApproval(String sheetName,String userName);
     void permissionDenial(String sheetName, String userName);
+    List<SheetDto> getOwnedSheets(String username);
+    List<PermissionRequestDto> getPendingRequests(String sheetName);
 }

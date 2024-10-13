@@ -1,8 +1,8 @@
 package shticell.client.sheethub.components.commands.components.permissionrequest.impl;
 
 import com.google.gson.Gson;
-import dto.Permission;
-import dto.PermissionRequestDto;
+import dto.permission.Permission;
+import dto.permission.PermissionRequestDto;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,12 +10,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.commands.components.permissionrequest.api.PermissionRequestController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
+import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
@@ -30,9 +30,11 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
     @FXML
     private ComboBox<String> permissionTypeBox;
     @FXML private TextArea messageField;
+    private int idKeeper = 1;
 
     private CommandsMenuController commandsMenuController;
     private AvailableSheetsController availableSheetsController;
+    private LoginController loginController;
 
     @FXML
     private void initialize() {
@@ -45,12 +47,14 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
         ObservableList<String> sheetNames = FXCollections.observableArrayList();
         List<String> availableSheetsNames = availableSheetsController.getAvailableSheetsNames();
         sheetNames.addAll(availableSheetsNames);
+        sheetNamesBox.setItems(sheetNames);
     }
 
     @FXML
     public void handleSubmit(ActionEvent event){
         if(validateInput()){
             sendPermissionRequest(sheetNamesBox.getValue(), permissionTypeBox.getValue(), messageField.getText());
+            commandsMenuController.returnToHub();
         }
         else
         {
@@ -70,12 +74,13 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
 
 
     private boolean validateInput() {
-        return !((sheetNamesBox.getValue() != null) &&
-                (permissionTypeBox.getValue() != null));
+        return (sheetNamesBox.getValue() != null) &&
+                (permissionTypeBox.getValue() != null);
     }
 
     private void sendPermissionRequest(String sheetName, String permissionType, String message) {
-        PermissionRequestDto requestParams = new PermissionRequestDto(sheetName,Permission.fromString(permissionType),message);
+        PermissionRequestDto requestParams = new PermissionRequestDto(idKeeper,sheetName,Permission.fromString(permissionType),message, loginController.getLoggedUserName());
+        ++idKeeper;
 
         Gson gson = new Gson();
         String requestParamsJson = gson.toJson(requestParams);
@@ -111,4 +116,8 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
     }
     @Override
     public void setAvailableSheetsController(AvailableSheetsController availableSheetsController){this.availableSheetsController = availableSheetsController;}
+    @Override
+    public void setLoginController(LoginController loginController){
+        this.loginController = loginController;
+    }
 }

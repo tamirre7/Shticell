@@ -2,7 +2,7 @@ package shticell.server.permission.servlets;
 
 import com.google.gson.Gson;
 import command.api.Engine;
-import dto.PermissionRequestDto;
+import dto.permission.PermissionRequestDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +14,7 @@ import shticell.server.utils.SessionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
-@WebServlet(name = "", urlPatterns = {"/permissions/requestpermission"})
+@WebServlet(name = "PermissionRequestServlet", urlPatterns = {"/permissions/requestpermission"})
 public class PermissionRequestServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -28,7 +28,7 @@ public class PermissionRequestServlet extends HttpServlet {
             String requestJson = new String(requestInputStream.readAllBytes());
             Gson gson = new Gson();
             PermissionRequestDto permissionRequestDto = gson.fromJson(requestJson, PermissionRequestDto.class);
-            engine.permissionRequest(permissionRequestDto.getSheetName(),permissionRequestDto.getPermissionType(),permissionRequestDto.getMessage(),userName);
+            engine.permissionRequest(permissionRequestDto.getId(),permissionRequestDto.getSheetName(),permissionRequestDto.getPermissionType(),permissionRequestDto.getMessage(),userName);
         }catch (Exception e)
         {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

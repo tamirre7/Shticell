@@ -1,7 +1,7 @@
 package shticell.client.sheethub.components.available.sheets.impl;
 
 import com.google.gson.Gson;
-import dto.PermissionDto;
+import dto.permission.PermissionInfoDto;
 import dto.SheetDto;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -61,7 +61,6 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         uploadedByColumn.setCellValueFactory(new PropertyValueFactory<>("uploadedBy"));
         sheetNameColumn.setCellValueFactory(new PropertyValueFactory<>("sheetName"));
         sheetSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        permissionColumn.setCellValueFactory(new PropertyValueFactory<>("permission"));
 
         permissionColumn.setCellFactory(column -> new TableCell<SheetDto, String>() {
             @Override
@@ -69,12 +68,11 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setText(null);
-                }
-                else {
+                } else {
                     SheetDto sheetDto = getTableRow().getItem();
                     String sheetName = sheetDto.getSheetName();
 
-                    fetchPermissionForSheet(sheetName,permission ->
+                    fetchPermissionForSheet(sheetName, permission ->
                     {
                         Platform.runLater(() -> setText(permission));
                     });
@@ -114,8 +112,8 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        PermissionDto permissionDto = new Gson().fromJson(responseBody, PermissionDto.class);
-                        permissionConsumer.accept(permissionDto.getPermissionType().toString());
+                        PermissionInfoDto permissionInfoDto = new Gson().fromJson(responseBody, PermissionInfoDto.class);
+                        permissionConsumer.accept(permissionInfoDto.getPermissionType().toString());
                     });
                 } else {
                     Platform.runLater(() ->
@@ -156,7 +154,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
                 sheetList.clear();
                 sheetList.addAll(availableSheets);
 
-                // Try to re-select the previously selected sheet (if still available)
+                //re-select the previously selected sheet
                 if (selectedSheet != null) {
                     for (SheetDto sheet : sheetList) {
                         if (sheet.getSheetName().equals(selectedSheet.getSheetName())) {

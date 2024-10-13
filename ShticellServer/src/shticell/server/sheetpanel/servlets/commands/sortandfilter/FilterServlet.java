@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "FilterServlet", urlPatterns = {"/sheetview/filter"})
-
 public class FilterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

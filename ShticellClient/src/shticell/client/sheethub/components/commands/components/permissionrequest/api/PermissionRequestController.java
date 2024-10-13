@@ -3,6 +3,7 @@ package shticell.client.sheethub.components.commands.components.permissionreques
 import javafx.event.ActionEvent;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
+import shticell.client.sheethub.components.login.api.LoginController;
 
 public interface PermissionRequestController {
     void handleSubmit(ActionEvent event);
@@ -13,4 +14,5 @@ public interface PermissionRequestController {
 
     void setAvailableSheetsController(AvailableSheetsController availableSheetsController);
     void populateSheetNames();
+    void setLoginController(LoginController loginController);
 }

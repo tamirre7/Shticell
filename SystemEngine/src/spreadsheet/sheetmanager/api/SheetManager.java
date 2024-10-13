@@ -1,8 +1,8 @@
 package spreadsheet.sheetmanager.api;
 
 import spreadsheet.api.SpreadSheet;
-import dto.Permission;
-import spreadsheet.sheetmanager.Permission.PermissionRequest;
+import dto.permission.Permission;
+import spreadsheet.sheetmanager.permissionrequest.PermissionRequest;
 
 import java.util.Map;
 

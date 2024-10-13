@@ -2,7 +2,7 @@ package shticell.server.permission.servlets;
 
 import com.google.gson.Gson;
 import command.api.Engine;
-import dto.PermissionDto;
+import dto.permission.PermissionInfoDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,9 +25,9 @@ public class UserSheetPermissionServlet extends HttpServlet {
                 throw new ServletException("No engine found");
             }
             String sheetName = req.getParameter("sheetName");
-            PermissionDto permissionDto = engine.getUserPermissionFromSheet(userNameFromSession, sheetName);
+            PermissionInfoDto permissionInfoDto = engine.getUserPermissionFromSheet(userNameFromSession, sheetName);
             Gson gson = new Gson();
-            String permissionJson = gson.toJson(permissionDto);
+            String permissionJson = gson.toJson(permissionInfoDto);
             resp.getWriter().write(permissionJson);
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

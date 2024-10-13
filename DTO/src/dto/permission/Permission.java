@@ -1,4 +1,4 @@
-package dto;
+package dto.permission;
 
 public enum Permission {
     OWNER,

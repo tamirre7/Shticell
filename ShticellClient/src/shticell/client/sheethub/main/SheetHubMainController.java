@@ -62,6 +62,7 @@ public class SheetHubMainController {
             loginComponent = loader.load();
             loginController = loader.getController();
             loadSheetComponentController.setLoginController(loginController);
+            commandsMenuComponentController.setLoginController(loginController);
             loginController.setSheetHubMainController(this);
             setMainPanelTo(loginComponent);
         } catch (IOException e) {
@@ -78,6 +79,7 @@ public class SheetHubMainController {
         loadSheetComponentController.setGreetingLabel();
         commandsMenuComponentController.refreshList();
         availableSheetsComponentController.startTableRefresher();
+        commandsMenuComponentController.activatePermissionRefresher();
         scene.getStylesheets().clear();
         scene.getStylesheets().add(getClass().getResource("sheet-hub-styles.css").toExternalForm());
         setMainPanelTo(sheetHubComponent);
@@ -91,10 +93,15 @@ public class SheetHubMainController {
 
     public void switchToLoginPage(){
         setMainPanelTo(loginComponent);
+        Stage stage = (Stage) scene.getWindow();
+        stage.setWidth(330);
+        stage.setHeight(270);
+        stage.centerOnScreen();  // Centers the stage on the screen
     }
 
     public void switchToSheetViewPage() {
         availableSheetsComponentController.stopTableRefresher();
+        commandsMenuComponentController.deactivatePermissionRefresher();
         sheetViewMainController.initSheet(scene, loginController.getLoggedUserName());
         setMainPanelTo(sheetViewMainPane);
 
@@ -107,11 +114,19 @@ public class SheetHubMainController {
     public void switchToPermissionRequestPage(Parent pane)
     {
         setMainPanelTo(pane);
+        Stage stage = (Stage) scene.getWindow();
+        stage.setWidth(500);
+        stage.setHeight(400);
+        stage.centerOnScreen();  // Centers the stage on the screen
 
     }
     public void switchToPermissionResponsePage(Parent pane)
     {
         setMainPanelTo(pane);
+        Stage stage = (Stage) scene.getWindow();
+        stage.setWidth(700);
+        stage.setHeight(550);
+        stage.centerOnScreen();  // Centers the stage on the screen
     }
 
     public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){

@@ -1,7 +1,8 @@
 package shticell.client.sheethub.components.permission.table.impl;
 
 import com.google.gson.Gson;
-import dto.PermissionDto;
+import dto.permission.PermissionInfoDto;
+import dto.permission.RequestStatus;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,43 +26,26 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class PermissionTableControllerImpl implements PermissionTableController {
     @FXML
-    private TableView<PermissionDto> permissionTable;
+    private TableView<PermissionInfoDto> permissionTable;
 
     @FXML
-    private TableColumn<PermissionDto, String> userNameColumn;
+    private TableColumn<PermissionInfoDto, String> userNameColumn;
 
     @FXML
-    private TableColumn<PermissionDto, String> permissionTypeColumn;
+    private TableColumn<PermissionInfoDto, String> permissionTypeColumn;
 
     @FXML
-    private TableColumn<PermissionDto, String> permissionStatusColumn;
+    private TableColumn<PermissionInfoDto, String> permissionStatusColumn;
 
-    private ObservableList<PermissionDto> permissionList = FXCollections.observableArrayList();
+    private ObservableList<PermissionInfoDto> permissionList = FXCollections.observableArrayList();
     @FXML
     private void initialize() {
         // Ensure the column types match the data being retrieved
         userNameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         permissionTypeColumn.setCellValueFactory(new PropertyValueFactory<>("permissionType"));
+        permissionStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Set the cell value factory for permissionStatusColumn to Boolean
-        permissionStatusColumn.setCellValueFactory(new PropertyValueFactory<>("isPending"));
-
-        // Customize the appearance of the Permission Status column
-        permissionStatusColumn.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    // Convert the String to a Boolean and then set the text
-                    boolean isPending = Boolean.parseBoolean(item);
-                    setText(isPending ? "Pending" : "Approved");
-                }
-            }
-        });
-
-        // Bind the permission list to the table
+    // Bind the permission list to the table
         permissionTable.setItems(permissionList);
     }
     @Override
@@ -79,7 +63,7 @@ public class PermissionTableControllerImpl implements PermissionTableController 
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
-                        PermissionDto[] permissions = new Gson().fromJson(responseBody, PermissionDto[].class);
+                        PermissionInfoDto[] permissions = new Gson().fromJson(responseBody, PermissionInfoDto[].class);
                         permissionList.setAll(permissions); // Update the ObservableList
                     });
                 } else {

@@ -14,6 +14,7 @@ import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsC
 import shticell.client.sheethub.components.commands.components.permissionrequest.api.PermissionRequestController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
 import shticell.client.sheethub.components.commands.components.permissionresponse.api.PermissionResponseController;
+import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.util.Constants;
@@ -27,6 +28,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     private PermissionRequestController permissionRequestController;
     private PermissionResponseController permissionResponseController;
     private AvailableSheetsController availableSheetsController;
+    private LoginController loginController;
 
     private BorderPane requestPage;
     private BorderPane responsePage;
@@ -42,13 +44,12 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         permissionRequestController = reqloader.getController();
 
         permissionRequestController.setCommandsMenuController(this);
-        permissionRequestController.setAvailableSheetsController(availableSheetsController);
 
         FXMLLoader resploader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
         responsePage = resploader.load();
         permissionResponseController = resploader.getController();
 
-        permissionResponseController.startRequestRefresher();
+        permissionResponseController.setCommandsMenuController(this);
 
         commandsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if ("View Selected Sheet".equals(newValue)) {
@@ -71,6 +72,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     }
     private void viewPermissionRequestForm() {
         if (mainController != null) {
+
             permissionRequestController.populateSheetNames();
             mainController.switchToPermissionRequestPage(requestPage);
         }
@@ -83,10 +85,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     }
 
     @FXML
-    public void returnToHub(){mainController.switchToLoginPage();}
-
-
-
+    public void returnToHub(){mainController.switchToHubPage();}
 
 
     @Override
@@ -107,6 +106,12 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     @Override
     public void setAvailableSheetsControllerTableController(AvailableSheetsController availableSheetsController) {
         this.availableSheetsController = availableSheetsController;
+        permissionRequestController.setAvailableSheetsController(availableSheetsController);
+    }
+    @Override
+    public void setLoginController(LoginController loginController) {
+        this.loginController = loginController;
+        permissionRequestController.setLoginController(loginController);
     }
     @FXML
     public void logoutButtonClicked(){
@@ -120,11 +125,20 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful() || response.isRedirect()) {
                     HttpClientUtil.removeCookiesOf(Constants.BASE_DOMAIN);
-                    Platform.runLater(() -> returnToHub());
+                    Platform.runLater(() -> mainController.switchToLoginPage());
 
                 }
             }
         });
+    }
 
+    @Override
+    public void activatePermissionRefresher()
+    {
+        permissionResponseController.startRequestRefresher();
+    }
+    @Override
+    public void deactivatePermissionRefresher(){
+        permissionResponseController.stopRequestRefresher();
     }
 }
