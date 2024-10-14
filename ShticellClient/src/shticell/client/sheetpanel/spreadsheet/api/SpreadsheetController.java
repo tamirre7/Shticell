@@ -3,6 +3,7 @@ package shticell.client.sheetpanel.spreadsheet.api;
 
 import dto.CellDto;
 import dto.SheetDto;
+import dto.permission.Permission;
 import javafx.scene.control.Label;
 
 
@@ -37,4 +38,5 @@ public interface SpreadsheetController {
     void setEditingManager(EditingManager editingManager);
     void disableCellClick();
     void enableCellClick();
+    void setPermission(Permission permission);
 }

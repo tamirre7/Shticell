@@ -1,7 +1,15 @@
 package shticell.client.sheetpanel.main;
 
+import com.google.gson.Gson;
+import dto.permission.PermissionInfoDto;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
@@ -15,6 +23,12 @@ import shticell.client.sheetpanel.skinmanager.SkinManager;
 import shticell.client.sheetpanel.spreadsheet.UISheetModel;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.sheetpanel.spreadsheet.impl.SpreadsheetControllerImpl;
+import shticell.client.util.Constants;
+import shticell.client.util.http.HttpClientUtil;
+
+import java.io.IOException;
+
+import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class SheetViewMainController {
     @FXML
@@ -36,10 +50,12 @@ public class SheetViewMainController {
 
     private SheetHubMainController sheetHubMainController;
 
+    private EditingManager editingManager;
+
     @FXML
     public void initialize() {
         UISheetModel uiSheetModel = new UISheetModel();
-        EditingManager editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController);
+        editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController);
         FormulaBuilder formulaBuilder = new FormulaBuilder();
         skinManager = new SkinManager();
         graphBuilderComponentController.setSpreadsheetController(spreadsheetComponentController);
@@ -68,11 +84,47 @@ public class SheetViewMainController {
 
     public void initSheet(Scene scene, String loggedUserName) {
         actionLineComponentController.setUsernameLabel(loggedUserName);
+        setViewMatchToPermission();
         miscComponentController.setScene(scene);
         skinManager.applySkin(scene,"Default");
         actionLineComponentController.populateVersionSelector();
    }
 
+    private void setViewMatchToPermission(){
+        String sheetName = spreadsheetComponentController.getCurrentSheet().getSheetName();
 
+        String finalUrl = HttpUrl
+                .parse(Constants.USER_PERMISSON_FOR_SHEET)
+                .newBuilder()
+                .addQueryParameter("sheetName", sheetName)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                        PermissionInfoDto permissionInfoDto = new Gson().fromJson(responseBody, PermissionInfoDto.class);
+                        spreadsheetComponentController.setPermission(permissionInfoDto.getPermissionType());
+                        editingManager.enableSheetViewEditing(permissionInfoDto.getPermissionType());
+                    });
+                } else {
+                    Platform.runLater(() ->
+                            showAlert("Error", "Failed to sort data: " + response.message())
+
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        showAlert("Error", "An error occurred while sorting: " + e.getMessage())
+                );
+            }
+        });
+    }
 
 }

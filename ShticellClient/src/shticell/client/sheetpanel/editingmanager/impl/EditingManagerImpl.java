@@ -1,6 +1,7 @@
 package shticell.client.sheetpanel.editingmanager.impl;
 
 
+import dto.permission.Permission;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.sortandfilter.api.SortAndFilterController;
 import shticell.client.sheetpanel.editingmanager.api.EditingManager;
@@ -22,11 +23,16 @@ public class EditingManagerImpl implements EditingManager {
 
 
     @Override
-    public void enableSheetViewEditing() {
-        rangeController.enableEditing();
-        sortAndFilterController.enableSortAndFilter();
-        spreadsheetController.enableCellClick();
-        actionLineController.enableEditing();
+    public void enableSheetViewEditing(Permission permission) {
+        if(permission == Permission.OWNER || permission == Permission.WRITER) {
+            rangeController.enableEditing();
+            sortAndFilterController.enableSortAndFilter();
+            spreadsheetController.enableCellClick();
+            actionLineController.enableEditing();
+        }
+        else if(permission == Permission.READER) {
+            sortAndFilterController.enableSortAndFilter();
+        }
     }
 
     @Override

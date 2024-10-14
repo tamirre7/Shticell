@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import dto.CellDto;
 import dto.DimensionDto;
 import dto.SheetDto;
+import dto.permission.Permission;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,6 +53,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private MiscController miscController;
     private FormulaBuilder formulaBuilder;
     private EditingManager editingManager;
+    private Permission permission;
 
 
     @FXML
@@ -115,7 +117,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         if (savedSheet != null && !versionView) {currentSheet = savedSheet;}
         uiSheetModel.clearCells();
         uiSheetModel.createCells(currentSheetNumRows,currentSheetNumCols);
-        editingManager.enableSheetViewEditing();
+        editingManager.enableSheetViewEditing(permission);
 
         updateAllCells(currentSheet.getCells());
 
@@ -570,7 +572,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
         doneButton.setOnAction(e -> {
             sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue,slider,currentSheet);
-            editingManager.enableSheetViewEditing();
+            editingManager.enableSheetViewEditing(permission);
             Stage stage = (Stage) doneButton.getScene().getWindow();
             stage.close();
         });
@@ -633,7 +635,11 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
     }
 
-
+    @Override
+    public void setPermission(Permission permission)
+    {
+        this.permission = permission;
+    }
 }
 
 
