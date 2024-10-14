@@ -1,4 +1,4 @@
-package spreadsheet.sheetmanager.permissionrequest;
+package spreadsheet.sheetmanager.permissionmanager.permissionrequest;
 
 import dto.permission.Permission;
 

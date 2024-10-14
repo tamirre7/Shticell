@@ -16,12 +16,12 @@ import java.util.function.Consumer;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
-public class RequestWatcher extends TimerTask {
+public class RequestRefresher extends TimerTask {
     private final Consumer<List<PermissionRequestDto>> requestConsumer;
     private boolean isActive = true;
     private List<SheetDto> ownedSheets;
 
-    public RequestWatcher(Consumer<List<PermissionRequestDto>> requestConsumer) {
+    public RequestRefresher(Consumer<List<PermissionRequestDto>> requestConsumer) {
         this.requestConsumer = requestConsumer;
     }
 

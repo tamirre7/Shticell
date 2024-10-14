@@ -14,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.*;
         import org.jetbrains.annotations.NotNull;
+import shticell.client.sheethub.components.available.sheets.SheetDtoProperty;
 import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
@@ -33,65 +34,59 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 public class AvailableSheetsControllerImpl implements AvailableSheetsController {
 
     @FXML
-    private TableView<SheetDto> sheetsTable;
+    private TableView<SheetDtoProperty> sheetsTable;
 
     @FXML
-    private TableColumn<SheetDto, String> uploadedByColumn;
+    private TableColumn<SheetDtoProperty, String> uploadedByColumn;
 
     @FXML
-    private TableColumn<SheetDto, String> sheetNameColumn;
+    private TableColumn<SheetDtoProperty, String> sheetNameColumn;
 
     @FXML
-    private TableColumn<SheetDto, String> sheetSizeColumn;
+    private TableColumn<SheetDtoProperty, String> sheetSizeColumn;
 
     @FXML
-    private TableColumn<SheetDto, String> permissionColumn;
+    private TableColumn<SheetDtoProperty, String> permissionColumn;
 
     private SheetTableRefresher  tableRefresher;
     private Timer timer;
 
-    private ObservableList<SheetDto> sheetList = FXCollections.observableArrayList();
+    private ObservableList<SheetDtoProperty> sheetList = FXCollections.observableArrayList();
 
     private SpreadsheetController spreadsheetController;
     private PermissionTableController permissionTableController;
 
     @FXML
     public void initialize() {
-        // Initialize table columns
-        uploadedByColumn.setCellValueFactory(new PropertyValueFactory<>("uploadedBy"));
-        sheetNameColumn.setCellValueFactory(new PropertyValueFactory<>("sheetName"));
-        sheetSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        // Set cell value factories to bind to the JavaFX properties
+        uploadedByColumn.setCellValueFactory(cellData -> cellData.getValue().uploadedByProperty());
+        sheetNameColumn.setCellValueFactory(cellData -> cellData.getValue().sheetNameProperty());
+        sheetSizeColumn.setCellValueFactory(cellData -> cellData.getValue().sizeProperty());
 
-        permissionColumn.setCellFactory(column -> new TableCell<SheetDto, String>() {
+        permissionColumn.setCellFactory(column -> new TableCell<SheetDtoProperty, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setText(null);
                 } else {
-                    SheetDto sheetDto = getTableRow().getItem();
-                    String sheetName = sheetDto.getSheetName();
+                    SheetDtoProperty sheetDtoProperty = getTableRow().getItem();
+                    String sheetName = sheetDtoProperty.sheetNameProperty().get();
 
-                    fetchPermissionForSheet(sheetName, permission ->
-                    {
+                    fetchPermissionForSheet(sheetName, permission -> {
                         Platform.runLater(() -> setText(permission));
                     });
                 }
             }
         });
 
-
-        // Set up row selection behavior
-        sheetsTable.setRowFactory(tv -> {
-            TableRow<SheetDto> row = new TableRow<>();
-            row.setOnMouseClicked(event -> {
-                if (!row.isEmpty()) {
-                    SheetDto selectedSheet = row.getItem();
-                    handleSheetSelection(selectedSheet);
-                }
-            });
-            return row;
+        // Set up selection behavior using property-based approach
+        sheetsTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleSheetSelection(newValue);
+            }
         });
+
 
         // Bind the observable list to the table
         sheetsTable.setItems(sheetList);
@@ -135,38 +130,61 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
     }
 
     @Override
-    // Handles what happens when a sheet is selected from the table
-    public void handleSheetSelection(SheetDto selectedSheet) {
+    public void handleSheetSelection(SheetDtoProperty selectedSheet) {
         if (selectedSheet != null) {
-            spreadsheetController.setCurrentSheet(selectedSheet);
-            spreadsheetController.displaySheet(selectedSheet);
-            permissionTableController.loadPermissionsForSheet(selectedSheet.getSheetName());
+            SheetDto sheetDto = convertToSheetDto(selectedSheet);
+            spreadsheetController.setCurrentSheet(sheetDto);
+            spreadsheetController.displaySheet(sheetDto);
+            permissionTableController.stopRequestRefresher();
+            permissionTableController.startRequestRefresher(selectedSheet.sheetNameProperty().get());
         }
     }
-    private void updateTable(SheetDto[] availableSheets) {
+    private void updateTable(List<SheetDto> availableSheets) {
         Platform.runLater(() -> {
             // Check if the size of available sheets is different from the current list
-            if (sheetList.size() != availableSheets.length) {
+            if (sheetList.size() != availableSheets.size()) {
                 // Save the currently selected sheet (if any)
-                SheetDto selectedSheet = sheetsTable.getSelectionModel().getSelectedItem();
+                SheetDtoProperty selectedSheet = sheetsTable.getSelectionModel().getSelectedItem();
 
                 // Clear and update the sheet list
                 sheetList.clear();
-                sheetList.addAll(availableSheets);
+                sheetList.addAll(availableSheets.stream().map(this::convertToSheetDtoProperty).collect(Collectors.toList()));
 
-                //re-select the previously selected sheet
+                // Re-select the previously selected sheet
                 if (selectedSheet != null) {
-                    for (SheetDto sheet : sheetList) {
-                        if (sheet.getSheetName().equals(selectedSheet.getSheetName())) {
+                    for (SheetDtoProperty sheet : sheetList) {
+                        if (sheet.sheetNameProperty().get().equals(selectedSheet.sheetNameProperty().get())) {
                             sheetsTable.getSelectionModel().select(sheet);
                             break;
                         }
                     }
                 }
+            } else {
+                // Update existing items
+                for (int i = 0; i < availableSheets.size(); i++) {
+                    SheetDto newSheet = availableSheets.get(i);
+                    SheetDtoProperty existingSheet = sheetList.get(i);
+                    updateSheetDtoProperty(existingSheet, newSheet);
+                }
             }
         });
     }
-
+    private void updateSheetDtoProperty(SheetDtoProperty existingSheet, SheetDto newSheet) {
+        existingSheet.sheetNameProperty().set(newSheet.getSheetName());
+        existingSheet.uploadedByProperty().set(newSheet.getUploadedBy());
+        existingSheet.versionProperty().set(newSheet.getVersion());
+        existingSheet.sizeProperty().set(newSheet.getSize());
+    }
+    private SheetDto convertToSheetDto(SheetDtoProperty sheetDtoProperty) {
+        return new SheetDto(
+                sheetDtoProperty.getDimensionDto(),
+                sheetDtoProperty.sheetNameProperty().get(),
+                sheetDtoProperty.versionProperty().get(),
+                sheetDtoProperty.getCells(),
+                sheetDtoProperty.getSheetRanges(),
+                sheetDtoProperty.uploadedByProperty().get()
+        );
+    }
     public void startTableRefresher() {
         stopTableRefresher();
 
@@ -192,11 +210,13 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         this.permissionTableController = permissionTableController;
     }
     @Override
-    public List<String> getAvailableSheetsNames(){
+    public List<String> getAvailableSheetsNames() {
         return sheetList.stream()
-                .map(SheetDto::getSheetName)
+                .map(sheet -> sheet.sheetNameProperty().get())
                 .collect(Collectors.toList());
     }
-
+    private SheetDtoProperty convertToSheetDtoProperty(SheetDto sheetDto) {
+        return new SheetDtoProperty(sheetDto);
+    }
 }
 

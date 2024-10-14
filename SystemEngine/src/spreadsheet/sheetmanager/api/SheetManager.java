@@ -2,7 +2,7 @@ package spreadsheet.sheetmanager.api;
 
 import spreadsheet.api.SpreadSheet;
 import dto.permission.Permission;
-import spreadsheet.sheetmanager.permissionrequest.PermissionRequest;
+import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
 
 import java.util.Map;
 

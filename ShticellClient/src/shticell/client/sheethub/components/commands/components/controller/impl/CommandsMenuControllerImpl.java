@@ -67,6 +67,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
 
     private void viewSelectedSheet() {
         if (mainController != null) {
+            commandsList.getSelectionModel().clearSelection();
             mainController.switchToSheetViewPage();
         }
     }
@@ -74,18 +75,20 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         if (mainController != null) {
 
             permissionRequestController.populateSheetNames();
-            mainController.switchToPermissionRequestPage(requestPage);
+            commandsList.getSelectionModel().clearSelection();
+            mainController.showPermissionRequestPopup(requestPage);
         }
     }
     private void viewResponsePage() {
         if (mainController != null) {
-            mainController.switchToPermissionResponsePage(responsePage);
+            commandsList.getSelectionModel().clearSelection();
+            mainController.showPermissionResponsePopup(responsePage);
 
         }
     }
 
     @FXML
-    public void returnToHub(){mainController.switchToHubPage();}
+    public void returnToHub(){mainController.closePermissionPopup();}
 
 
     @Override
@@ -140,5 +143,6 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     @Override
     public void deactivatePermissionRefresher(){
         permissionResponseController.stopRequestRefresher();
+        permissionTableController.stopRequestRefresher();
     }
 }

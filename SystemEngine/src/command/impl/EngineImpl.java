@@ -23,7 +23,7 @@ import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import dto.permission.Permission;
-import spreadsheet.sheetmanager.permissionrequest.PermissionRequest;
+import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
 import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.impl.SheetManagerImpl;
 import spreadsheet.util.UpdateResult;
@@ -499,7 +499,7 @@ public class EngineImpl implements Engine {
 
 
     @Override
-    public SheetDto[] getAllSheets()
+    public List<SheetDto>  getAllSheets()
     {
         List<SheetDto> sheetDtos = new ArrayList<>();
         for(Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
@@ -519,7 +519,7 @@ public class EngineImpl implements Engine {
 
         }
 
-        return sheetDtos.toArray(new SheetDto[0]);
+        return sheetDtos;
     }
 
     @Override
@@ -530,7 +530,7 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public PermissionInfoDto[] getAllSheetPermissions(String sheetName) {
+    public List<PermissionInfoDto> getAllSheetPermissions(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
 
         Map<String, Permission> approvedPermissions = relevantManager.getApprovedPermissions();
@@ -558,7 +558,7 @@ public class EngineImpl implements Engine {
         }
 
         // Convert the list to an array and return
-        return permissionInfoDtos.toArray(new PermissionInfoDto[0]);
+        return permissionInfoDtos;
     }
     @Override
     public void permissionRequest(int requestId,String sheetName, Permission permissionType, String message,String username){

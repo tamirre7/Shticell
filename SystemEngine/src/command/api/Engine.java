@@ -27,9 +27,9 @@ public interface Engine {
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName);
     String createCellId(int row, int col);
     String evaluateOriginalValue(String originalValue,String sheetName);
-    SheetDto[] getAllSheets();
+    List<SheetDto> getAllSheets();
     PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName);
-    PermissionInfoDto[] getAllSheetPermissions(String sheetName);
+    List<PermissionInfoDto> getAllSheetPermissions(String sheetName);
     void permissionRequest(int requestId, String sheetName, Permission permissionType, String message, String username);
     void permissionApproval(String sheetName,String userName);
     void permissionDenial(String sheetName, String userName);

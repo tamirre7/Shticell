@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet(name="SheetPermissionsServlet", urlPatterns = {"/permissions/sheetpermissions"})
 public class SheetPermissionServlet extends HttpServlet {
@@ -24,7 +25,7 @@ public class SheetPermissionServlet extends HttpServlet {
                 throw new ServletException("No engine found");
             }
             String sheetName = req.getParameter("sheetName");
-            PermissionInfoDto[] permissionInfoDtos = engine.getAllSheetPermissions(sheetName);
+            List<PermissionInfoDto> permissionInfoDtos = engine.getAllSheetPermissions(sheetName);
             Gson gson = new Gson();
             String permissionDtosJson = gson.toJson(permissionInfoDtos);
             resp.getWriter().write(permissionDtosJson);

@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shticell.client.sheethub.components.available.sheets.impl.AvailableSheetsControllerImpl;
 import shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl;
@@ -44,6 +45,7 @@ public class SheetHubMainController {
 
     private LoginController loginController;
 
+    private Stage permissionPopupStage;
 
     @FXML
     public void initialize() {
@@ -111,22 +113,33 @@ public class SheetHubMainController {
         stage.setHeight(800);
         stage.centerOnScreen();  // Centers the stage on the screen
     }
-    public void switchToPermissionRequestPage(Parent pane)
-    {
-        setMainPanelTo(pane);
-        Stage stage = (Stage) scene.getWindow();
-        stage.setWidth(500);
-        stage.setHeight(400);
-        stage.centerOnScreen();  // Centers the stage on the screen
+    public void showPermissionRequestPopup(Parent pane) {
+        permissionPopupStage = new Stage();
+        permissionPopupStage.initModality(Modality.APPLICATION_MODAL);
+        permissionPopupStage.initOwner(scene.getWindow());
 
+        Scene popupScene = new Scene(pane);
+        permissionPopupStage.setScene(popupScene);
+        permissionPopupStage.setTitle("Permission Request");
+        permissionPopupStage.setWidth(500);
+        permissionPopupStage.setHeight(400);
+        permissionPopupStage.centerOnScreen();
+        permissionPopupStage.showAndWait();
     }
-    public void switchToPermissionResponsePage(Parent pane)
-    {
-        setMainPanelTo(pane);
-        Stage stage = (Stage) scene.getWindow();
-        stage.setWidth(700);
-        stage.setHeight(550);
-        stage.centerOnScreen();  // Centers the stage on the screen
+
+    public void showPermissionResponsePopup(Parent pane) {
+
+        permissionPopupStage = new Stage();
+        permissionPopupStage.initModality(Modality.APPLICATION_MODAL);
+        permissionPopupStage.initOwner(scene.getWindow());
+
+        Scene popupScene = new Scene(pane);
+        permissionPopupStage.setScene(popupScene);
+        permissionPopupStage.setTitle("Permission Response");
+        permissionPopupStage.setWidth(700);
+        permissionPopupStage.setHeight(550);
+        permissionPopupStage.centerOnScreen();
+        permissionPopupStage.showAndWait();
     }
 
     public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){
@@ -141,6 +154,11 @@ public class SheetHubMainController {
     {
         availableSheetsComponentController.stopTableRefresher();
         commandsMenuComponentController.logoutButtonClicked();
+    }
+
+    public void closePermissionPopup(){
+        permissionPopupStage.close();
+        permissionPopupStage = null;
     }
 
 }

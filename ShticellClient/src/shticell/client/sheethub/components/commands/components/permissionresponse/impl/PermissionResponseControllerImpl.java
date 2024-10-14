@@ -14,7 +14,8 @@ import javafx.scene.control.TextArea;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
-import shticell.client.sheethub.components.commands.components.permissionresponse.RequestWatcher;
+import shticell.client.sheethub.components.commands.components.permissionresponse.PermissionRequestDtoProperty;
+import shticell.client.sheethub.components.commands.components.permissionresponse.RequestRefresher;
 import shticell.client.sheethub.components.commands.components.permissionresponse.api.PermissionResponseController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
@@ -32,16 +33,16 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
 
     private CommandsMenuController commandsMenuController;
 
-    @FXML private TableView<PermissionRequestDto> requestTableView;
+    @FXML private TableView<PermissionRequestDtoProperty> requestTableView;
     @FXML private TextArea messageArea;
     @FXML private Button approveButton;
     @FXML private Button denyButton;
-    @FXML private Button returnButton;
+    @FXML private Button closeButton;
 
-    private RequestWatcher requestRefresher;
+    private RequestRefresher requestRefresher;
     private Timer timer;
 
-    private ObservableList<PermissionRequestDto> requests = FXCollections.observableArrayList();
+    private ObservableList<PermissionRequestDtoProperty> requests = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -59,24 +60,26 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
 
     @FXML
     private void handleDeny(ActionEvent event){
-        PermissionRequestDto selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
+        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
         if (selectedRequest != null) {
-            PermissionResponseDto response = new PermissionResponseDto(selectedRequest,false);
+            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(),false);
             sendResponseMessage(response);
+            requests.remove(selectedRequest);
         }
     }
 
     @FXML
     private void handleApprove(ActionEvent event){
-        PermissionRequestDto selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
+        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
         if (selectedRequest != null) {
-            PermissionResponseDto response = new PermissionResponseDto(selectedRequest,true);
+            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(),true);
             sendResponseMessage(response);
+            requests.remove(selectedRequest);
         }
     }
 
     @FXML
-    private void handleReturn(ActionEvent event){
+    private void handleClose(ActionEvent event){
         commandsMenuController.returnToHub();
     }
 
@@ -116,12 +119,13 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
         Platform.runLater(() -> {
             // Create a set for easy lookup of existing request IDs
             Set<Integer> existingRequestIds = requests.stream()
-                    .map(PermissionRequestDto::getId)
+                    .map(PermissionRequestDtoProperty::getId)
                     .collect(Collectors.toSet());
 
             // Filter out new requests that are not already in the existing requests
-            List<PermissionRequestDto> filteredNewRequests = newRequests.stream()
+            List<PermissionRequestDtoProperty> filteredNewRequests = newRequests.stream()
                     .filter(request -> !existingRequestIds.contains(request.getId()))
+                    .map(PermissionRequestDtoProperty::new)
                     .toList();
 
             // Update the requests and the table only if there are new requests
@@ -138,7 +142,7 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
         stopRequestRefresher();
 
         timer = new Timer();
-        requestRefresher = new RequestWatcher(this::updateRequestTable);
+        requestRefresher = new RequestRefresher(this::updateRequestTable);
         timer.schedule(requestRefresher, REFRESH_RATE, REFRESH_RATE);
 
     }

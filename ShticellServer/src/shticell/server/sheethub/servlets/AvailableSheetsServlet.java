@@ -12,6 +12,7 @@ import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @WebServlet(name ="AvailableSheetsServlet", urlPatterns = {"/sheethub/availablesheets"})
 public class AvailableSheetsServlet extends HttpServlet {
@@ -24,7 +25,7 @@ public class AvailableSheetsServlet extends HttpServlet {
                 throw new ServletException("No engine found");
             }
             Gson gson = new Gson();
-            SheetDto[] availableSheets = engine.getAllSheets();
+            List<SheetDto> availableSheets = engine.getAllSheets();
             String availableSheetsJson = gson.toJson(availableSheets);
             resp.getWriter().write(availableSheetsJson);
 
