@@ -84,13 +84,14 @@ public class SheetViewMainController {
 
     public void initSheet(Scene scene, String loggedUserName) {
         actionLineComponentController.setUsernameLabel(loggedUserName);
-        setViewMatchToPermission();
         miscComponentController.setScene(scene);
         skinManager.applySkin(scene,"Default");
         actionLineComponentController.populateVersionSelector();
+        editingManager.disableSheetViewEditing(false);
    }
 
-    private void setViewMatchToPermission(){
+
+    public void setViewMatchToPermission(){
         String sheetName = spreadsheetComponentController.getCurrentSheet().getSheetName();
 
         String finalUrl = HttpUrl

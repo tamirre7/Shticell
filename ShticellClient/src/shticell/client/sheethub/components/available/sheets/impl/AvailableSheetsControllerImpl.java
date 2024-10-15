@@ -1,6 +1,7 @@
 package shticell.client.sheethub.components.available.sheets.impl;
 
 import com.google.gson.Gson;
+import dto.permission.Permission;
 import dto.permission.PermissionInfoDto;
 import dto.SheetDto;
 import javafx.application.Platform;
@@ -128,6 +129,26 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
 
 
     }
+    @Override
+    public void updateSheetPermission(String sheetName, Permission newPermission) {
+        Platform.runLater(() -> {
+            int permissionColumnIndex = sheetsTable.getColumns().indexOf(permissionColumn);
+            for (int i = 0; i < sheetList.size(); i++) {
+                SheetDtoProperty sheet = sheetList.get(i);
+                if (sheet.sheetNameProperty().get().equals(sheetName)) {
+                    final int rowIndex = i;
+                    // Update the permission for the matching sheet
+                    fetchPermissionForSheet(sheetName, permission -> {
+
+                    });
+                    break;
+                }
+            }
+        });
+    }
+
+
+
 
     @Override
     public void handleSheetSelection(SheetDtoProperty selectedSheet) {

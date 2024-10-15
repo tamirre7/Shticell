@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
 import shticell.client.sheethub.components.commands.components.permissionresponse.PermissionRequestDtoProperty;
 import shticell.client.sheethub.components.commands.components.permissionresponse.RequestRefresher;
@@ -32,6 +33,7 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 public class PermissionResponseControllerImpl implements PermissionResponseController {
 
     private CommandsMenuController commandsMenuController;
+    private AvailableSheetsController availableSheetsController;
 
     @FXML private TableView<PermissionRequestDtoProperty> requestTableView;
     @FXML private TextArea messageArea;
@@ -75,6 +77,8 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
             PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(),true);
             sendResponseMessage(response);
             requests.remove(selectedRequest);
+
+            availableSheetsController.updateSheetPermission(selectedRequest.getSheetName(), selectedRequest.getPermissionType());
         }
     }
 
@@ -160,6 +164,10 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
     @Override
     public void setCommandsMenuController(CommandsMenuController commandsMenuController) {
         this.commandsMenuController = commandsMenuController;
+    }
+    @Override
+    public void setAvailableSheetsController(AvailableSheetsController availableSheetsController) {
+        this.availableSheetsController = availableSheetsController;
     }
 
 }

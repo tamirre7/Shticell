@@ -106,6 +106,7 @@ public class SheetHubMainController {
         commandsMenuComponentController.deactivatePermissionRefresher();
         sheetViewMainController.initSheet(scene, loginController.getLoggedUserName());
         setMainPanelTo(sheetViewMainPane);
+        sheetViewMainController.setViewMatchToPermission();
 
         // Set window size for the Sheet view page
         Stage stage = (Stage) scene.getWindow();
@@ -157,8 +158,9 @@ public class SheetHubMainController {
     }
 
     public void closePermissionPopup(){
+        availableSheetsComponentController.startTableRefresher();
+        commandsMenuComponentController.activatePermissionRefresher();
         permissionPopupStage.close();
-        permissionPopupStage = null;
     }
 
 }

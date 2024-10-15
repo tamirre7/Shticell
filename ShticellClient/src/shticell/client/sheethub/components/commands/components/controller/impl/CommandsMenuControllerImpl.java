@@ -67,7 +67,6 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
 
     private void viewSelectedSheet() {
         if (mainController != null) {
-            commandsList.getSelectionModel().clearSelection();
             mainController.switchToSheetViewPage();
         }
     }
@@ -75,13 +74,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         if (mainController != null) {
 
             permissionRequestController.populateSheetNames();
-            commandsList.getSelectionModel().clearSelection();
             mainController.showPermissionRequestPopup(requestPage);
         }
     }
     private void viewResponsePage() {
         if (mainController != null) {
-            commandsList.getSelectionModel().clearSelection();
             mainController.showPermissionResponsePopup(responsePage);
 
         }
@@ -110,6 +107,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     public void setAvailableSheetsControllerTableController(AvailableSheetsController availableSheetsController) {
         this.availableSheetsController = availableSheetsController;
         permissionRequestController.setAvailableSheetsController(availableSheetsController);
+        permissionResponseController.setAvailableSheetsController(availableSheetsController);
     }
     @Override
     public void setLoginController(LoginController loginController) {

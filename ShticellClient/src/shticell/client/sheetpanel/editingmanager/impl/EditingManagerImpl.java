@@ -28,10 +28,11 @@ public class EditingManagerImpl implements EditingManager {
             rangeController.enableEditing();
             sortAndFilterController.enableSortAndFilter();
             spreadsheetController.enableCellClick();
-            actionLineController.enableEditing();
+            actionLineController.enableEditing(false);
         }
         else if(permission == Permission.READER) {
             sortAndFilterController.enableSortAndFilter();
+            actionLineController.enableEditing(true);
         }
     }
 

@@ -255,10 +255,10 @@ public class ActionLineControllerImpl implements ActionLineController {
     }
 
     @Override
-    public void enableEditing(){
+    public void enableEditing(boolean versionView){
         updatevalbtn.setDisable(false);
         originalvalueTF.setDisable(false);
-        versionSelector.setDisable(false);
+        if(versionView) {versionSelector.setDisable(false);}
     }
     @Override
     public void clearTextFields() {
