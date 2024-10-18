@@ -31,7 +31,7 @@ public class OwnedSheetsServlet extends HttpServlet {
            resp.getWriter().write(ownedSheetsJson);
        }catch (Exception e) {
            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-           resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error evaluating original value: " + e.getMessage() + "\"}");
+           resp.getWriter().write("Error: " + e.getMessage());
        }
     }
 }

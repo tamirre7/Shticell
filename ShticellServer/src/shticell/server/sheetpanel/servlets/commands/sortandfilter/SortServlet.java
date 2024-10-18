@@ -59,7 +59,7 @@ public class SortServlet extends HttpServlet {
             resp.getWriter().write(jsonResp);
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error sort range" + e.getMessage() + "\"}");
+            resp.getWriter().write("Error sort range" + e.getMessage());
         }
 
 

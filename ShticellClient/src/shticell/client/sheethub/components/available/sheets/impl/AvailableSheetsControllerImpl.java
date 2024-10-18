@@ -113,7 +113,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
                     });
                 } else {
                     Platform.runLater(() ->
-                            showAlert("Error", "Failed to sort data: " + response.message())
+                            showAlert("Error", "Failed to show available sheets: " + response.message())
 
                     );
                 }
@@ -122,7 +122,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showAlert("Error", "An error occurred while sorting: " + e.getMessage())
+                        showAlert("Error", "An error occurred: " + e.getMessage())
                 );
             }
         });

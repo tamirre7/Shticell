@@ -35,7 +35,7 @@ public class FormulaBuilderServlet extends HttpServlet {
 
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error evaluating original value: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error evaluating original value: " + e.getMessage());
 
         }
     }

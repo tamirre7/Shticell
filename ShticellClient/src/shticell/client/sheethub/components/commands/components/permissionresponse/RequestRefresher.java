@@ -1,6 +1,7 @@
 package shticell.client.sheethub.components.commands.components.permissionresponse;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dto.permission.PermissionRequestDto;
 import dto.SheetDto;
 import javafx.application.Platform;
@@ -32,7 +33,7 @@ public class RequestRefresher extends TimerTask {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                    ownedSheets = List.of(new Gson().fromJson(responseBody, SheetDto[].class));
+                    ownedSheets = new Gson().fromJson(responseBody, new TypeToken<List<SheetDto>>(){}.getType());
                     fetchPendingRequests(); // Call to fetch pending requests after getting owned sheets
                 }
             }

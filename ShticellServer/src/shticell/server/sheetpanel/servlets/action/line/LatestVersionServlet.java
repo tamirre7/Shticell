@@ -23,7 +23,7 @@ public class LatestVersionServlet extends HttpServlet {
 
         }catch (Exception e){
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error getting version: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error getting version: " + e.getMessage());
 
         }
     }

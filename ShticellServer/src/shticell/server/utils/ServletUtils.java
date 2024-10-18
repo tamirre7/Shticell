@@ -1,5 +1,7 @@
 package shticell.server.utils;
 
+import chat.chatmanager.api.ChatManager;
+import chat.chatmanager.impl.ChatManagerImpl;
 import command.api.Engine;
 import command.impl.EngineImpl;
 import jakarta.servlet.ServletContext;
@@ -38,14 +40,14 @@ public class ServletUtils {
         return (Engine) servletContext.getAttribute(ENGINE_ATTRIBUTE_NAME);
     }
 
-//    public static ChatManager getChatManager(ServletContext servletContext) {
-//        synchronized (chatManagerLock) {
-//            if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
-//                servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
-//            }
-//        }
-//        return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
-//    }
+    public static ChatManager getChatManager(ServletContext servletContext) {
+        synchronized (chatManagerLock) {
+            if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
+                servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManagerImpl());
+            }
+        }
+        return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
+    }
 
     public static int getIntParameter(HttpServletRequest request, String name) {
         String value = request.getParameter(name);

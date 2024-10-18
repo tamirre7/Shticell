@@ -42,7 +42,7 @@ public class AddEmptyCellServlet extends HttpServlet {
         }catch (Exception e)
         {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error adding cell: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error adding cell: " + e.getMessage());
         }
 }
 }

@@ -15,4 +15,6 @@ public interface CommandsMenuController {
     void setLoginController(LoginController loginController);
     void activatePermissionRefresher();
     void deactivatePermissionRefresher();
+    void activateChatRefreshers();
+    void deActivateChatRefreshers();
 }

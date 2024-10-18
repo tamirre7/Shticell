@@ -43,7 +43,7 @@ public class CellStyleUpdateServlet extends HttpServlet {
 
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error updating cell's style: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error updating cell's style: " + e.getMessage());
         }
 
     }

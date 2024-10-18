@@ -2,6 +2,10 @@ package shticell.client.util;
 
 public class Constants {
 
+    //global constants
+    public final static int REFRESH_RATE = 500;
+    public final static String CHAT_LINE_FORMATTING = "%tH:%tM:%tS | %.10s: %s%n";
+
     //fxml locations
     public final static String SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/main/shticell-hub-main.fxml";
     public final static String SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/main/shticellApp.fxml";
@@ -13,6 +17,7 @@ public class Constants {
     public final static String FORMULA_BUILDER_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/command/components/formulabuilder/formulabuilder.fxml";
     public final static String PERMISSION_REQUEST_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionrequest/request-permission.fxml";
     public final static String PERMISSION_RESPONSE_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionresponse/permission-response.fxml";
+    public final static String CHAT_ROOM_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/chat/chatroom/chat-room-main.fxml";
 
     //server resources locations
     public final static String BASE_DOMAIN = "localhost";
@@ -23,6 +28,7 @@ public class Constants {
     private final static String HUB_SERVER_PATH = "/sheethub";
     private final static String SHEET_VIEW_SERVER_PATH = "/sheetview";
     private final static String PERMISSION_PATH = "/permissions";
+    private final static String CHAT_PATH = "/chat";
 
 
     //sheet hub resources
@@ -32,8 +38,6 @@ public class Constants {
     public final static String AVAILABLE_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/availablesheets";
     public final static String OWNED_SHEETS = FULL_SERVER_PATH + HUB_SERVER_PATH + "/ownedsheets";
 
-    //sheethub general constants
-    public final static int REFRESH_RATE = 500;
 
     //sheet view resources
     public final static String UPDATE_CELL = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecell";
@@ -55,5 +59,12 @@ public class Constants {
     public final static String REQUEST_PERMISSION = FULL_SERVER_PATH + PERMISSION_PATH + "/requestpermission";
     public final static String PERMISSION_RESPONSE = FULL_SERVER_PATH + PERMISSION_PATH + "/response";
     public final static String SHEET_PENDING_PERMISSIONS_REQUESTS = FULL_SERVER_PATH + PERMISSION_PATH + "/pendingrequests";
+
+
+    //chat resources
+
+    public final static String USERS_LIST = FULL_SERVER_PATH + CHAT_PATH + "/userslist";
+    public final static String SEND_CHAT_LINE = FULL_SERVER_PATH + CHAT_PATH + "sendChat";
+    public final static String CHAT_LINES_LIST = FULL_SERVER_PATH + CHAT_PATH +  "/chatlines";
 
 }

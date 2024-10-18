@@ -46,6 +46,7 @@ public class SheetHubMainController {
     private LoginController loginController;
 
     private Stage permissionPopupStage;
+    private Stage chatPopupStage;
 
     @FXML
     public void initialize() {
@@ -104,6 +105,7 @@ public class SheetHubMainController {
     public void switchToSheetViewPage() {
         availableSheetsComponentController.stopTableRefresher();
         commandsMenuComponentController.deactivatePermissionRefresher();
+        commandsMenuComponentController.deActivateChatRefreshers();
         sheetViewMainController.initSheet(scene, loginController.getLoggedUserName());
         setMainPanelTo(sheetViewMainPane);
         sheetViewMainController.setViewMatchToPermission();
@@ -115,6 +117,8 @@ public class SheetHubMainController {
         stage.centerOnScreen();  // Centers the stage on the screen
     }
     public void showPermissionRequestPopup(Parent pane) {
+        commandsMenuComponentController.activatePermissionRefresher();
+
         permissionPopupStage = new Stage();
         permissionPopupStage.initModality(Modality.APPLICATION_MODAL);
         permissionPopupStage.initOwner(scene.getWindow());
@@ -129,6 +133,7 @@ public class SheetHubMainController {
     }
 
     public void showPermissionResponsePopup(Parent pane) {
+        commandsMenuComponentController.activatePermissionRefresher();
 
         permissionPopupStage = new Stage();
         permissionPopupStage.initModality(Modality.APPLICATION_MODAL);
@@ -141,6 +146,21 @@ public class SheetHubMainController {
         permissionPopupStage.setHeight(550);
         permissionPopupStage.centerOnScreen();
         permissionPopupStage.showAndWait();
+    }
+    public void showChatPopup(Parent pane) {
+        commandsMenuComponentController.activateChatRefreshers();
+
+        chatPopupStage = new Stage();
+        chatPopupStage.initModality(Modality.APPLICATION_MODAL);
+        chatPopupStage.initOwner(scene.getWindow());
+
+        Scene popupScene = new Scene(pane);
+        chatPopupStage.setScene(popupScene);
+        chatPopupStage.setTitle("Chat");
+        chatPopupStage.setWidth(700);
+        chatPopupStage.setHeight(550);
+        chatPopupStage.centerOnScreen();
+        chatPopupStage.showAndWait();
     }
 
     public void setupSheetView(SheetViewMainController sheetViewMainController,ScrollPane sheetViewMainPane,Scene scene){

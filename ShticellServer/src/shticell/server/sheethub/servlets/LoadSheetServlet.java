@@ -3,7 +3,6 @@ package shticell.server.sheethub.servlets;
 import com.google.gson.Gson;
 import command.api.Engine;
 import dto.SaveLoadFileDto;
-import dto.SheetDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -35,13 +34,16 @@ public class LoadSheetServlet extends HttpServlet {
 
             try (InputStream fileContent = filePart.getInputStream()) {
                 SaveLoadFileDto saveLoadFileDto = engine.loadFile(fileContent, userNameFromSession);
+                if (!saveLoadFileDto.isSucceeded()) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
                 String json = new Gson().toJson(saveLoadFileDto);
                 resp.getWriter().write(json);
             }
         }
         catch (Exception e){
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error loading file: " + e.getMessage() + "\"}");
+            resp.getWriter().write(e.getMessage());
         }
     }
 }

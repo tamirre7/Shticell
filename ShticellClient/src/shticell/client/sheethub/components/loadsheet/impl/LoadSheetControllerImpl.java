@@ -56,8 +56,8 @@ public class LoadSheetControllerImpl implements LoadSheetController {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to load file: " + response.message())
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to load file: \n" + errorMessage)
                     );
                 }
             }
@@ -65,11 +65,12 @@ public class LoadSheetControllerImpl implements LoadSheetController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        showAlert("Error", "Error: " + e.getMessage())
+                        showAlert("Error", "Error: \n" + e.getMessage())
                 );
             }
         });
     }
+
     @Override
     public void setGreetingLabel() {
         if (loginController != null) {

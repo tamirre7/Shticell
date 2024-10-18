@@ -44,7 +44,7 @@ public class DynamicAnalysisServlet extends HttpServlet {
 
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error dynamic analysis: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error dynamic analysis: " + e.getMessage());
         }
     }
 

@@ -2,7 +2,6 @@ package command.impl;
 
 import command.api.Engine;
 import dto.*;
-
 import dto.permission.PermissionInfoDto;
 import dto.permission.PermissionRequestDto;
 import dto.permission.RequestStatus;
@@ -59,7 +58,7 @@ public class EngineImpl implements Engine {
             int numCols = stlLayout.getColumns();
 
             if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
-                return new SaveLoadFileDto(false, "Invalid sheet size: Rows must be between 1 and 50, columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
+                return new SaveLoadFileDto(false, "Invalid sheet size: Rows must be between 1 and 50 and columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
             }
 
             // Create Dimensions object
@@ -80,7 +79,6 @@ public class EngineImpl implements Engine {
                 String startCell = stlRange.getSTLBoundaries().getFrom();
                 String endCell = stlRange.getSTLBoundaries().getTo();
                 String rangeName = stlRange.getName();
-
 
                 // Validate the start and end cells
                 if (!spreadSheet.isValidCellID(startCell) || !spreadSheet.isValidCellID(endCell)) {
@@ -107,7 +105,6 @@ public class EngineImpl implements Engine {
                 spreadSheet.isValidCellID(cellID);
                 CellIdentifierImpl cellId = new CellIdentifierImpl(cellID);
 
-
                 // Evaluate the expression and validate function arguments
                 Expression expression;
                 try {
@@ -123,8 +120,6 @@ public class EngineImpl implements Engine {
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
 
-
-
             // Update dependencies and influences
             spreadSheet.updateDependenciesAndInfluences();
 
@@ -135,9 +130,10 @@ public class EngineImpl implements Engine {
         }  catch (JAXBException e) {
             return new SaveLoadFileDto(false, "XML parsing error: " + e.getMessage());
         } catch (Exception e) {
-            return new SaveLoadFileDto(false, "An unexpected error occurred: " + e.getMessage());
+            return new SaveLoadFileDto(false, e.getMessage());
         }
     }
+
 
 
     private SheetDto convertSheetToSheetDto(SpreadSheet spreadSheet) {

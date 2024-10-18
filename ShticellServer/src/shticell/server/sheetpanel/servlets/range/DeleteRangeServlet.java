@@ -40,9 +40,13 @@ public class DeleteRangeServlet extends HttpServlet {
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 
-        }catch (Exception e) {
+        }catch (IllegalArgumentException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("Error deleting range: " + e.getMessage());
+        }
+        catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error deleting range: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error deleting range: " + e.getMessage());
         }
 
     }

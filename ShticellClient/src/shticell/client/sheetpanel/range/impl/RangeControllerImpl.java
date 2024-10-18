@@ -223,8 +223,9 @@ public class RangeControllerImpl implements RangeController {
                             uiSheetModel.clearPreviousRangeHighlight();
                         });
                     } else {
+                        String errorMessage = response.body() != null ? response.body().string() : "Unknown error";
                         Platform.runLater(() ->
-                                showAlert("Error", "Failed to delete range: " + response.message())
+                                showAlert("Error", errorMessage)
                         );
                     }
                 }

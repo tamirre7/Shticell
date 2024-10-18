@@ -29,7 +29,7 @@ public class SheetByVersionServlet extends HttpServlet {
         }
         catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error getting sheet by version: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error getting sheet by version: " + e.getMessage());
         }
     }
 }

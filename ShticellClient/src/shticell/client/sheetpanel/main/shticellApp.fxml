@@ -25,9 +25,11 @@
             <VBox minHeight="-Infinity" prefHeight="490.0" prefWidth="125.0" styleClass="left-vbox" BorderPane.alignment="TOP_LEFT">
                <Separator prefWidth="200.0" />
                <fx:include fx:id="sortAndFilterComponent" source="../command/components/sortandfilter/sortandflter.fxml" />
+               <fx:include fx:id="dynamicAnalysisComponent" source="../command/components/dynamicanalysis/dynamic-analysis.fxml" />
                <fx:include fx:id="graphBuilderComponent" source="../command/components/graphbuilder/builder/graphbuild.fxml" />
                <fx:include fx:id="rangeComponent" source="../range/rangescomponent.fxml" />
                <fx:include fx:id="miscComponent" source="../misc/misccomponent.fxml" />
+
             </VBox>
          </left>
 

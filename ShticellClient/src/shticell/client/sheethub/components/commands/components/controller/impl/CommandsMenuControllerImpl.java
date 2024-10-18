@@ -6,11 +6,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.web.HTMLEditorSkin;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
+import shticell.client.sheethub.components.commands.components.chat.chatroom.api.ChatRoomController;
 import shticell.client.sheethub.components.commands.components.permissionrequest.api.PermissionRequestController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
 import shticell.client.sheethub.components.commands.components.permissionresponse.api.PermissionResponseController;
@@ -27,11 +29,13 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     private PermissionTableController permissionTableController;
     private PermissionRequestController permissionRequestController;
     private PermissionResponseController permissionResponseController;
+    private ChatRoomController chatRoomController;
     private AvailableSheetsController availableSheetsController;
     private LoginController loginController;
 
     private BorderPane requestPage;
     private BorderPane responsePage;
+    private BorderPane chatPage;
 
     @FXML
     private ListView<String> commandsList;
@@ -39,16 +43,20 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     @FXML
     public void initialize() throws IOException {
 
-        FXMLLoader reqloader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_REQUEST_RESOURCE_LOCATION));
-        requestPage = reqloader.load();
-        permissionRequestController = reqloader.getController();
+        FXMLLoader reqLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_REQUEST_RESOURCE_LOCATION));
+        requestPage = reqLoader.load();
+        permissionRequestController = reqLoader.getController();
 
         permissionRequestController.setCommandsMenuController(this);
 
-        FXMLLoader resploader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
-        responsePage = resploader.load();
-        permissionResponseController = resploader.getController();
+        FXMLLoader respLoader = new FXMLLoader(getClass().getResource(Constants.CHAT_ROOM_RESOURCE_LOCATION));
+        chatPage = respLoader.load();
+        chatRoomController = respLoader.getController();
+        chatRoomController.setCommandsMenuComponent(this);
 
+        FXMLLoader chatLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
+        responsePage = chatLoader.load();
+        permissionResponseController = chatLoader.getController();
         permissionResponseController.setCommandsMenuController(this);
 
         commandsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -60,6 +68,9 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             }
             if("Response To Permission Requests".equals(newValue)) {
                 viewResponsePage();
+            }
+            if("Enter Chat".equals(newValue)){
+                viewChatPage();
             }
 
         });
@@ -81,6 +92,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         if (mainController != null) {
             mainController.showPermissionResponsePopup(responsePage);
 
+        }
+    }
+    private void viewChatPage() {
+        if (mainController != null) {
+            mainController.showChatPopup(chatPage);
         }
     }
 
@@ -142,5 +158,13 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
     public void deactivatePermissionRefresher(){
         permissionResponseController.stopRequestRefresher();
         permissionTableController.stopRequestRefresher();
+    }
+    @Override
+    public void activateChatRefreshers(){
+        chatRoomController.setActive();
+    }
+    @Override
+    public void deActivateChatRefreshers(){
+        chatRoomController.setInActive();
     }
 }

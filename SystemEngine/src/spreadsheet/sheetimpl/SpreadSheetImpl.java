@@ -53,7 +53,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         // Validate the row and column ranges
         if (row < 1 || row > this.sheetDimension.getNumRows()
                 || col < 'A' || col > this.sheetDimension.getNumCols() + 'A') {
-            throw new IllegalArgumentException("Invalid cell identifier - Row: Expected number between 1-"
+            throw new IllegalArgumentException("There is an invalid cell identifier in the sheet - \n" + "Row: Expected number between 1-"
                     + this.sheetDimension.getNumRows() + " and got " + row
                     + "\n" + "Col: Expected char between A - "
                     + (char) (this.sheetDimension.getNumCols() - 1 + 'A') + " and got " + col);

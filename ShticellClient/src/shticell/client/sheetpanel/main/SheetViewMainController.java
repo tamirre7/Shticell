@@ -12,6 +12,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl;
+import shticell.client.sheetpanel.command.components.dynamicanalysis.impl.DynamicAnalysisControllerImpl;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
 import shticell.client.sheetpanel.command.components.graphbuilder.builder.impl.GraphBuilderControllerImpl;
 import shticell.client.sheetpanel.command.components.sortandfilter.impl.SortAndFilterControllerImpl;
@@ -43,6 +44,8 @@ public class SheetViewMainController {
     private MiscControllerImpl miscComponentController;
     @FXML
     private SpreadsheetControllerImpl spreadsheetComponentController;
+    @FXML
+    private DynamicAnalysisControllerImpl dynamicAnalysisComponentController;
 
     private Scene scene;
 
@@ -72,6 +75,7 @@ public class SheetViewMainController {
         spreadsheetComponentController.setFormulaBuilder(formulaBuilder);
         spreadsheetComponentController.setMiscController(miscComponentController);
         miscComponentController.setSkinManager(skinManager);
+        dynamicAnalysisComponentController.setSpreadsheetController(spreadsheetComponentController);
     }
     public SpreadsheetController getSpreadsheetController() {return spreadsheetComponentController;}
 
