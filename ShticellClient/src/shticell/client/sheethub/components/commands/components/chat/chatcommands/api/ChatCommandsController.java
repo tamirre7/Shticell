@@ -8,6 +8,6 @@ import java.io.IOException;
 
 public interface ChatCommandsController {
     ReadOnlyBooleanProperty autoUpdatesProperty();
-    void quitClicked(ActionEvent event) throws IOException;
+    void returnClicked(ActionEvent event) throws IOException;
     void setChatRoomController(ChatRoomController chatRoomController);
 }

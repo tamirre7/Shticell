@@ -28,7 +28,7 @@ public class EditingManagerImpl implements EditingManager {
             rangeController.enableEditing();
             sortAndFilterController.enableSortAndFilter();
             spreadsheetController.enableCellClick();
-            actionLineController.enableEditing(false);
+            actionLineController.enableEditing(true);
         }
         else if(permission == Permission.READER) {
             sortAndFilterController.enableSortAndFilter();

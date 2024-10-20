@@ -34,18 +34,15 @@ public class ChatServlet extends HttpServlet {
             return;
         }
 
-        int chatManagerVersion = 0;
         List<SingleChatEntry> chatEntries;
         synchronized (getServletContext()) {
-            chatManagerVersion = chatManager.getVersion();
             chatEntries = chatManager.getChatEntries(chatVersion);
         }
 
         // log and create the response json string
-        ChatAndVersion cav = new ChatAndVersion(chatEntries, chatManagerVersion);
         Gson gson = new Gson();
-        String jsonResponse = gson.toJson(cav);
-        logServerMessage("Server Chat version: " + chatManagerVersion + ", User '" + username + "' Chat version: " + chatVersion);
+        String jsonResponse = gson.toJson(chatEntries);
+        logServerMessage("User '" + username);
         logServerMessage(jsonResponse);
 
         try (PrintWriter out = response.getWriter()) {
@@ -57,16 +54,5 @@ public class ChatServlet extends HttpServlet {
 
     private void logServerMessage(String message){
         System.out.println(message);
-    }
-
-    private static class ChatAndVersion {
-
-        final private List<SingleChatEntry> entries;
-        final private int version;
-
-        public ChatAndVersion(List<SingleChatEntry> entries, int version) {
-            this.entries = entries;
-            this.version = version;
-        }
     }
 }

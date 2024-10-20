@@ -19,7 +19,7 @@ public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpd
     @FXML private UsersListController usersListComponentController;
     @FXML private VBox actionCommandsComponent;
     @FXML private ChatCommandsController chatCommandsComponentController;
-    @FXML private GridPane chatAreaComponent;
+    @FXML private VBox chatAreaComponent;
     @FXML private ChatAreaController chatAreaComponentController;
     private CommandsMenuController commandsMenuComponent;
 

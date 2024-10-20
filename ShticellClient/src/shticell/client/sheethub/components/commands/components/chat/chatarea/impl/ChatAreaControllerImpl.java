@@ -1,11 +1,8 @@
 package shticell.client.sheethub.components.commands.components.chat.chatarea.impl;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,11 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.commands.components.chat.api.HttpStatusUpdate;
 import shticell.client.sheethub.components.commands.components.chat.chatarea.ChatAreaRefresher;
 import shticell.client.sheethub.components.commands.components.chat.chatarea.api.ChatAreaController;
-import shticell.client.sheethub.components.commands.components.chat.chatarea.model.ChatLinesWithVersion;
+import shticell.client.sheethub.components.commands.components.chat.chatarea.model.ChatLines;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.stream.Collectors;
@@ -32,7 +28,6 @@ import static shticell.client.util.Constants.CHAT_LINE_FORMATTING;
 import static shticell.client.util.Constants.REFRESH_RATE;
 
 public class ChatAreaControllerImpl implements ChatAreaController {
-    private final IntegerProperty chatVersion;
     private final BooleanProperty autoScroll;
     private final BooleanProperty autoUpdate;
     private HttpStatusUpdate httpStatusUpdate;
@@ -46,7 +41,6 @@ public class ChatAreaControllerImpl implements ChatAreaController {
     @FXML private Label chatVersionLabel;
 
     public ChatAreaControllerImpl() {
-        chatVersion = new SimpleIntegerProperty();
         autoScroll = new SimpleBooleanProperty();
         autoUpdate = new SimpleBooleanProperty();
     }
@@ -54,7 +48,6 @@ public class ChatAreaControllerImpl implements ChatAreaController {
     @FXML
     public void initialize() {
         autoScroll.bind(autoScrollButton.selectedProperty());
-        chatVersionLabel.textProperty().bind(Bindings.concat("Chat Version: ", chatVersion.asString()));
     }
     @Override
     public BooleanProperty autoUpdatesProperty() {
@@ -94,35 +87,35 @@ public class ChatAreaControllerImpl implements ChatAreaController {
         this.httpStatusUpdate = chatRoomMainController;
     }
 
-    private void updateChatLines(ChatLinesWithVersion chatLinesWithVersion) {
-        if (chatLinesWithVersion.getVersion() != chatVersion.get()) {
-            String deltaChatLines = chatLinesWithVersion
-                    .getEntries()
-                    .stream()
-                    .map(singleChatLine -> {
-                        long time = singleChatLine.getTime();
-                        return String.format(CHAT_LINE_FORMATTING, time, time, time, singleChatLine.getUsername(), singleChatLine.getChatString());
-                    }).collect(Collectors.joining());
+    private void updateChatLines(ChatLines chatLines) {
+        String deltaChatLines = chatLines
+                .getEntries()
+                .stream()
+                .map(singleChatLine -> {
+                    long time = singleChatLine.getTime();
+                    return String.format(CHAT_LINE_FORMATTING, time, time, time, singleChatLine.getUsername(), singleChatLine.getChatString());
+                }).collect(Collectors.joining());
 
-            Platform.runLater(() -> {
-                chatVersion.set(chatLinesWithVersion.getVersion());
 
-                if (autoScroll.get()) {
-                    mainChatLinesTextArea.appendText(deltaChatLines);
-                    mainChatLinesTextArea.selectPositionCaret(mainChatLinesTextArea.getLength());
-                    mainChatLinesTextArea.deselect();
-                } else {
-                    int originalCaretPosition = mainChatLinesTextArea.getCaretPosition();
-                    mainChatLinesTextArea.appendText(deltaChatLines);
-                    mainChatLinesTextArea.positionCaret(originalCaretPosition);
-                }
-            });
-        }
+        Platform.runLater(() -> {
+
+            if (autoScroll.get()) {
+                mainChatLinesTextArea.appendText(deltaChatLines);
+                mainChatLinesTextArea.selectPositionCaret(mainChatLinesTextArea.getLength());
+                mainChatLinesTextArea.deselect();
+            } else {
+                int originalCaretPosition = mainChatLinesTextArea.getCaretPosition();
+                mainChatLinesTextArea.appendText(deltaChatLines);
+                mainChatLinesTextArea.positionCaret(originalCaretPosition);
+            }
+        });
+
     }
+
+
     @Override
     public void startListRefresher() {
         chatAreaRefresher = new ChatAreaRefresher(
-                chatVersion,
                 autoUpdate,
                 httpStatusUpdate::updateHttpLine,
                 this::updateChatLines);
@@ -132,7 +125,6 @@ public class ChatAreaControllerImpl implements ChatAreaController {
 
     @Override
     public void close() throws IOException {
-        chatVersion.set(0);
         chatLineTextArea.clear();
         if (chatAreaRefresher != null && timer != null) {
             chatAreaRefresher.cancel();

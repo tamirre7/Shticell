@@ -5,12 +5,12 @@
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="211.0" prefWidth="126.0" spacing="5.0" stylesheets="@action-commands.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.chat.chatcommands.impl.ChatCommandsControllerImpl">
-   <children>
-      <ToggleButton id="auto-updates-button" fx:id="autoUpdatesButton" mnemonicParsing="false" prefWidth="100.0" selected="true" styleClass="main-action-button" text="Auto Updates" textAlignment="CENTER" wrapText="true" />
-      <Button id="quit-button" mnemonicParsing="false" onAction="#quitClicked" prefWidth="100.0" styleClass="main-action-button" text="Quit" />
-   </children>
+<VBox alignment="TOP_LEFT" spacing="10" stylesheets="@action-commands.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.chat.chatcommands.impl.ChatCommandsControllerImpl">
    <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      <Insets top="10" right="10" bottom="10" left="10"/>
    </padding>
+   <children>
+      <ToggleButton id="auto-updates-button" fx:id="autoUpdatesButton" text="Auto Updates" styleClass="main-action-button" maxWidth="Infinity"/>
+      <Button id="Return-button" text="Return" onAction="#returnClicked" styleClass="quit-button" maxWidth="Infinity"/>
+   </children>
 </VBox>

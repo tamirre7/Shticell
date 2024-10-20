@@ -16,7 +16,7 @@ import shticell.server.utils.SessionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 
-@WebServlet(name = "LoadSheetServlet", urlPatterns = "/sheethub/loadsheet")
+@WebServlet(name = "LoadSheetServlet", urlPatterns = {"/sheethub/loadsheet"})
 @MultipartConfig
 public class LoadSheetServlet extends HttpServlet {
 

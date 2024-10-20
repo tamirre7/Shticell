@@ -37,8 +37,9 @@ public class DynamicAnalysisServlet extends HttpServlet {
             String sheetName = cellData.get("sheetName");
             String cellId = cellData.get("cellId");
             String cellOriginalValue = cellData.get("cellOriginalValue");
+            int version = Integer.parseInt(cellData.get("version"));
 
-            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue,userNameFromSession,sheetName);
+            SheetDto updatedSheet = engine.updateCellWithoutSheetVersionUpdate(cellId, cellOriginalValue,userNameFromSession,sheetName,version);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

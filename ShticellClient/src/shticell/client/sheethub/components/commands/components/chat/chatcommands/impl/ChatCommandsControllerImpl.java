@@ -32,7 +32,7 @@ public class ChatCommandsControllerImpl implements ChatCommandsController {
     }
     @Override
     @FXML
-    public void quitClicked(ActionEvent event) throws IOException {
+    public void returnClicked(ActionEvent event) throws IOException {
         chatRoomController.close();
     }
     @Override

@@ -2,17 +2,8 @@ package shticell.client.sheethub.components.commands.components.chat.chatarea.mo
 
 import java.util.List;
 
-public class ChatLinesWithVersion {
-    private int version;
+public class ChatLines {
     private List<SingleChatLine> entries;
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
 
     public List<SingleChatLine> getEntries() {
         return entries;

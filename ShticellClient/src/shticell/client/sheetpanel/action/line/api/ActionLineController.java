@@ -8,7 +8,8 @@ public interface ActionLineController {
     void setSpreadsheetController(SpreadsheetController spreadsheetControllerI);
     void setCellData(CellDto cellDto, String cellId);
     void updateCellValue(String preBuildOriginalValue);
-    void populateVersionSelector();
+    void startVersionSelectorRefresher();
+    void stopVersionSelectorRefresher();
     void clearTextFields();
     void disableEditing(boolean versionView);
     void enableEditing(boolean versionView);

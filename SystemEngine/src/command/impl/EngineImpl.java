@@ -162,21 +162,25 @@ public class EngineImpl implements Engine {
         return result;
     }
     @Override
-     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName)
+     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName,int sheetVersionToEdit)
     {
-        return updateCell(cellid, originalValue, false,modifyingUserName,sheetName);
+        return updateCell(cellid, originalValue, false,modifyingUserName,sheetName,sheetVersionToEdit);
     }
 
     @Override
-    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName)
+    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName,int sheetVersionToEdit)
     {
-        return updateCell(cellid, originalValue, true,modifyingUserName,sheetName);
+        return updateCell(cellid, originalValue, true,modifyingUserName,sheetName,sheetVersionToEdit);
     }
 
 
 
-    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName,String sheetName) {
+    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName,String sheetName,int sheetVersionToEdit) {
         SheetManager relevantManager = sheetMap.get(sheetName);
+        if(sheetVersionToEdit != relevantManager.getLatestVersion() && !isDynamicUpdate)
+        {
+            throw new IllegalArgumentException("Cell update must be performed on the most recent sheet version");
+        }
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
         if (originalValue == null) {

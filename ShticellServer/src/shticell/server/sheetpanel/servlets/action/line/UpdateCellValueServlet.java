@@ -37,8 +37,9 @@ public class UpdateCellValueServlet extends HttpServlet {
             String sheetName = cellDetails.get("sheetName");
             String cellId = cellDetails.get("cellid");
             String value = cellDetails.get("newvalue");
+            int version = Integer.parseInt(cellDetails.get("version"));
 
-            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value,userNameFromSession,sheetName);
+            SheetDto updatedSheet = engine.updateCellWithSheetVersionUpdate(cellId, value,userNameFromSession,sheetName,version);
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 

@@ -2,13 +2,12 @@ package shticell.client.sheethub.components.commands.components.chat.chatarea;
 
 import com.google.gson.Gson;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
-import shticell.client.sheethub.components.commands.components.chat.chatarea.model.ChatLinesWithVersion;
+import shticell.client.sheethub.components.commands.components.chat.chatarea.model.ChatLines;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
@@ -19,15 +18,14 @@ import java.util.function.Consumer;
 public class ChatAreaRefresher extends TimerTask {
 
     private final Consumer<String> httpRequestLoggerConsumer;
-    private final Consumer<ChatLinesWithVersion> chatlinesConsumer;
-    private final IntegerProperty chatVersion;
+    private final Consumer<ChatLines> chatlinesConsumer;
     private final BooleanProperty shouldUpdate;
     private int requestNumber;
 
-    public ChatAreaRefresher(IntegerProperty chatVersion, BooleanProperty shouldUpdate, Consumer<String> httpRequestLoggerConsumer, Consumer<ChatLinesWithVersion> chatlinesConsumer) {
+    public ChatAreaRefresher(BooleanProperty shouldUpdate, Consumer<String> httpRequestLoggerConsumer, Consumer<ChatLines> chatlinesConsumer) {
         this.httpRequestLoggerConsumer = httpRequestLoggerConsumer;
         this.chatlinesConsumer = chatlinesConsumer;
-        this.chatVersion = chatVersion;
+
         this.shouldUpdate = shouldUpdate;
         requestNumber = 0;
     }
@@ -45,7 +43,6 @@ public class ChatAreaRefresher extends TimerTask {
         String finalUrl = HttpUrl
                 .parse(Constants.CHAT_LINES_LIST)
                 .newBuilder()
-                .addQueryParameter("chatversion", String.valueOf(chatVersion.get()))
                 .build()
                 .toString();
 
@@ -63,8 +60,8 @@ public class ChatAreaRefresher extends TimerTask {
                     String rawBody = response.body().string();
                     httpRequestLoggerConsumer.accept("Response of Chat Request # " + finalRequestNumber + ": " + rawBody);
                     Gson gson = new Gson();
-                    ChatLinesWithVersion chatLinesWithVersion = gson.fromJson(rawBody, ChatLinesWithVersion.class);
-                    chatlinesConsumer.accept(chatLinesWithVersion);
+                    ChatLines chatLines = gson.fromJson(rawBody, ChatLines.class);
+                    chatlinesConsumer.accept(chatLines);
                 } else {
                     httpRequestLoggerConsumer.accept("Something went wrong with Request # " + finalRequestNumber + ". Code is " + response.code());
                 }

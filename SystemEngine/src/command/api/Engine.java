@@ -15,8 +15,8 @@ import java.util.Map;
 public interface Engine {
 
     SaveLoadFileDto loadFile(InputStream fileContent,String username);
-    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName);
-    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName);
+    SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName,int sheetVersionToEdit);
+    SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifiedBy,String sheetName,int sheetVersionToEdit);
     SheetDto displaySheetByVersion(int version,String sheetName);
     SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight,String sheetName);
     int getLatestVersion(String sheetName);
@@ -35,4 +35,5 @@ public interface Engine {
     void permissionDenial(String sheetName, String userName);
     List<SheetDto> getOwnedSheets(String username);
     List<PermissionRequestDto> getPendingRequests(String sheetName);
+
 }

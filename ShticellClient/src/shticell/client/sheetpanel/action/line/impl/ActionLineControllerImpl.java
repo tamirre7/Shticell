@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
+import shticell.client.sheetpanel.action.line.VersionSelectorRefresher;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.util.Constants;
@@ -20,7 +22,9 @@ import shticell.client.util.http.HttpClientUtil;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
+import static shticell.client.util.Constants.REFRESH_RATE;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
@@ -44,18 +48,15 @@ public class ActionLineControllerImpl implements ActionLineController {
     private ObjectProperty<SheetDto> sheetByVersionProperty = new SimpleObjectProperty<>();
     SpreadsheetController  spreadsheetController;
 
+    private Timer timer;
+    private VersionSelectorRefresher versionSelectorRefresher;
+
     @FXML
     public void initialize() {
 
 
         updatevalbtn.setOnAction(event -> {
             updateCellValue(null);
-        });
-
-        latestVersion.addListener((obs, oldVersion, newVersion) -> {
-            if (newVersion != null && newVersion.intValue() > 0) {
-                populateVersionSelector();  // Populate the ComboBox when the latest version is retrieved
-            }
         });
 
         versionSelector.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -71,6 +72,14 @@ public class ActionLineControllerImpl implements ActionLineController {
                 displaySheetByVersion(newSheetValue, selectedVersion);
             }
         });
+
+        latestVersion.addListener((obs, oldVersion, newVersion) -> {
+            if (newVersion != null && newVersion.intValue() > 0) {
+                Platform.runLater(this::updateVersionSelector);
+            }
+        });
+
+        versionSelector.setOnMouseClicked(event -> versionSelector.setStyle(""));
     }
     @Override
     public String getLoggedUser(){return usernameValueLabel.getText();}
@@ -136,6 +145,7 @@ public class ActionLineControllerImpl implements ActionLineController {
         Map<String,String> cellData = new HashMap<>();
         cellData.put("cellid", cellId);
         cellData.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
+        cellData.put("version", spreadsheetController.getCurrentSheet().getVersion().toString());
         if (preBuildOriginalValue == null) { cellData.put("newvalue", newValue);}
         else{cellData.put("newvalue", preBuildOriginalValue);}
 
@@ -170,7 +180,6 @@ public class ActionLineControllerImpl implements ActionLineController {
                         SheetDto updatedSheet = extractSheetFromResponseBody(responseBody);
                         spreadsheetController.setCurrentSheet(updatedSheet);
                         spreadsheetController.updateAllCells(updatedSheet.getCells());
-                        populateVersionSelector();
                     });
                 }
             }
@@ -178,53 +187,42 @@ public class ActionLineControllerImpl implements ActionLineController {
     }
 
     @Override
-    public void populateVersionSelector() {
-        getLatestVersion();
+    public void startVersionSelectorRefresher() {
+        stopVersionSelectorRefresher();
+
+        versionSelectorRefresher = new VersionSelectorRefresher(this::handleLatestVersion,spreadsheetController.getCurrentSheet().getSheetName());
+        timer = new Timer();
+        timer.schedule(versionSelectorRefresher, REFRESH_RATE, REFRESH_RATE);
+    }
+
+    private void updateVersionSelector() {
+        int currentLatestVersion = latestVersion.get();
         versionSelector.getItems().clear();
-        for (int i = 1; i <=  latestVersion.get(); i++) {
+        for (int i = 1; i <= currentLatestVersion; i++) {
             versionSelector.getItems().add(String.valueOf(i));
         }
 
+        // Indicate new version if the selector was previously populated
+        if (versionSelector.getItems().size() > 1) {
+            versionSelector.setStyle("-fx-background-color: red;");
+        }
+    }
+    private void handleLatestVersion(int newLatestVersion) {
+        if (newLatestVersion > latestVersion.get()) {
+            latestVersion.set(newLatestVersion);
+        }
     }
 
-    private void getLatestVersion() {
-        //noinspection ConstantConditions
-
-        String finalUrl = HttpUrl
-                .parse(Constants.LATEST_VERSION)
-                .newBuilder()
-                .addQueryParameter("sheetName",spreadsheetController.getCurrentSheet().getSheetName())
-                .build()
-                .toString();
-
-
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        showAlert("Error", e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                            showAlert("Error", responseBody)
-                    );
-                } else {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        int latest = Integer.parseInt(responseBody);
-                        latestVersion.set(latest);
-                    });
-                }
-            }
-        });
+    @Override
+    public void stopVersionSelectorRefresher() {
+        if (versionSelectorRefresher != null) {
+            versionSelectorRefresher.setActive(false);
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
-
-
 
     @Override
     public void setCellData(CellDto cellDto, String cellId) {

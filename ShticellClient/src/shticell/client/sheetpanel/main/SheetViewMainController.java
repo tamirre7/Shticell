@@ -90,7 +90,7 @@ public class SheetViewMainController {
         actionLineComponentController.setUsernameLabel(loggedUserName);
         miscComponentController.setScene(scene);
         skinManager.applySkin(scene,"Default");
-        actionLineComponentController.populateVersionSelector();
+        actionLineComponentController.startVersionSelectorRefresher();
         editingManager.disableSheetViewEditing(false);
    }
 

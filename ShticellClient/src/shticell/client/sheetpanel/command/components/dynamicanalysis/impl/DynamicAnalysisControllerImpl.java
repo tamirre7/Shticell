@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import okhttp3.*;
@@ -34,11 +35,27 @@ public class DynamicAnalysisControllerImpl {
     SpreadsheetControllerImpl spreadsheetController;
 
     public void handleAnalysisButtonPress() {
+
+        Map<String, CheckBox> cellCheckboxes = getNumericCellCheckboxes();
+        ScrollPane scrollPane = createScrollPane(cellCheckboxes);
+        VBox mainContent = createMainContent(scrollPane, cellCheckboxes);
+        Dialog<List<String>> dialog = createCellSelectionDialog(cellCheckboxes, mainContent);
+        Optional<List<String>> result = dialog.showAndWait();
+        result.ifPresent(this::openSliderSetupDialog);
+    }
+
+    private ScrollPane createScrollPane(Map<String, CheckBox> cellCheckboxes) {
         VBox cellListBox = new VBox(5);
         cellListBox.setPadding(new Insets(10));
+        cellCheckboxes.values().forEach(cellListBox.getChildren()::add);
+        ScrollPane scrollPane = new ScrollPane(cellListBox);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(300);
+        return scrollPane;
+    }
 
+    private Map<String, CheckBox> getNumericCellCheckboxes() {
         Map<String, CheckBox> cellCheckboxes = new HashMap<>();
-
         for (Map.Entry<String, CellDto> entry : spreadsheetController.getCurrentSheet().getCells().entrySet()) {
             String cellId = entry.getKey();
             CellDto cellDto = entry.getValue();
@@ -47,55 +64,46 @@ public class DynamicAnalysisControllerImpl {
                 CheckBox cellCheckBox = new CheckBox(String.format("Cell %s: %s", cellId, cellDto.getOriginalValue()));
                 cellCheckBox.setUserData(cellId);
                 cellCheckboxes.put(cellId, cellCheckBox);
-                cellListBox.getChildren().add(cellCheckBox);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
                 // Skip non-numeric cells
             }
         }
+        return cellCheckboxes;
+    }
 
-        ScrollPane scrollPane = new ScrollPane(cellListBox);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPrefViewportHeight(300);
+    private VBox createMainContent(ScrollPane scrollPane, Map<String, CheckBox> cellCheckboxes) {
+        Button selectAllButton = createSelectAllButton(cellCheckboxes);
+        Button deselectAllButton = createDeselectAllButton(cellCheckboxes);
+        HBox selectionButtonBox = new HBox(10, selectAllButton, deselectAllButton);
+        selectionButtonBox.setAlignment(Pos.CENTER);
+        VBox mainContent = new VBox(10, scrollPane, selectionButtonBox);
+        mainContent.setPadding(new Insets(20, 20, 0, 20));
+        return mainContent;
+    }
 
-        Dialog<List<String>> dialog = new Dialog<>();
-        dialog.setTitle("Select Cells for Dynamic Analysis");
-        dialog.setHeaderText("Choose cells with numeric values:");
-
-        // Create "Select All" and "Deselect All" buttons
+    private Button createSelectAllButton(Map<String, CheckBox> cellCheckboxes) {
         Button selectAllButton = new Button("Select All");
         selectAllButton.setOnAction(e -> cellCheckboxes.values().forEach(cb -> cb.setSelected(true)));
         selectAllButton.setPrefWidth(100);
+        return selectAllButton;
+    }
 
+    private Button createDeselectAllButton(Map<String, CheckBox> cellCheckboxes) {
         Button deselectAllButton = new Button("Deselect All");
         deselectAllButton.setOnAction(e -> cellCheckboxes.values().forEach(cb -> cb.setSelected(false)));
         deselectAllButton.setPrefWidth(100);
+        return deselectAllButton;
+    }
 
-        HBox selectionButtonBox = new HBox(10, selectAllButton, deselectAllButton);
-        selectionButtonBox.setAlignment(Pos.CENTER);
-
-        // Create main content
-        VBox mainContent = new VBox(10, scrollPane, selectionButtonBox);
-        mainContent.setPadding(new Insets(20, 20, 0, 20));
-
-        // Set up OK and Cancel buttons
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, cancelButtonType);
-
-        // Create a custom HBox for centering the OK and Cancel buttons
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER); // מרכז את התוכן
-        buttonBox.getChildren().addAll(
-                dialog.getDialogPane().lookupButton(okButtonType),
-                dialog.getDialogPane().lookupButton(cancelButtonType)
-        );
-
-        // Add everything to the dialog
-        VBox dialogContent = new VBox(20, mainContent, buttonBox);
-        dialog.getDialogPane().setContent(dialogContent);
-
+    private Dialog<List<String>> createCellSelectionDialog(Map<String, CheckBox> cellCheckboxes, VBox mainContent) {
+        Dialog<List<String>> dialog = new Dialog<>();
+        dialog.setTitle("Select Cells for Dynamic Analysis");
+        dialog.setHeaderText("Choose cells with numeric values:");
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.getDialogPane().setContent(mainContent);
+        dialog.initModality(Modality.APPLICATION_MODAL); // Disable background interaction
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == okButtonType) {
+            if (dialogButton == ButtonType.OK) {
                 return cellCheckboxes.values().stream()
                         .filter(CheckBox::isSelected)
                         .map(cb -> (String) cb.getUserData())
@@ -103,9 +111,7 @@ public class DynamicAnalysisControllerImpl {
             }
             return null;
         });
-
-        Optional<List<String>> result = dialog.showAndWait();
-        result.ifPresent(this::openSliderSetupDialog);
+        return dialog;
     }
 
     public void openSliderSetupDialog(List<String> cellIds) {
@@ -113,43 +119,54 @@ public class DynamicAnalysisControllerImpl {
             showAlert("ERROR", "No cells selected for dynamic analysis");
             return;
         }
+        VBox dialogContent = createSliderSetupContent();
+        Dialog<ButtonType> setupDialog = createSliderSetupDialog(dialogContent);
+        setupDialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                processSliderSetupDialog(cellIds, dialogContent);
+            }
+            return null;
+        });
+        setupDialog.showAndWait();
+    }
 
+    private VBox createSliderSetupContent() {
         TextField minValueField = new TextField("0");
         TextField maxValueField = new TextField("100");
         TextField stepSizeField = new TextField("1");
-
         minValueField.setPromptText("Enter min value");
         maxValueField.setPromptText("Enter max value");
         stepSizeField.setPromptText("Enter step size");
-
         VBox dialogContent = new VBox(10);
         dialogContent.getChildren().addAll(
                 new Label("Min Value:"), minValueField,
                 new Label("Max Value:"), maxValueField,
                 new Label("Step Size:"), stepSizeField
         );
+        return dialogContent;
+    }
 
+    private Dialog<ButtonType> createSliderSetupDialog(VBox dialogContent) {
         Dialog<ButtonType> setupDialog = new Dialog<>();
         setupDialog.setTitle("Slider Setup");
         setupDialog.getDialogPane().setContent(dialogContent);
         setupDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        setupDialog.initModality(Modality.APPLICATION_MODAL); // Disable background interaction
+        return setupDialog;
+    }
 
-        setupDialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                try {
-                    double min = Double.parseDouble(minValueField.getText());
-                    double max = Double.parseDouble(maxValueField.getText());
-                    double step = Double.parseDouble(stepSizeField.getText());
-                    showMultiCellSliderDialog(cellIds, min, max, step);
-                } catch (NumberFormatException e) {
-                    showAlert("ERROR", "Please enter valid numeric values for min, max, and step size");
-                    return null;
-                }
-            }
-            return null;
-        });
-
-        setupDialog.showAndWait();
+    private void processSliderSetupDialog(List<String> cellIds, VBox dialogContent) {
+        TextField minValueField = (TextField) dialogContent.getChildren().get(1);
+        TextField maxValueField = (TextField) dialogContent.getChildren().get(3);
+        TextField stepSizeField = (TextField) dialogContent.getChildren().get(5);
+        try {
+            double min = Double.parseDouble(minValueField.getText());
+            double max = Double.parseDouble(maxValueField.getText());
+            double step = Double.parseDouble(stepSizeField.getText());
+            showMultiCellSliderDialog(cellIds, min, max, step);
+        } catch (NumberFormatException e) {
+            showAlert("ERROR", "Please enter valid numeric values for min, max, and step size");
+        }
     }
 
     public void showMultiCellSliderDialog(List<String> cellIds, double min, double max, double step) {
@@ -158,8 +175,8 @@ public class DynamicAnalysisControllerImpl {
         layout.setVgap(10);
         layout.setPadding(new Insets(20));
 
-        Map<String, String> originalValues = new HashMap<>();
         Map<String, Slider> sliders = new HashMap<>();
+        Map<String, String> originalValues = createSliders(cellIds, sliders, min, max, step);
 
         for (int i = 0; i < cellIds.size(); i++) {
             String cellId = cellIds.get(i);
@@ -201,7 +218,7 @@ public class DynamicAnalysisControllerImpl {
             for (String cellId : cellIds) {
                 sendDynamicAnalysisUpdateRequest(cellId, originalValues.get(cellId), sliders.get(cellId), spreadsheetController.getCurrentSheet());
             }
-           //spreadsheetController.editingManager.enableSheetViewEditing(permission);
+            //spreadsheetController.editingManager.enableSheetViewEditing(permission);
             Stage stage = (Stage) okButton.getScene().getWindow();
             stage.close();
         });
@@ -253,11 +270,35 @@ public class DynamicAnalysisControllerImpl {
         dialog.setY((Screen.getPrimary().getVisualBounds().getHeight() - dialog.getHeight()) / 2);
     }
 
+    private Map<String, String> createSliders(List<String> cellIds, Map<String, Slider> sliders, double min, double max, double step) {
+        Map<String, String> originalValues = new HashMap<>();
+        for (String cellId : cellIds) {
+            CellDto cellDto = spreadsheetController.getCurrentSheet().getCells().get(cellId);
+            String originalValue = cellDto.getOriginalValue();
+            originalValues.put(cellId, originalValue);
+
+            Slider slider = createSlider(min, max, step, originalValue);
+            sliders.put(cellId, slider);
+        }
+        return originalValues;
+    }
+
+    private Slider createSlider(double min, double max, double step, String originalValue) {
+        double initialValue = Double.parseDouble(originalValue);
+        Slider slider = new Slider(min, max, initialValue);
+        slider.setMajorTickUnit(step);
+        slider.setMinorTickCount(0);
+        slider.setPrefWidth(200);
+        return slider;
+    }
+
     public void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue, Slider slider, SheetDto sheetToUpdate) {
         Map<String, String> cellUpdateData = new HashMap<>();
         cellUpdateData.put("cellId", cellId);
         cellUpdateData.put("cellOriginalValue", cellOriginalValue);
         cellUpdateData.put("sheetName", sheetToUpdate.getSheetName());
+        cellUpdateData.put("version",spreadsheetController.getCurrentSheet().getVersion().toString());
+
         Gson gson = new Gson();
         String cellUpdateDataJson = gson.toJson(cellUpdateData);
 
