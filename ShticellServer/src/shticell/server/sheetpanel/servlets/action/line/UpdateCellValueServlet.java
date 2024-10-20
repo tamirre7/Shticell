@@ -21,7 +21,6 @@ public class UpdateCellValueServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        resp.setContentType("application/json");
-
         try {
             String userNameFromSession = SessionUtils.getUsername(req);
             Engine engine = ServletUtils.getEngine(getServletContext());

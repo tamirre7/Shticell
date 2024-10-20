@@ -195,7 +195,7 @@ public class EngineImpl implements Engine {
 
         UpdateResult updateRes;
         SpreadSheet updateSpreadSheet;
-        updateRes = relevantSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName);
+        updateRes = relevantSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName,relevantManager.getLatestVersion());
         if (updateRes.isSuccess()) {
             updateSpreadSheet = updateRes.getSheet();
             if(!isDynamicUpdate) {sheetMap.get(relevantSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}

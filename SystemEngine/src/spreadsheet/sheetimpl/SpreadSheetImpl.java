@@ -21,7 +21,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     private final Dimension sheetDimension;
     private final Map<CellIdentifier, Cell> activeCells;
     private Map<String, RangeImpl> ranges = new HashMap<>();
-    private SheetManager sheetManager;
     private String sheetName;
 
 
@@ -29,7 +28,6 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         this.activeCells = new HashMap<>();
         this.sheetDimension = sheetDimension;
         this.ranges = new HashMap<>();
-        this.sheetManager = sheetManager;
         this.sheetName = sheetManager.getSheetName();
     }
 
@@ -72,7 +70,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
     @Override
     public void addEmptyCell (CellIdentifierImpl identifier){
-        CellImpl newCell = new CellImpl(identifier, "",sheetManager.getLatestVersion(),this,"");
+        CellImpl newCell = new CellImpl(identifier, "",1,this,"");
         newCell.calculateEffectiveValue();
         activeCells.put(identifier, newCell);
         this.updateDependenciesAndInfluences();
@@ -97,11 +95,12 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName) {
+    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName,int currentVersion) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
         newSheetVersion.updateDependenciesAndInfluences();
         int versionUpdate = isDynamicUpdate ? 0 : 1;
-        Cell newCell = new CellImpl(cellId, originalValue, newSheetVersion.sheetManager.getLatestVersion() + versionUpdate, newSheetVersion,modifyingUserName);
+        int newVer = currentVersion + versionUpdate;
+        Cell newCell = new CellImpl(cellId, originalValue, newVer, newSheetVersion,modifyingUserName);
         Cell beforeUpdateCell = activeCells.get(cellId);
         if(beforeUpdateCell != null) {newCell.setCellStyle(beforeUpdateCell.getCellStyle());}
         newSheetVersion.activeCells.put(cellId, newCell);
@@ -116,8 +115,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
             // successful calculation. update sheet and relevant cells version
             if(!isDynamicUpdate) {
-                int newVersion = newSheetVersion.sheetManager.getLatestVersion() +1;
-                cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVersion));
+                cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVer));
             }
              newSheetVersion.updateDependenciesAndInfluences();
              for (Cell cell : newSheetVersion.activeCells.values()) {

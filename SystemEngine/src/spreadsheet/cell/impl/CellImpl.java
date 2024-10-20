@@ -19,7 +19,7 @@ public class CellImpl implements Cell, Serializable
     private final CellIdentifierImpl identifier;
     private String originalValue;
     private EffectiveValue effectiveValue;
-    private int lastModifiedVersion;
+    private Integer lastModifiedVersion;
     private List<CellIdentifierImpl> dependencies;
     private List<CellIdentifierImpl> influences;
     private ReadOnlySpreadSheet sheet;
@@ -28,7 +28,7 @@ public class CellImpl implements Cell, Serializable
 
 
     public CellImpl(CellIdentifierImpl identifier, String originalValue,
-                    int lastModifiedVersion,
+                    Integer lastModifiedVersion,
                      ReadOnlySpreadSheet sheet,String modifiedBy) {
         this.identifier = identifier;
         this.originalValue = originalValue;
