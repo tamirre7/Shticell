@@ -12,7 +12,6 @@ import shticell.client.sheethub.components.available.sheets.impl.AvailableSheets
 import shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl;
 import shticell.client.sheethub.components.loadsheet.impl.LoadSheetControllerImpl;
 import shticell.client.sheethub.components.login.api.LoginController;
-import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
 import shticell.client.sheethub.components.permission.table.impl.PermissionTableControllerImpl;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
@@ -55,6 +54,7 @@ public class SheetHubMainController {
         commandsMenuComponentController.setPermissionTableController(permissionTableComponentController);
         commandsMenuComponentController.setAvailableSheetsControllerTableController(availableSheetsComponentController);
         startUpLoginPage();
+        availableSheetsComponentController.setLoginController(loginController);
     }
 
 
@@ -113,7 +113,7 @@ public class SheetHubMainController {
         // Set window size for the Sheet view page
         Stage stage = (Stage) scene.getWindow();
         stage.setWidth(1200);
-        stage.setHeight(800);
+        stage.setHeight(675);
         stage.centerOnScreen();  // Centers the stage on the screen
     }
     public void showPermissionRequestPopup(Parent pane) {

@@ -11,12 +11,10 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 

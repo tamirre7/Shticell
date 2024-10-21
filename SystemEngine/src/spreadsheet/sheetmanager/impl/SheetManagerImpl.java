@@ -9,7 +9,6 @@ import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.versionmanager.api.VersionManager;
 import spreadsheet.sheetmanager.versionmanager.impl.VersionManagerImpl;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 public class SheetManagerImpl implements SheetManager, Serializable {

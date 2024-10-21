@@ -4,7 +4,6 @@ import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsC
 import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
 import shticell.client.sheethub.main.SheetHubMainController;
-import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 public interface CommandsMenuController {
     void setMainController(SheetHubMainController mainController);

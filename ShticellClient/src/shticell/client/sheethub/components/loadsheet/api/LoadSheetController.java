@@ -1,7 +1,6 @@
 package shticell.client.sheethub.components.loadsheet.api;
 
 import javafx.event.ActionEvent;
-import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.login.api.LoginController;
 
 import java.io.File;

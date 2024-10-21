@@ -1,7 +1,6 @@
 package shticell.client.sheetpanel.misc.api;
 
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 import shticell.client.sheetpanel.skinmanager.SkinManager;
 
 public interface MiscController {

@@ -3,7 +3,6 @@ package shticell.client.sheetpanel.misc.impl;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 import shticell.client.sheetpanel.misc.api.MiscController;
 import shticell.client.sheetpanel.skinmanager.SkinManager;
 

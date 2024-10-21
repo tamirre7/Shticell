@@ -8,9 +8,9 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox styleClass="commands-menu" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl">
+<VBox prefHeight="207.0" prefWidth="248.0" styleClass="commands-menu" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.controller.impl.CommandsMenuControllerImpl">
     <Label styleClass="commands-header" text="Commands:" />
-    <ListView fx:id="commandsList" prefHeight="126.0" prefWidth="248.0" styleClass="commands-list">
+    <ListView fx:id="commandsList" prefHeight="133.0" prefWidth="248.0" styleClass="commands-list">
         <items>
             <FXCollections fx:factory="observableArrayList">
                 <String fx:value="View Selected Sheet" />

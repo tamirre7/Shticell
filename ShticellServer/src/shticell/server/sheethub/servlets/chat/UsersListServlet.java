@@ -7,11 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shticell.server.utils.ServletUtils;
 import usermanager.api.UserManager;
-
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @WebServlet(name = "UsersListServlet", urlPatterns = {"/chat/userslist"})

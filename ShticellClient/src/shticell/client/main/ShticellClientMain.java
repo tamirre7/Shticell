@@ -6,12 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
-import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
-
-import java.awt.*;
 import java.io.IOException;
 
 public class ShticellClientMain extends Application {

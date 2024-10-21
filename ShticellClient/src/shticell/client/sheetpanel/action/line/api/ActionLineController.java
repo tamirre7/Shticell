@@ -1,7 +1,6 @@
 package shticell.client.sheetpanel.action.line.api;
 
 import dto.CellDto;
-import dto.SheetDto;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 
 public interface ActionLineController {

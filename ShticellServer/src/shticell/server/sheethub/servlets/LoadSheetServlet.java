@@ -12,11 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import shticell.server.utils.ServletUtils;
 import shticell.server.utils.SessionUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-@WebServlet(name = "LoadSheetServlet", urlPatterns = {"/sheethub/loadsheet"})
+@WebServlet(name = "LoadSheetServlet", urlPatterns = "/sheethub/loadsheet")
 @MultipartConfig
 public class LoadSheetServlet extends HttpServlet {
 
@@ -35,7 +34,7 @@ public class LoadSheetServlet extends HttpServlet {
             try (InputStream fileContent = filePart.getInputStream()) {
                 SaveLoadFileDto saveLoadFileDto = engine.loadFile(fileContent, userNameFromSession);
                 if (!saveLoadFileDto.isSucceeded()) {
-                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    throw new ServletException(saveLoadFileDto.getMessage());
                 }
                 String json = new Gson().toJson(saveLoadFileDto);
                 resp.getWriter().write(json);

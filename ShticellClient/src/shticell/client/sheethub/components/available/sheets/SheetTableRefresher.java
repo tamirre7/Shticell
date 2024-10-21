@@ -2,7 +2,7 @@ package shticell.client.sheethub.components.available.sheets;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import dto.SheetDto;
+import dto.permission.SheetPermissionDto;
 import javafx.application.Platform;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -20,12 +20,10 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class SheetTableRefresher extends TimerTask {
 
+    private final Consumer<List<SheetPermissionDto>> tableConsumer;
+    private boolean isActive = true;
 
-    private final Consumer<List<SheetDto>> tableConsumer;
-    private  boolean isActive = true;
-
-    public SheetTableRefresher(Consumer<List<SheetDto>> tableConsumer) {
-
+    public SheetTableRefresher(Consumer<List<SheetPermissionDto>> tableConsumer) {
         this.tableConsumer = tableConsumer;
     }
 
@@ -36,18 +34,16 @@ public class SheetTableRefresher extends TimerTask {
         }
 
         HttpClientUtil.runAsync(Constants.AVAILABLE_SHEETS, new Callback() {
-
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> showAlert("Error", e.getMessage()));
-
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
-                   List<SheetDto> availableSheets = new Gson().fromJson(responseBody, new TypeToken<List<SheetDto>>(){}.getType());
+                    List<SheetPermissionDto> availableSheets = new Gson().fromJson(responseBody, new TypeToken<List<SheetPermissionDto>>(){}.getType());
                     tableConsumer.accept(availableSheets);
                 } else {
                     Platform.runLater(() -> showAlert("Error", "Failed to fetch available sheets: " + response.message()));
@@ -59,6 +55,4 @@ public class SheetTableRefresher extends TimerTask {
     public void setActive(boolean active) {
         this.isActive = active;
     }
-
 }
-

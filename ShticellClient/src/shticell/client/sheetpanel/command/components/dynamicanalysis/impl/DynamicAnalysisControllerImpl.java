@@ -40,6 +40,7 @@ public class DynamicAnalysisControllerImpl {
         ScrollPane scrollPane = createScrollPane(cellCheckboxes);
         VBox mainContent = createMainContent(scrollPane, cellCheckboxes);
         Dialog<List<String>> dialog = createCellSelectionDialog(cellCheckboxes, mainContent);
+        dialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
         Optional<List<String>> result = dialog.showAndWait();
         result.ifPresent(this::openSliderSetupDialog);
     }
@@ -121,6 +122,7 @@ public class DynamicAnalysisControllerImpl {
         }
         VBox dialogContent = createSliderSetupContent();
         Dialog<ButtonType> setupDialog = createSliderSetupDialog(dialogContent);
+        setupDialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
         setupDialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
                 processSliderSetupDialog(cellIds, dialogContent);
@@ -170,14 +172,36 @@ public class DynamicAnalysisControllerImpl {
     }
 
     public void showMultiCellSliderDialog(List<String> cellIds, double min, double max, double step) {
+        GridPane layout = createGridPane();
+        Map<String, Slider> sliders = new HashMap<>();
+        Map<String, String> originalValues = createSliders(cellIds, sliders, min, max, step);
+
+        populateGridWithSliders(cellIds, sliders, originalValues, layout, min, max, step);
+
+        Button okButton = createOkButton(cellIds, sliders, originalValues);
+        HBox buttonBox = createButtonBox(okButton);
+        layout.add(buttonBox, 0, cellIds.size(), 3, 1);
+
+        VBox contentBox = createContentBox(layout);
+        ScrollPane scrollPane = createScrollPane(contentBox, cellIds.size());
+
+        Stage dialog = createDialog(scrollPane);
+        dialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
+        setDialogProperties(dialog, okButton, cellIds, sliders, originalValues);
+
+        dialog.showAndWait(); // שינינו מ-show ל-showAndWait
+        centerDialog(dialog);
+    }
+
+    private GridPane createGridPane() {
         GridPane layout = new GridPane();
         layout.setHgap(10);
         layout.setVgap(10);
         layout.setPadding(new Insets(20));
+        return layout;
+    }
 
-        Map<String, Slider> sliders = new HashMap<>();
-        Map<String, String> originalValues = createSliders(cellIds, sliders, min, max, step);
-
+    private void populateGridWithSliders(List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues, GridPane layout, double min, double max, double step) {
         for (int i = 0; i < cellIds.size(); i++) {
             String cellId = cellIds.get(i);
             CellDto cellDto = spreadsheetController.getCurrentSheet().getCells().get(cellId);
@@ -191,18 +215,9 @@ public class DynamicAnalysisControllerImpl {
             slider.setPrefWidth(200);
 
             Label cellLabel = new Label("Cell " + cellId + ":");
-            Label valueLabel = new Label(String.format("%.2f", initialValue));
-            valueLabel.setMinWidth(50);
-            valueLabel.setAlignment(Pos.CENTER_RIGHT);
+            Label valueLabel = createValueLabel(initialValue);
 
-            slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-                double roundedValue = Math.round(newValue.doubleValue() / step) * step;
-                slider.setValue(roundedValue);
-                valueLabel.setText(String.format("%.2f", roundedValue));
-
-                String newValueStr = String.format("%.2f", roundedValue);
-                sendDynamicAnalysisUpdateRequest(cellId, newValueStr, slider, spreadsheetController.getCurrentSheet());
-            });
+            attachSliderListener(slider, step, valueLabel, cellId);
 
             sliders.put(cellId, slider);
 
@@ -210,7 +225,27 @@ public class DynamicAnalysisControllerImpl {
             layout.add(slider, 1, i);
             layout.add(valueLabel, 2, i);
         }
+    }
 
+    private Label createValueLabel(double initialValue) {
+        Label valueLabel = new Label(String.format("%.2f", initialValue));
+        valueLabel.setMinWidth(50);
+        valueLabel.setAlignment(Pos.CENTER_RIGHT);
+        return valueLabel;
+    }
+
+    private void attachSliderListener(Slider slider, double step, Label valueLabel, String cellId) {
+        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            double roundedValue = Math.round(newValue.doubleValue() / step) * step;
+            slider.setValue(roundedValue);
+            valueLabel.setText(String.format("%.2f", roundedValue));
+
+            String newValueStr = String.format("%.2f", roundedValue);
+            sendDynamicAnalysisUpdateRequest(cellId, newValueStr, slider, spreadsheetController.getCurrentSheet());
+        });
+    }
+
+    private Button createOkButton(List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues) {
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
         okButton.setPrefWidth(100);
@@ -218,35 +253,48 @@ public class DynamicAnalysisControllerImpl {
             for (String cellId : cellIds) {
                 sendDynamicAnalysisUpdateRequest(cellId, originalValues.get(cellId), sliders.get(cellId), spreadsheetController.getCurrentSheet());
             }
-            //spreadsheetController.editingManager.enableSheetViewEditing(permission);
             Stage stage = (Stage) okButton.getScene().getWindow();
             stage.close();
         });
+        return okButton;
+    }
 
+    private HBox createButtonBox(Button okButton) {
         HBox buttonBox = new HBox(okButton);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(20, 0, 0, 0));
+        return buttonBox;
+    }
 
-        layout.add(buttonBox, 0, cellIds.size(), 3, 1);
-
+    private VBox createContentBox(GridPane layout) {
         VBox contentBox = new VBox(layout);
         contentBox.setPadding(new Insets(0, 10, 0, 10));
+        return contentBox;
+    }
 
+    private ScrollPane createScrollPane(VBox contentBox, int cellCount) {
         ScrollPane scrollPane = new ScrollPane(contentBox);
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(cellIds.size() > 10 ? ScrollPane.ScrollBarPolicy.AS_NEEDED : ScrollPane.ScrollBarPolicy.NEVER); // הגדרת מדיניות הגלילה לפי מספר התאים
+        scrollPane.setVbarPolicy(cellCount > 10 ? ScrollPane.ScrollBarPolicy.AS_NEEDED : ScrollPane.ScrollBarPolicy.NEVER);
+        return scrollPane;
+    }
 
+    private Stage createDialog(ScrollPane scrollPane) {
         StackPane root = new StackPane(scrollPane);
         root.setPrefWidth(400);
 
         Scene scene = new Scene(root);
-
         Stage dialog = new Stage();
         dialog.setTitle("Update Cell Values");
         dialog.setScene(scene);
         dialog.setResizable(false);
+        dialog.sizeToScene();
 
+        return dialog;
+    }
+
+    private void setDialogProperties(Stage dialog, Button okButton, List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues) {
         dialog.setOnCloseRequest(e -> {
             for (String cellId : cellIds) {
                 sendDynamicAnalysisUpdateRequest(cellId, originalValues.get(cellId), sliders.get(cellId), spreadsheetController.getCurrentSheet());
@@ -254,18 +302,13 @@ public class DynamicAnalysisControllerImpl {
             spreadsheetController.displayOriginalSheet(false);
         });
 
-        // Set the dialog size to fit its content
-        dialog.sizeToScene();
-
-        // Limit the maximum height of the dialog
         double maxHeight = Math.min(Screen.getPrimary().getVisualBounds().getHeight() * 0.8, 600);
         if (dialog.getHeight() > maxHeight) {
             dialog.setHeight(maxHeight);
         }
+    }
 
-        dialog.show();
-
-        // Center the dialog on the screen
+    private void centerDialog(Stage dialog) {
         dialog.setX((Screen.getPrimary().getVisualBounds().getWidth() - dialog.getWidth()) / 2);
         dialog.setY((Screen.getPrimary().getVisualBounds().getHeight() - dialog.getHeight()) / 2);
     }

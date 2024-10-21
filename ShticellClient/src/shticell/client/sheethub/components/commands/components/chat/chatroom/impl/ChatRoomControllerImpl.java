@@ -1,7 +1,6 @@
 package shticell.client.sheethub.components.commands.components.chat.chatroom.impl;
 
 import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import shticell.client.sheethub.components.commands.components.chat.api.HttpStatusUpdate;
 import shticell.client.sheethub.components.commands.components.chat.chatarea.api.ChatAreaController;
@@ -10,7 +9,6 @@ import shticell.client.sheethub.components.commands.components.chat.chatroom.api
 import shticell.client.sheethub.components.commands.components.chat.users.api.UsersListController;
 import shticell.client.sheethub.components.commands.components.controller.api.CommandsMenuController;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpdate {

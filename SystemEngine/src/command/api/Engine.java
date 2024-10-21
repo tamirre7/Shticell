@@ -5,6 +5,7 @@ import dto.*;
 import dto.permission.Permission;
 import dto.permission.PermissionInfoDto;
 import dto.permission.PermissionRequestDto;
+import dto.permission.SheetPermissionDto;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 
@@ -27,7 +28,7 @@ public interface Engine {
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName);
     String createCellId(int row, int col);
     String evaluateOriginalValue(String originalValue,String sheetName);
-    List<SheetDto> getAllSheets();
+    List<SheetPermissionDto> getAllSheets(String userName);
     PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName);
     List<PermissionInfoDto> getAllSheetPermissions(String sheetName);
     void permissionRequest(int requestId, String sheetName, Permission permissionType, String message, String username);

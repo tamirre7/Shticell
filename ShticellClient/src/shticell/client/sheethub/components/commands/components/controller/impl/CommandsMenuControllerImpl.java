@@ -1,12 +1,13 @@
 package shticell.client.sheethub.components.commands.components.controller.impl;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.web.HTMLEditorSkin;
+import javafx.util.Duration;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -23,6 +24,8 @@ import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 
 import java.io.IOException;
+
+import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class CommandsMenuControllerImpl implements CommandsMenuController {
     private SheetHubMainController mainController;
@@ -59,45 +62,107 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         permissionResponseController = chatLoader.getController();
         permissionResponseController.setCommandsMenuController(this);
 
-        commandsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if ("View Selected Sheet".equals(newValue)) {
-                viewSelectedSheet();
-            }
-            if("Request Permission".equals(newValue)) {
-                viewPermissionRequestForm();
-            }
-            if("Response To Permission Requests".equals(newValue)) {
-                viewResponsePage();
-            }
-            if("Enter Chat".equals(newValue)){
-                viewChatPage();
-            }
+        commandsList.setCellFactory(lv -> {
+            ListCell<String> cell = new ListCell<String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        setText(item);
+                    }
+                }
+            };
 
+            cell.setOnMouseClicked(event -> {
+                if (!cell.isEmpty()) {
+                    cell.setStyle("-fx-background-color: #2196F3;"); // Set to blue when clicked
+                    PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
+                    pause.setOnFinished(e -> cell.setStyle(null)); // Reset style after delay
+                    pause.play();
+
+                    // Handle the click event
+                    handleCellClick(cell.getItem());
+                }
+            });
+
+            return cell;
         });
+    }
+    private void handleCellClick(String item) {
+        switch (item) {
+            case "View Selected Sheet":
+                viewSelectedSheet();
+                break;
+            case "Request Permission":
+                viewPermissionRequestForm();
+                break;
+            case "Response To Permission Requests":
+                viewResponsePage();
+                break;
+            case "Enter Chat":
+                viewChatPage();
+                break;
+        }
     }
 
     private void viewSelectedSheet() {
         if (mainController != null) {
+            if(availableSheetsController.isSheetSelected())
             mainController.switchToSheetViewPage();
+            else{showAlert("Error", "A sheet must be selected before viewing a sheet");}
         }
     }
     private void viewPermissionRequestForm() {
         if (mainController != null) {
-
-            permissionRequestController.populateSheetNames();
-            mainController.showPermissionRequestPopup(requestPage);
+            try {
+                FXMLLoader reqLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_REQUEST_RESOURCE_LOCATION));
+                requestPage = reqLoader.load();
+                permissionRequestController = reqLoader.getController();
+                permissionRequestController.setCommandsMenuController(this);
+                permissionRequestController.setAvailableSheetsController(availableSheetsController);
+                permissionRequestController.setLoginController(loginController);
+                permissionRequestController.populateSheetNames();
+                mainController.showPermissionRequestPopup(requestPage);
+            } catch (IOException e) {
+                showAlert("Error", "Failed to load permission request form");
+            }
         }
     }
+
     private void viewResponsePage() {
         if (mainController != null) {
-            mainController.showPermissionResponsePopup(responsePage);
-
+            try {
+                FXMLLoader respLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
+                responsePage = respLoader.load();
+                permissionResponseController = respLoader.getController();
+                permissionResponseController.setCommandsMenuController(this);
+                permissionResponseController.setAvailableSheetsController(availableSheetsController);
+                mainController.showPermissionResponsePopup(responsePage);
+            } catch (IOException e) {
+                showAlert("Error", "Failed to load permission response page");
+            }
         }
     }
+
     private void viewChatPage() {
         if (mainController != null) {
-            mainController.showChatPopup(chatPage);
+            try {
+                FXMLLoader chatLoader = new FXMLLoader(getClass().getResource(Constants.CHAT_ROOM_RESOURCE_LOCATION));
+                chatPage = chatLoader.load();
+                chatRoomController = chatLoader.getController();
+                chatRoomController.setCommandsMenuComponent(this);
+                mainController.showChatPopup(chatPage);
+            } catch (IOException e) {
+                showAlert("Error", "Failed to load chat page");
+            }
         }
+    }
+
+    private void clearSelection() {
+        Platform.runLater(() -> commandsList.getSelectionModel().clearSelection());
     }
 
     @FXML

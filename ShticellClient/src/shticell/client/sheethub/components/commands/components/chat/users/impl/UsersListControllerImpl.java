@@ -12,9 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import shticell.client.sheethub.components.commands.components.chat.api.HttpStatusUpdate;
 import shticell.client.sheethub.components.commands.components.chat.users.UserListRefresher;
-import shticell.client.sheethub.components.commands.components.chat.users.api.UsersListController;
-
-import java.io.Closeable;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;

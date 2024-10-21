@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
 import shticell.client.sheetpanel.action.line.VersionSelectorRefresher;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
@@ -203,8 +202,8 @@ public class ActionLineControllerImpl implements ActionLineController {
         }
 
         // Indicate new version if the selector was previously populated
-        if (versionSelector.getItems().size() > 1) {
-            versionSelector.setStyle("-fx-background-color: red;");
+        if (versionSelector.getItems().size() > 1 && spreadsheetController.getCurrentSheet().getVersion() != latestVersion.get()) {
+            versionSelector.setStyle("-fx-border-color: red; -fx-border-width: 2;");
         }
     }
     private void handleLatestVersion(int newLatestVersion) {

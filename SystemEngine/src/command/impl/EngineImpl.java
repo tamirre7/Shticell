@@ -2,9 +2,7 @@ package command.impl;
 
 import command.api.Engine;
 import dto.*;
-import dto.permission.PermissionInfoDto;
-import dto.permission.PermissionRequestDto;
-import dto.permission.RequestStatus;
+import dto.permission.*;
 import expressions.api.Expression;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -21,7 +19,6 @@ import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
-import dto.permission.Permission;
 import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
 import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.impl.SheetManagerImpl;
@@ -499,27 +496,20 @@ public class EngineImpl implements Engine {
 
 
     @Override
-    public List<SheetDto>  getAllSheets()
+    public List<SheetPermissionDto>getAllSheets(String userName)
     {
-        List<SheetDto> sheetDtos = new ArrayList<>();
+        List<SheetPermissionDto> sheetPermissionsDtos = new ArrayList<>();
         for(Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
             SheetManager sheetManager = entry.getValue();
             SpreadSheet sheet = sheetManager.getSheetByVersion(sheetManager.getLatestVersion());
 
-            Map<String, CellDto> cellDtos = convertCellsToCellDtos(sheet.getActiveCells());
+            SheetDto sheetDto = convertSheetToSheetDto(sheet);
+            Permission userPermission = sheetManager.getPermission(userName);
 
-            // Convert Ranges from Ranges to RangesDto
-            Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(sheet.getRanges());
-
-            Dimension dimensions = sheet.getSheetDimentions();
-            DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-            // Return a SheetDto with the retrieved SpreadSheet
-            sheetDtos.add(new SheetDto(dimensionDto, sheet.getSheetName(), sheetManager.getLatestVersion(), cellDtos, cellsInRangeDto,sheetMap.get(sheet.getSheetName()).getUploadedBy()));
-
+            sheetPermissionsDtos.add(new SheetPermissionDto(sheetDto,userPermission));
         }
 
-        return sheetDtos;
+        return sheetPermissionsDtos;
     }
 
     @Override

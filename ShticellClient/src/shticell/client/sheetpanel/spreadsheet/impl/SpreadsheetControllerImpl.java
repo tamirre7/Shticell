@@ -19,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
-
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.command.components.formulabuilder.FormulaBuilder;
 import shticell.client.sheetpanel.editingmanager.api.EditingManager;
@@ -29,13 +28,11 @@ import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
 import shticell.client.sheetpanel.misc.api.MiscController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 

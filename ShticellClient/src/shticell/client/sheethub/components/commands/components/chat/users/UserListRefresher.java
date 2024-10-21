@@ -2,19 +2,14 @@ package shticell.client.sheethub.components.commands.components.chat.users;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import dto.permission.PermissionRequestDto;
-import javafx.beans.property.BooleanProperty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
-
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
