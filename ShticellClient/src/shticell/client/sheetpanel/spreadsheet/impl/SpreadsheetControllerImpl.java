@@ -104,7 +104,14 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         uiSheetModel.clearPreviousHighlights();
         savedSheet = currentSheet;
         currentSheet = sheetDto;
-        editingManager.disableSheetViewEditing(versionView);
+        if(versionView)
+        {
+            editingManager.enableVersionViewRead();
+        }
+        else
+        {
+            editingManager.enableSheetStateView();
+        }
         updateAllCells(sheetDto.getCells());
 
     }
@@ -148,12 +155,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         MenuItem styleMenuItem = new MenuItem("Setting the cell style");
         MenuItem resetMenuItem = new MenuItem("Reset style");
         MenuItem buildFormulaMenuItem = new MenuItem("Build formula");
-        MenuItem dynamicAnalysisMenuItem = new MenuItem("Dynamic analysis");
-        dynamicAnalysisMenuItem.setOnAction(event -> dynamicAnalysisSetup(cellLabel,cellId));
         buildFormulaMenuItem.setOnAction(event -> formulaBuilder.buildFormula());
         styleMenuItem.setOnAction(event -> showCellStyleDialog(cellLabel, cellId));
         resetMenuItem.setOnAction(event -> resetCellStyle(cellLabel, cellId));
-        contextMenu.getItems().add(dynamicAnalysisMenuItem);
         contextMenu.getItems().add(buildFormulaMenuItem);
         contextMenu.getItems().add(styleMenuItem);
         contextMenu.getItems().add(resetMenuItem);
@@ -493,144 +497,6 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         });
     }
 
-    public void dynamicAnalysisSetup(Label cellLabel, String cellId) {
-        savedSheet = currentSheet;
-        openSliderDialog(cellLabel, cellId);
-    }
-
-    public void openSliderDialog(Label cellLabel, String cellID) {
-        try {
-            CellDto cellDto = currentSheet.getCells().get(cellID);
-            if (cellDto == null) {
-                showAlert("ERROR", "Dynamic analysis is only for numric original values");
-                return;
-            }
-            String originalValue = cellDto.getOriginalValue();
-            Double originalDouble = Double.parseDouble(originalValue);
-        }
-        catch (NumberFormatException e) {
-            showAlert("ERROR", "Dynamic analysis is only for numric original values");
-            return;
-        }
-
-        TextField minValueField = new TextField("0");
-        TextField maxValueField = new TextField("100");
-        TextField stepSizeField = new TextField("1");
-
-        minValueField.setPromptText("Enter min value");
-        maxValueField.setPromptText("Enter max value");
-        stepSizeField.setPromptText("Enter step size");
-
-        VBox dialogContent = new VBox();
-        dialogContent.getChildren().addAll(
-                new Label("Min Value:"), minValueField,
-                new Label("Max Value:"), maxValueField,
-                new Label("Step Size:"), stepSizeField
-        );
-
-        Dialog<ButtonType> setupDialog = new Dialog<>();
-        setupDialog.setTitle("Slider Setup");
-        setupDialog.getDialogPane().setContent(dialogContent);
-        setupDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        setupDialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK) {
-                double min = Double.parseDouble(minValueField.getText());
-                double max = Double.parseDouble(maxValueField.getText());
-                double step = Double.parseDouble(stepSizeField.getText());
-                showSliderDialog(cellLabel, cellID, min, max, step);
-            }
-            return null;
-        });
-
-        setupDialog.showAndWait();
-    }
-
-    public void showSliderDialog(Label cellLabel, String cellID, double min, double max, double step) {
-        Slider slider = new Slider(min, max, Double.parseDouble(cellLabel.getText()));
-        slider.setMajorTickUnit(step);
-        slider.setMinorTickCount(0);
-        Label sliderValueLabel = new Label(Double.toString(slider.getValue()));
-        String realOriginalValue = currentSheet.getCells().get(cellID).getOriginalValue();
-        SheetDto tempSheet = new SheetDto(currentSheet.getSheetDimension(),currentSheet.getSheetName(),currentSheet.getVersion(),currentSheet.getCells(),currentSheet.getSheetRanges(),currentSheet.getUploadedBy());
-
-        slider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            double roundedValue = Math.round(newValue.doubleValue() / step) * step;
-            slider.setValue(roundedValue);
-            sliderValueLabel.setText(String.format("%.2f", roundedValue));
-
-            String newvalueStr = String.format("%.2f", roundedValue);
-            //slider.setDisable(true);
-            sendDynamicAnalysisUpdateRequest(cellID, newvalueStr,slider,tempSheet);
-            editingManager.disableSheetViewEditing(false);
-        });
-
-        Button doneButton = new Button("Done");
-
-        doneButton.setOnAction(e -> {
-            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue,slider,currentSheet);
-            editingManager.enableSheetViewEditing(permission);
-            Stage stage = (Stage) doneButton.getScene().getWindow();
-            stage.close();
-        });
-
-        VBox layout = new VBox(10, new Label("Choose a new value:"), slider, sliderValueLabel, doneButton);
-        layout.setAlignment(Pos.CENTER);
-        Scene scene = new Scene(layout, 300, 200);
-
-        Stage dialog = new Stage();
-        dialog.setTitle("Update Cell Value");
-        dialog.setScene(scene);
-
-        dialog.setOnCloseRequest(e -> {
-            sendDynamicAnalysisUpdateRequest(cellID, realOriginalValue,slider, tempSheet);
-            savedSheet = tempSheet;
-            displayOriginalSheet(false);});
-        dialog.show();
-    }
-
-    private void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue,Slider slider,SheetDto sheetToUpdate){
-        AtomicReference<SheetDto> sheetToUpdateRef = new AtomicReference<>(sheetToUpdate);
-        Map<String,String> cellUpdateData = new HashMap<>();
-        cellUpdateData.put("cellId", cellId);
-        cellUpdateData.put("cellOriginalValue", cellOriginalValue);
-        cellUpdateData.put("sheetName", sheetToUpdate.getSheetName());
-        Gson gson = new Gson();
-        String cellUpdateDatajson = gson.toJson(cellUpdateData);
-
-        RequestBody requestBody = RequestBody.create(cellUpdateDatajson, MediaType.parse("application/json"));
-
-        Request request = new Request.Builder()
-                .url(Constants.DYNAMIC_ANALYSIS_UPDATE)
-                .post(requestBody)
-                .build();
-
-        HttpClientUtil.runAsync(request, new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        sheetToUpdateRef.set(extractSheetFromResponseBody(responseBody));
-                        updateAllCells(sheetToUpdateRef.get().getCells());
-                        // slider.setDisable(false);
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        showAlert("Error", "Failed to update cell: " + response.message());
-                        slider.setDisable(false); // Re-enable slider even if there's an error
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        showAlert("Error", "Error: " + e.getMessage())
-                );}
-        });
-
-    }
 
     @Override
     public void setPermission(Permission permission)

@@ -392,10 +392,16 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     }
 
     @Override
-    public void disableSortAndFilter(boolean versionView) {
+    public void enableResetOnly(){
+        disableSortAndFilter();
+        resetButton.setDisable(false);
+    }
+
+    @Override
+    public void disableSortAndFilter() {
         sortButton.setDisable(true);
         filterButton.setDisable(true);
-        if (versionView) {resetButton.setDisable(true);}
+     resetButton.setDisable(true);
 
     }
 

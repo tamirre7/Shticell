@@ -1,5 +1,6 @@
 package shticell.client.sheetpanel.command.components.graphbuilder.builder.impl;
 
+import javafx.scene.control.Button;
 import shticell.client.sheetpanel.command.components.graphbuilder.builder.api.GraphBuilderController;
 import shticell.client.sheetpanel.command.components.graphbuilder.dialog.api.GraphDialogController;
 import dto.SheetDto;
@@ -27,9 +28,21 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 public class GraphBuilderControllerImpl implements GraphBuilderController {
 
     private SpreadsheetController spreadsheetController;
+    @FXML
+    private Button graphButton;
 
     public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
+    }
+
+    @Override
+    public void enableGraphBuild() {
+        graphButton.setDisable(false);
+    }
+
+    @Override
+    public void disableGraphBuild() {
+        graphButton.setDisable(true);
     }
 
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dto.CellDto;
 import dto.SheetDto;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,6 +18,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import shticell.client.sheetpanel.command.components.dynamicanalysis.api.DynamicAnalysisController;
 import shticell.client.sheetpanel.spreadsheet.impl.SpreadsheetControllerImpl;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
@@ -31,8 +33,10 @@ import java.util.stream.Collectors;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
-public class DynamicAnalysisControllerImpl {
+public class DynamicAnalysisControllerImpl implements DynamicAnalysisController {
     SpreadsheetControllerImpl spreadsheetController;
+    @FXML
+    private Button dynamicAnalysisButton;
 
     public void handleAnalysisButtonPress() {
 
@@ -380,5 +384,15 @@ public class DynamicAnalysisControllerImpl {
 
     public void setSpreadsheetController(SpreadsheetControllerImpl spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
+    }
+
+    @Override
+    public void enableDynamicAnalysis() {
+        dynamicAnalysisButton.setDisable(false);
+    }
+
+    @Override
+    public void disableDynamicAnalysis() {
+        dynamicAnalysisButton.setDisable(true);
     }
 }

@@ -249,6 +249,12 @@ public class RangeControllerImpl implements RangeController {
     }
 
     @Override
+    public void enableViewOnly(){
+        disableEditing();
+        rangeListView.setDisable(false);
+    }
+
+    @Override
     public void enableEditing() {
         rangeListView.setDisable(false);
         addButton.setDisable(false);

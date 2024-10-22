@@ -12,5 +12,7 @@ public interface DynamicAnalysisController {
     void showMultiCellSliderDialog(List<String> cellIds, double min, double max, double step);
     void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue, Slider slider, SheetDto sheetToUpdate);
     void setSpreadsheetController(SpreadsheetControllerImpl spreadsheetController);
+    void enableDynamicAnalysis();
+    void disableDynamicAnalysis();
 
 }

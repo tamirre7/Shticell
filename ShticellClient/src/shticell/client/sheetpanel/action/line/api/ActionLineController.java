@@ -10,8 +10,9 @@ public interface ActionLineController {
     void startVersionSelectorRefresher();
     void stopVersionSelectorRefresher();
     void clearTextFields();
-    void disableEditing(boolean versionView);
-    void enableEditing(boolean versionView);
+    void disableEditing();
+    void enableEditing();
+    void enableVersionView();
     void setUsernameLabel(String usernameLabel);
     String getLoggedUser();
 }

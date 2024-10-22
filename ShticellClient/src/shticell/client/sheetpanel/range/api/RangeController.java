@@ -15,4 +15,5 @@ public interface RangeController {
     void handleDeleteRange();
     void disableEditing();
     void enableEditing();
+    void enableViewOnly();
 }

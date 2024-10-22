@@ -4,5 +4,6 @@ import dto.permission.Permission;
 
 public interface EditingManager {
     void enableSheetViewEditing(Permission permission);
-    void disableSheetViewEditing(boolean versionView);
+    void enableSheetStateView();
+    void enableVersionViewRead();
 }

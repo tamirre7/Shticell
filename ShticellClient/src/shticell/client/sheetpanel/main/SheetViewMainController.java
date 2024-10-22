@@ -58,7 +58,6 @@ public class SheetViewMainController {
     @FXML
     public void initialize() {
         UISheetModel uiSheetModel = new UISheetModel();
-        editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController);
         FormulaBuilder formulaBuilder = new FormulaBuilder();
         skinManager = new SkinManager();
         graphBuilderComponentController.setSpreadsheetController(spreadsheetComponentController);
@@ -71,11 +70,12 @@ public class SheetViewMainController {
         spreadsheetComponentController.setActionLineController(actionLineComponentController);
         spreadsheetComponentController.setRangeController(rangeComponentController);
         spreadsheetComponentController.setUiSheetModel(uiSheetModel);
-        spreadsheetComponentController.setEditingManager(editingManager);
         spreadsheetComponentController.setFormulaBuilder(formulaBuilder);
         spreadsheetComponentController.setMiscController(miscComponentController);
         miscComponentController.setSkinManager(skinManager);
         dynamicAnalysisComponentController.setSpreadsheetController(spreadsheetComponentController);
+        editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController,dynamicAnalysisComponentController,graphBuilderComponentController);
+        spreadsheetComponentController.setEditingManager(editingManager);
     }
     public SpreadsheetController getSpreadsheetController() {return spreadsheetComponentController;}
 
@@ -91,7 +91,6 @@ public class SheetViewMainController {
         miscComponentController.setScene(scene);
         skinManager.applySkin(scene,"Default");
         actionLineComponentController.startVersionSelectorRefresher();
-        editingManager.disableSheetViewEditing(false);
    }
 
 

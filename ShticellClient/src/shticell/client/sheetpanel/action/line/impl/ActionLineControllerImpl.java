@@ -245,17 +245,22 @@ public class ActionLineControllerImpl implements ActionLineController {
     }
 
     @Override
-    public void disableEditing(boolean versionView){
+    public void disableEditing(){
         updatevalbtn.setDisable(true);
         originalvalueTF.setDisable(true);
-        if(!versionView) {versionSelector.setDisable(true);}
+       versionSelector.setDisable(true);
     }
 
     @Override
-    public void enableEditing(boolean versionView){
+    public void enableEditing(){
         updatevalbtn.setDisable(false);
         originalvalueTF.setDisable(false);
-        if(versionView) {versionSelector.setDisable(false);}
+        versionSelector.setDisable(false);
+    }
+    @Override
+    public void enableVersionView(){
+        disableEditing();
+        versionSelector.setDisable(false);
     }
     @Override
     public void clearTextFields() {
