@@ -3,6 +3,7 @@ package spreadsheet.cell.impl;
 import expressions.api.Expression;
 import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.cellstyle.api.CellStyle;
 import spreadsheet.cell.cellstyle.impl.CellStyleImpl;
@@ -16,18 +17,18 @@ import static expressions.parser.FunctionParser.parseExpression;
 
 public class CellImpl implements Cell, Serializable
 {
-    private final CellIdentifierImpl identifier;
+    private final CellIdentifier identifier;
     private String originalValue;
     private EffectiveValue effectiveValue;
     private Integer lastModifiedVersion;
-    private List<CellIdentifierImpl> dependencies;
-    private List<CellIdentifierImpl> influences;
+    private List<CellIdentifier> dependencies;
+    private List<CellIdentifier> influences;
     private ReadOnlySpreadSheet sheet;
     private CellStyle style;
     private String modifiedBy;
 
 
-    public CellImpl(CellIdentifierImpl identifier, String originalValue,
+    public CellImpl(CellIdentifier identifier, String originalValue,
                     Integer lastModifiedVersion,
                      ReadOnlySpreadSheet sheet,String modifiedBy) {
         this.identifier = identifier;
@@ -41,7 +42,7 @@ public class CellImpl implements Cell, Serializable
         this.modifiedBy = modifiedBy;
     }
     @Override
-    public CellIdentifierImpl getIdentifier() {
+    public CellIdentifier getIdentifier() {
         return identifier;
     }
     @Override
@@ -70,11 +71,11 @@ public class CellImpl implements Cell, Serializable
         return lastModifiedVersion;
     }
     @Override
-    public List<CellIdentifierImpl> getDependencies() {
+    public List<CellIdentifier> getDependencies() {
         return dependencies;
     }
     @Override
-    public List<CellIdentifierImpl> getInfluences() {
+    public List<CellIdentifier> getInfluences() {
         return influences;
     }
 

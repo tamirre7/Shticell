@@ -42,7 +42,7 @@ public class PendingPermissionRequestsServlet extends HttpServlet {
 
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error setting sheet: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error setting sheet: " + e.getMessage());
         }
     }
 }

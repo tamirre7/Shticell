@@ -31,7 +31,7 @@ public class UserSheetPermissionServlet extends HttpServlet {
             resp.getWriter().write(permissionJson);
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error loading file: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error loading file: " + e.getMessage());
         }
 
     }

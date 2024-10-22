@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface Cell
 {
-    CellIdentifierImpl getIdentifier();
+    CellIdentifier getIdentifier();
 
     void setCellOriginalValue(String value);
 
@@ -21,9 +21,9 @@ public interface Cell
 
     int getLastModifiedVersion();
 
-    List<CellIdentifierImpl> getDependencies();
+    List<CellIdentifier> getDependencies();
 
-    List<CellIdentifierImpl> getInfluences();
+    List<CellIdentifier> getInfluences();
 
     void updateVersion(int newVersion);
     void setEffectiveValue (EffectiveValue effectiveValue);

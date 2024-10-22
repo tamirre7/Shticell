@@ -31,13 +31,13 @@ public class PermissionResponseServlet extends HttpServlet {
 
             if(permissionResponseDto.isApproved())
             {
-                engine.permissionApproval(permissionResponseDto.getPermissionRequestDto().getSheetName(),permissionResponseDto.getPermissionRequestDto().getRequester());
+                engine.permissionApproval(permissionResponseDto);
             }else {
-                engine.permissionDenial(permissionResponseDto.getPermissionRequestDto().getSheetName(),permissionResponseDto.getPermissionRequestDto().getRequester());
+                engine.permissionDenial(permissionResponseDto);
             }
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"status\":\"error\",\"message\":\"Error updating cell: " + e.getMessage() + "\"}");
+            resp.getWriter().write("Error updating cell: " + e.getMessage());
         }
     }
 }

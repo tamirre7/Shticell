@@ -9,6 +9,7 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.graph.api.DirGraph;
 import spreadsheet.graph.impl.DirGraphImpl;
+import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.util.UpdateResult;
@@ -20,7 +21,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     private final Dimension sheetDimension;
     private final Map<CellIdentifier, Cell> activeCells;
-    private Map<String, RangeImpl> ranges = new HashMap<>();
+    private Map<String, Range> ranges = new HashMap<>();
     private String sheetName;
 
 
@@ -61,7 +62,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
 
     @Override
-    public EffectiveValue getCellEffectiveValue(CellIdentifierImpl identifier) {
+    public EffectiveValue getCellEffectiveValue(CellIdentifier identifier) {
         Cell cell = activeCells.get(identifier);
         if(cell == null) {
            addEmptyCell(identifier);
@@ -69,7 +70,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return cell != null ? cell.getEffectiveValue() : null;
     }
     @Override
-    public void addEmptyCell (CellIdentifierImpl identifier){
+    public void addEmptyCell (CellIdentifier identifier){
         CellImpl newCell = new CellImpl(identifier, "",1,this,"");
         newCell.calculateEffectiveValue();
         activeCells.put(identifier, newCell);
@@ -89,13 +90,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public Cell getCell(CellIdentifier identifier) {
         return activeCells.get(identifier);
     }
-    @Override
-    public void removeCell(CellIdentifier identifier) {
-        activeCells.remove(identifier);
-    }
 
     @Override
-    public UpdateResult updateCellValueAndCalculate(CellIdentifierImpl cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName,int currentVersion) {
+    public UpdateResult updateCellValueAndCalculate(CellIdentifier cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName,int currentVersion) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
         newSheetVersion.updateDependenciesAndInfluences();
         int versionUpdate = isDynamicUpdate ? 0 : 1;
@@ -189,10 +186,10 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 int rangeNameEnd = findCellIdEnd(value, rangeNameStart);
                 if (rangeNameEnd > rangeNameStart) {
                     String rangeName = value.substring(rangeNameStart, rangeNameEnd).trim(); // Keep original case for the range name
-                    RangeImpl range = this.getRange(rangeName); // Fetch range by its name
-                    if (range != null)
-                        references.addAll(range.getCellsInRange());
-                    // Add all cells in range
+                    Range range = this.getRange(rangeName); // Fetch range by its name
+                    if (range != null) {
+                        references.addAll(range.getCellsInRange()); // Add all cells in range
+                    }
                 }
                 i = rangeNameEnd;
             } else {
@@ -260,19 +257,19 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public int hashCode() {
         return Objects.hash(activeCells);
     }
-
-    public boolean isRangeWithinBounds(CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
+    @Override
+    public boolean isRangeWithinBounds(CellIdentifier topLeft, CellIdentifier bottomRight) {
         return isCellWithinBounds(topLeft) && isCellWithinBounds(bottomRight);
     }
-
-    public boolean isCellWithinBounds(CellIdentifierImpl cell) {
+    @Override
+    public boolean isCellWithinBounds(CellIdentifier cell) {
         int row = cell.getRow();
         char col = cell.getCol();
         return row >= 1 && row <= sheetDimension.getNumRows()
                 && col >= 'A' && col < ('A' + sheetDimension.getNumCols());
     }
-
-    public void addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight) {
+    @Override
+    public void addRange(String name, CellIdentifier topLeft, CellIdentifier bottomRight) {
         if (ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range name already exists");
         }
@@ -280,16 +277,17 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             throw new IllegalArgumentException("Range is out of bounds");
         }
         ranges.put(name, new RangeImpl (name, topLeft, bottomRight,sheetDimension));
-        List<CellIdentifierImpl> cellsInRange = ranges.get(name).getCellsInRange();
-        for (CellIdentifierImpl cellIdentifier : cellsInRange) {
+        List<CellIdentifier> cellsInRange = ranges.get(name).getCellsInRange();
+        for (CellIdentifier cellIdentifier : cellsInRange) {
             if (!activeCells.containsKey(cellIdentifier)){
                 addEmptyCell(cellIdentifier);
             }
         }
 
     }
-
+    @Override
     public void removeRange(String name) {
+        updateRangeActivation(name);
         if (!ranges.containsKey(name)) {
             throw new IllegalArgumentException("Range not found");
         }
@@ -297,16 +295,25 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             throw new IllegalArgumentException("Range in use cannot be removed");
         ranges.remove(name);
     }
-
-    public RangeImpl getRange(String name) {
+    @Override
+    public Range getRange(String name) {
         if (!ranges.containsKey(name)) {
             return null;
         }
         return ranges.get(name);
     }
-
-    public Map<String, RangeImpl> getRanges()  {
+    @Override
+    public Map<String, Range> getRanges()  {
         return ranges;
+    }
+
+    private void updateRangeActivation (String name) {
+        Range range = ranges.get(name);
+        for (Cell cell: activeCells.values()) {
+            if (cell.getOriginalValue().toUpperCase().equals("{SUM,"+name.toUpperCase()+"}") || cell.getOriginalValue().toUpperCase().equals("{AVERAGE,"+name.toUpperCase()+"}")) {
+                return;}
+        }
+        range.setActive(false);
     }
 
 

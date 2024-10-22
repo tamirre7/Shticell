@@ -3,16 +3,18 @@ package expressions.expressionsimpl;
 import expressions.api.Expression;
 import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.EffectiveValueImpl;
+import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 
 public class Sum implements Expression {
-    private final RangeImpl range;
+    private final Range range;
 
-    public Sum (RangeImpl range){
+    public Sum (Range range){
         this.range = range;
     }
     @Override
@@ -22,7 +24,7 @@ public class Sum implements Expression {
        }
         double sum = 0.0;
         // Iterate over each cell in the range
-        for (CellIdentifierImpl cellIdentifier : range.getCellsInRange()) {
+        for (CellIdentifier cellIdentifier : range.getCellsInRange()) {
             EffectiveValue cellValue = spreadSheet.getCellEffectiveValue(cellIdentifier);
             // Extract numeric value
             if (cellValue == null){

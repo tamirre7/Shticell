@@ -263,7 +263,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     public void setFormulaBuilder(FormulaBuilder formulaBuilder) {this.formulaBuilder = formulaBuilder;}
 
     @Override
-    public void setCurrentSheet(SheetDto sheet) {currentSheet = sheet;}
+    public void setCurrentSheet(SheetDto sheet) {currentSheet = sheet;
+    rangeController.displayRanges(sheet.getSheetRanges());}
 
     @Override
     public void setUiSheetModel(UISheetModel uiSheetModel){

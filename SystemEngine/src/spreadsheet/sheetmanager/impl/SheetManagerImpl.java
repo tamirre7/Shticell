@@ -9,6 +9,7 @@ import spreadsheet.sheetmanager.api.SheetManager;
 import spreadsheet.sheetmanager.versionmanager.api.VersionManager;
 import spreadsheet.sheetmanager.versionmanager.impl.VersionManagerImpl;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 public class SheetManagerImpl implements SheetManager, Serializable {
@@ -50,18 +51,18 @@ public class SheetManagerImpl implements SheetManager, Serializable {
     }
 
     @Override
-    public void ApprovePermission(String username) {
-        permissionManager.ApprovePermission(username);
+    public void ApprovePermission(PermissionRequest request) {
+        permissionManager.ApprovePermission(request);
     }
 
     @Override
-    public void addPendingPermissionRequest(String username, PermissionRequest request) {
-        permissionManager.addPendingPermissionRequest(username, request);
+    public void addPendingPermissionRequest(PermissionRequest request) {
+        permissionManager.addPendingPermissionRequest(request);
     }
 
     @Override
-    public void removePendingRequest(String username) {
-        permissionManager.removePendingRequest(username);
+    public void denyPendingRequest(PermissionRequest request) {
+        permissionManager.denyPendingRequest(request);
     }
 
     @Override
@@ -75,8 +76,13 @@ public class SheetManagerImpl implements SheetManager, Serializable {
     }
 
     @Override
-    public Map<String, PermissionRequest> getPendingPermissionRequests() {
+    public Map<String, List<PermissionRequest>> getPendingPermissionRequests() {
         return permissionManager.getPendingPermissionRequests();
+    }
+
+    @Override
+    public Map<String, List<PermissionRequest>> getDeniedPermissionRequests() {
+        return permissionManager.getDeniedPermissionRequests();
     }
 }
 

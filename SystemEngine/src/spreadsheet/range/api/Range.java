@@ -1,13 +1,18 @@
 package spreadsheet.range.api;
+import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierImpl;
+
+import java.util.List;
 
 public interface Range {
 
-    public CellIdentifierImpl getTopLeft();
+     CellIdentifier getTopLeft();
 
-    public CellIdentifierImpl getBottomRight();
+     CellIdentifier getBottomRight();
 
     void setActive(boolean active);
-
+    boolean isActive();
     String getName();
+    List<CellIdentifier> getCellsInRange();
 }

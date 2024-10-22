@@ -5,6 +5,7 @@ import expressions.expressionsimpl.*;
 import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.impl.CellIdentifierImpl;
+import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 
 import java.util.ArrayList;
@@ -357,7 +358,7 @@ public enum FunctionParser {
             }
 
             String rangeName = arguments.get(0);
-            RangeImpl range = ReadOnlySheet.getRanges().get(rangeName);
+            Range range = ReadOnlySheet.getRanges().get(rangeName);
 
             return new Sum(range);
         }
@@ -370,7 +371,7 @@ public enum FunctionParser {
             }
 
             String rangeName = arguments.get(0);
-            RangeImpl range = ReadOnlySheet.getRanges().get(rangeName);
+            Range range = ReadOnlySheet.getRanges().get(rangeName);
 
             return new Average(range);
         }

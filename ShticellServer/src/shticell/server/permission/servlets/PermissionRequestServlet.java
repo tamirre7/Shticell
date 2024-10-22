@@ -32,7 +32,7 @@ public class PermissionRequestServlet extends HttpServlet {
         }catch (Exception e)
         {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"status\":\"error\",\"message\":\"Error setting sheet: " + e.getMessage() + "\"}");
+            response.getWriter().write("Error setting sheet: " + e.getMessage());
         }
 
     }

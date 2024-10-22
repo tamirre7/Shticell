@@ -4,6 +4,7 @@ import spreadsheet.api.SpreadSheet;
 import dto.permission.Permission;
 import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SheetManager {
@@ -12,10 +13,11 @@ public interface SheetManager {
     void updateSheetVersion(SpreadSheet sheet);
     int getLatestVersion();
     String getUploadedBy();
-    void ApprovePermission(String username);
-    void addPendingPermissionRequest(String username,PermissionRequest request);
+    void ApprovePermission(PermissionRequest request);
+    void addPendingPermissionRequest(PermissionRequest request);
     Permission getPermission(String username);
     Map<String, Permission> getApprovedPermissions();
-    Map<String, PermissionRequest>getPendingPermissionRequests();
-    void removePendingRequest(String username);
+    Map<String, List<PermissionRequest>>getPendingPermissionRequests();
+    Map<String, List<PermissionRequest>> getDeniedPermissionRequests();
+    void denyPendingRequest(PermissionRequest request);
 }

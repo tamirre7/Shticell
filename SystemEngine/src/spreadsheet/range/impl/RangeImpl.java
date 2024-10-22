@@ -2,22 +2,21 @@ package spreadsheet.range.impl;
 
 import spreadsheet.api.Dimension;
 import spreadsheet.cell.api.Cell;
+import spreadsheet.cell.api.CellIdentifier;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class RangeImpl implements Range, Serializable {
     private String name;
-    private CellIdentifierImpl topLeft;
-    private CellIdentifierImpl bottomRight;
-    private List<CellIdentifierImpl> cellsInRange;
+    private CellIdentifier topLeft;
+    private CellIdentifier bottomRight;
+    private List<CellIdentifier> cellsInRange;
     private boolean isActive;
     private Dimension sheetDimensions;
 
-    public RangeImpl (String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight,Dimension sheetDimentions) {
+    public RangeImpl (String name, CellIdentifier topLeft, CellIdentifier bottomRight,Dimension sheetDimentions) {
         this.name = name;
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
@@ -67,14 +66,14 @@ public class RangeImpl implements Range, Serializable {
     public String getName() {
         return name;
     }
-
-    public List<CellIdentifierImpl> getCellsInRange() { return Collections.unmodifiableList(cellsInRange);}
-
-    public CellIdentifierImpl getTopLeft() {
+    @Override
+    public List<CellIdentifier> getCellsInRange() { return Collections.unmodifiableList(cellsInRange);}
+    @Override
+    public CellIdentifier getTopLeft() {
         return topLeft;
     }
-
-    public CellIdentifierImpl getBottomRight() {
+    @Override
+    public CellIdentifier getBottomRight() {
         return bottomRight;
     }
 
@@ -82,6 +81,7 @@ public class RangeImpl implements Range, Serializable {
         return isActive;
     }
 
+    @Override
     public void setActive(boolean active) {
         isActive = active;
     }
