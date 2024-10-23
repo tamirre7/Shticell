@@ -71,7 +71,7 @@ public class SheetManagerImpl implements SheetManager, Serializable {
     }
 
     @Override
-    public Map<String, Permission> getApprovedPermissions() {
+    public Map<String, List<PermissionRequest>> getApprovedPermissions() {
         return permissionManager.getApprovedPermissions();
     }
 

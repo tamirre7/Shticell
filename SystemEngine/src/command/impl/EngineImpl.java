@@ -16,7 +16,6 @@ import spreadsheet.cell.cellstyle.impl.CellStyleImpl;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.cell.impl.CellImpl;
 import spreadsheet.range.api.Range;
-import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
 import spreadsheet.sheetimpl.SpreadSheetImpl;
 import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
@@ -523,7 +522,7 @@ public class EngineImpl implements Engine {
     public List<PermissionInfoDto> getAllSheetPermissions(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
 
-        Map<String, Permission> approvedPermissions = relevantManager.getApprovedPermissions();
+        Map<String, List<PermissionRequest>> approvedPermissions = relevantManager.getApprovedPermissions();
         Map<String, List<PermissionRequest>> pendingPermissions = relevantManager.getPendingPermissionRequests();
         Map<String, List<PermissionRequest>> deniedPermissions = relevantManager.getDeniedPermissionRequests();
 
@@ -531,12 +530,14 @@ public class EngineImpl implements Engine {
         List<PermissionInfoDto> permissionInfoDtos = new ArrayList<>();
 
         // Add approved permissions to the list
-        for (Map.Entry<String, Permission> entry : approvedPermissions.entrySet()) {
+        for (Map.Entry<String, List<PermissionRequest>> entry : approvedPermissions.entrySet()) {
             String userName = entry.getKey();
-            Permission permission = entry.getValue();
+            List<PermissionRequest> requests = entry.getValue();
 
-            // Create PermissionInfoDto for approved permissions
-            permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.APPROVED));
+            for (PermissionRequest request : requests) {
+                Permission permission = request.getPermission();
+                permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.APPROVED));
+            }
         }
 
         // Add pending permissions to the list
@@ -559,7 +560,7 @@ public class EngineImpl implements Engine {
             // Add each denied request for the user
             for (PermissionRequest request : requests) {
                 Permission permission = request.getPermission();
-                permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.DENIED));
+                permissionInfoDtos.add(new PermissionInfoDto(userName, permission, sheetName, RequestStatus.REJECTED));
             }
         }
 
@@ -575,13 +576,13 @@ public class EngineImpl implements Engine {
         relevantManager.addPendingPermissionRequest(request);
     }
     @Override
-    public void permissionApproval(PermissionResponseDto responseDto){
+    public void permissionApproval(PermissionResponseDto responseDto) {
         PermissionRequestDto requestDto = responseDto.getPermissionRequestDto();
-        PermissionRequest request = new PermissionRequest(requestDto.getId(),requestDto.getPermissionType(),requestDto.getRequester());
+        PermissionRequest request = new PermissionRequest(requestDto.getId(), requestDto.getPermissionType(), requestDto.getRequester());
         SheetManager relevantManager = sheetMap.get(requestDto.getSheetName());
         relevantManager.ApprovePermission(request);
-
     }
+
     @Override
     public void permissionDenial(PermissionResponseDto responseDto)
     {

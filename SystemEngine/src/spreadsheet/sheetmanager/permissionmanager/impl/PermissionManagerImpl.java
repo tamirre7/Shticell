@@ -13,11 +13,14 @@ import java.util.Map;
 
 public class PermissionManagerImpl implements PermissionManager, Serializable {
     private Map<String, Permission> sheetPermissionMap = new HashMap<>();
+    private Map<String, List<PermissionRequest>> approvedPermissionRequests = new HashMap<>();
     private Map<String, List<PermissionRequest>> pendingPermissionRequests = new HashMap<>();
     private Map<String, List<PermissionRequest>> deniedPermissionRequests = new HashMap<>();
 
     public PermissionManagerImpl(String uploadedBy) {
         this.sheetPermissionMap.put(uploadedBy, Permission.OWNER);
+        PermissionRequest ownerRequest = new PermissionRequest(-1,Permission.OWNER,uploadedBy);
+        approvedPermissionRequests.computeIfAbsent(uploadedBy, k -> new ArrayList<>()).add(ownerRequest);
     }
 
     @Override
@@ -26,6 +29,7 @@ public class PermissionManagerImpl implements PermissionManager, Serializable {
       List<PermissionRequest> requests = pendingPermissionRequests.get(userName);
       if(requests != null && requests.contains(requestToApprove)) {
           Permission permission = requestToApprove.getPermission();
+          approvedPermissionRequests.computeIfAbsent(userName, k -> new ArrayList<>()).add(requestToApprove);
           sheetPermissionMap.put(userName, permission);
           requests.remove(requestToApprove);
 
@@ -62,8 +66,8 @@ public class PermissionManagerImpl implements PermissionManager, Serializable {
     }
 
     @Override
-    public Map<String, Permission> getApprovedPermissions() {
-        return new HashMap<>(sheetPermissionMap);
+    public Map<String, List<PermissionRequest>> getApprovedPermissions() {
+        return new HashMap<>(approvedPermissionRequests);
     }
 
     @Override

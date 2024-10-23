@@ -16,7 +16,7 @@ public interface SheetManager {
     void ApprovePermission(PermissionRequest request);
     void addPendingPermissionRequest(PermissionRequest request);
     Permission getPermission(String username);
-    Map<String, Permission> getApprovedPermissions();
+    Map<String, List<PermissionRequest>> getApprovedPermissions();
     Map<String, List<PermissionRequest>>getPendingPermissionRequests();
     Map<String, List<PermissionRequest>> getDeniedPermissionRequests();
     void denyPendingRequest(PermissionRequest request);

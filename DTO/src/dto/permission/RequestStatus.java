@@ -2,7 +2,7 @@ package dto.permission;
 
 public enum RequestStatus {
     APPROVED,
-    DENIED,
+    REJECTED,
     PENDING;
 
     public static RequestStatus fromString(String requestStatus) {

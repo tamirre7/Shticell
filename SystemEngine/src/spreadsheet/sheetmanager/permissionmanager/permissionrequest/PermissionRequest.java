@@ -2,6 +2,8 @@ package spreadsheet.sheetmanager.permissionmanager.permissionrequest;
 
 import dto.permission.Permission;
 
+import java.util.Objects;
+
 public class PermissionRequest {
     private final int id;
     private final Permission permission;
@@ -29,5 +31,21 @@ public class PermissionRequest {
 
     public int getId() {
         return id;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PermissionRequest that = (PermissionRequest) o;
+        return id == that.id &&
+                permission == that.permission &&
+                Objects.equals(requester, that.requester);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, permission, requester);
     }
 }

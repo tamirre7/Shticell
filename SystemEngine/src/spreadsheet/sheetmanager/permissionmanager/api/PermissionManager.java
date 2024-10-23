@@ -11,7 +11,7 @@ public interface PermissionManager {
     void addPendingPermissionRequest(PermissionRequest request);
     void denyPendingRequest(PermissionRequest requestToDeny);
     Permission getPermission(String username);
-    Map<String, Permission> getApprovedPermissions();
+    Map<String, List<PermissionRequest>> getApprovedPermissions();
     Map<String, List<PermissionRequest>> getPendingPermissionRequests();
     Map<String, List<PermissionRequest>> getDeniedPermissionRequests();
 }
