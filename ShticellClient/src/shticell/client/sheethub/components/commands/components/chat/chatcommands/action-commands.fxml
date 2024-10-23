@@ -11,6 +11,6 @@
    </padding>
    <children>
       <ToggleButton id="auto-updates-button" fx:id="autoUpdatesButton" text="Auto Updates" styleClass="main-action-button" maxWidth="Infinity"/>
-      <Button id="Return-button" text="Return" onAction="#returnClicked" styleClass="quit-button" maxWidth="Infinity"/>
+      <Button id="return-button" text="Return" onAction="#returnClicked" styleClass="return-button" maxWidth="Infinity"/>
    </children>
 </VBox>

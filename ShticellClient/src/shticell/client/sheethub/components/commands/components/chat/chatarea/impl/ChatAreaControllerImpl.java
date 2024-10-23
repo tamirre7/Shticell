@@ -38,7 +38,6 @@ public class ChatAreaControllerImpl implements ChatAreaController {
     private ToggleButton autoScrollButton;
     @FXML private TextArea chatLineTextArea;
     @FXML private TextArea mainChatLinesTextArea;
-    @FXML private Label chatVersionLabel;
 
     public ChatAreaControllerImpl() {
         autoScroll = new SimpleBooleanProperty();

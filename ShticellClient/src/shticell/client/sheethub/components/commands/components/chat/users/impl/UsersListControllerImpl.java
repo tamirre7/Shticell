@@ -60,7 +60,7 @@ public class UsersListControllerImpl implements shticell.client.sheethub.compone
     @Override
     public void startListRefresher() {
         listRefresher = new UserListRefresher(
-                true,
+                autoUpdate,
                 httpStatusUpdate::updateHttpLine,
                 this::updateUsersList);
         timer = new Timer();

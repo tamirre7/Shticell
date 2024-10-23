@@ -1,14 +1,64 @@
-/*action-commmands.css*/
+* action-commands.css *,
 .main-action-button {
-    -fx-text-fill: GREEN;
-    -fx-font-size: 20px;
-    -fx-font-weight: BOLD;
+    -fx-background-color: #28a745; /* Same green as the toggle buttons */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-border-radius: 4px;
 }
 
-#quit-button {
-    -fx-text-fill: RED;
+.main-action-button:hover {
+    -fx-background-color: #218838; /* Darker green on hover */
 }
 
+.main-action-button:pressed {
+    -fx-background-color: #1e7e34; /* Even darker green on press */
+}
+
+/* Quit button */
+#return-button {
+    -fx-background-color: #dc3545; /* Red background for quit */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-border-radius: 4px;
+}
+
+#return-button:hover {
+    -fx-background-color: #c82333; /* Darker red on hover */
+}
+
+#return-button:pressed {
+    -fx-background-color: #bd2130; /* Even darker red on press */
+}
+
+/* Auto Updates Button Toggle */
 #auto-updates-button {
-    -fx-font-size: 16px;
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 16px;
+    -fx-border-radius: 4px;
+}
+
+#auto-updates-button:selected {
+    -fx-background-color: #218838; /* Darker green when selected */
+}
+
+#auto-updates-button:hover {
+    -fx-background-color: #218838; /* Darker green on hover */
+}
+
+#auto-updates-button:pressed {
+    -fx-background-color: #1e7e34; /* Even darker green on press */
+}
+
+/* Hover and Press effects for general buttons */
+.button:hover {
+    -fx-opacity: 0.9;
+}
+
+.button:pressed {
+    -fx-opacity: 0.7;
 }

@@ -39,8 +39,10 @@ public class ChatServlet extends HttpServlet {
         }
 
         // log and create the response json string
+        Chat chat = new Chat(chatEntries);
         Gson gson = new Gson();
-        String jsonResponse = gson.toJson(chatEntries);
+
+        String jsonResponse = gson.toJson(chat);
         logServerMessage("User '" + username);
         logServerMessage(jsonResponse);
 
@@ -49,6 +51,17 @@ public class ChatServlet extends HttpServlet {
             out.flush();
         }
 
+    }
+    private static class Chat {
+        final private List<SingleChatEntry> entries;
+
+        public Chat(List<SingleChatEntry> entries) {
+            this.entries = entries;
+        }
+
+        public List<SingleChatEntry> getEntries() {
+            return entries;
+        }
     }
 
     private void logServerMessage(String message){

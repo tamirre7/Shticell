@@ -2,6 +2,7 @@ package shticell.client.sheethub.components.commands.components.chat.users;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import javafx.beans.property.BooleanProperty;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -18,10 +19,10 @@ public class UserListRefresher extends TimerTask {
     private final Consumer<String> httpRequestLoggerConsumer;
     private final Consumer<List<String>> usersListConsumer;
     private int requestNumber;
-    private final boolean shouldUpdate;
+    private final BooleanProperty shouldUpdate;
 
 
-    public UserListRefresher(boolean shouldUpdate, Consumer<String> httpRequestLoggerConsumer, Consumer<List<String>> usersListConsumer) {
+    public UserListRefresher(BooleanProperty shouldUpdate, Consumer<String> httpRequestLoggerConsumer, Consumer<List<String>> usersListConsumer) {
         this.shouldUpdate = shouldUpdate;
         this.httpRequestLoggerConsumer = httpRequestLoggerConsumer;
         this.usersListConsumer = usersListConsumer;
@@ -31,7 +32,7 @@ public class UserListRefresher extends TimerTask {
     @Override
     public void run() {
 
-        if (!shouldUpdate) {
+        if (!shouldUpdate.get()) {
             return;
         }
 

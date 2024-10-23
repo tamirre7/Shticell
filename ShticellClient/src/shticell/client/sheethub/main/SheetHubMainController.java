@@ -157,7 +157,7 @@ public class SheetHubMainController {
         Scene popupScene = new Scene(pane);
         chatPopupStage.setScene(popupScene);
         chatPopupStage.setTitle("Chat");
-        chatPopupStage.setWidth(700);
+        chatPopupStage.setWidth(1000);
         chatPopupStage.setHeight(550);
         chatPopupStage.centerOnScreen();
         chatPopupStage.showAndWait();

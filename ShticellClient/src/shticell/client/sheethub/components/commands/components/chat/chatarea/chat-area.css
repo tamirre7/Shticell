@@ -1,65 +1,57 @@
 /* chat-area.css */
 .root {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: #f8f9fa; /* Light background for a modern look */
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
+/* Send button */
 #send-button {
-    -fx-background-color: #2196F3;
+    -fx-background-color: #007bff; /* Blue color for send */
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-padding: 8px 16px;
     -fx-border-radius: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0.5, 0, 1);
 }
 
-.toggle-action-button {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-    -fx-font-size: 12px;
-    -fx-font-weight: normal;
-    -fx-padding: 6px 12px;
-    -fx-border-radius: 4px;
+#send-button:hover {
+    -fx-background-color: #0056b3; /* Darker blue on hover */
 }
 
-#say-something-label {
-    -fx-text-fill: #333333;
-    -fx-font-size: 14px;
-    -fx-font-weight: normal;
+#send-button:pressed {
+    -fx-background-color: #004085; /* Even darker blue when pressed */
 }
 
-.text-area {
-    -fx-background-color: white;
-    -fx-border-color: #CCCCCC;
-    -fx-border-radius: 4px;
-}
-
-.text-area .content {
-    -fx-background-color: white;
-}
-
-/* action-commands.css */
-.main-action-button {
-    -fx-background-color: #4CAF50;
+/* Toggle button (auto-scroll) */
+.toggle-action-button, #auto-scroll-button {
+    -fx-background-color: #28a745; /* Green color for toggles */
     -fx-text-fill: white;
     -fx-font-size: 14px;
-    -fx-font-weight: normal;
     -fx-padding: 8px 16px;
     -fx-border-radius: 4px;
 }
 
-#quit-button {
-    -fx-background-color: #F44336;
+#auto-scroll-button:pressed {
+    -fx-background-color: #218838; /* Darker green when pressed */
 }
 
-#auto-updates-button {
-    -fx-font-size: 14px;
+.toggle-action-button:selected, #auto-scroll-button:selected {
+    -fx-background-color: #218838; /* Same as pressed when selected */
 }
 
-.button:hover, .toggle-button:hover {
-    -fx-opacity: 0.8;
+#auto-scroll-button:hover {
+    -fx-background-color: #218838; /* Slightly darker green on hover */
 }
 
-.button:pressed, .toggle-button:pressed {
-    -fx-opacity: 0.6;
+/* TextArea styling */
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 4px;
+    -fx-padding: 8px;
+}
+
+.text-area .content {
+    -fx-background-color: white;
 }

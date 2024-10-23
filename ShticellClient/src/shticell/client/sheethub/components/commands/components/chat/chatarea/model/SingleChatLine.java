@@ -1,31 +1,20 @@
 package shticell.client.sheethub.components.commands.components.chat.chatarea.model;
 
 public class SingleChatLine {
-    private long time;
-    private String username;
     private String chatString;
+    private String username;
+    private long time;
 
-    public long getTime() {
-        return time;
-    }
-
-    public void setTime(long time) {
-        this.time = time;
+    // Getters and setters
+    public String getChatString() {
+        return chatString;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getChatString() {
-        return chatString;
-    }
-
-    public void setChatString(String chatString) {
-        this.chatString = chatString;
+    public long getTime() {
+        return time;
     }
 }
