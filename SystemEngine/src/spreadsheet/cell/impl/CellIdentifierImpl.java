@@ -30,9 +30,8 @@ public class CellIdentifierImpl implements CellIdentifier, Serializable
             row = Integer.parseInt(cellId.substring(1, cellId.length())); // extract the row number
         } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
             // Handle exceptions related to invalid row number or column letter
-            throw new IllegalArgumentException("Invalid cell identifier: " + cellId, e);
+            throw new IllegalArgumentException("Invalid cell ID. \nExample for a valid cell ID - A1 ");
         }
-
 
         this.row = row;
         this.col = col;

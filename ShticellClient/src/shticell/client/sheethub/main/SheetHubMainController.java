@@ -183,4 +183,10 @@ public class SheetHubMainController {
         permissionPopupStage.close();
     }
 
+    public void closeChatPopup(){
+        availableSheetsComponentController.startTableRefresher();
+        commandsMenuComponentController.activateChatRefreshers();
+        chatPopupStage.close();
+    }
+
 }

@@ -45,6 +45,9 @@ public class AddRangeServlet extends HttpServlet {
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
 
+        }catch (IllegalArgumentException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write("Error adding range: " + e.getMessage());
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("Error adding range: " + e.getMessage());

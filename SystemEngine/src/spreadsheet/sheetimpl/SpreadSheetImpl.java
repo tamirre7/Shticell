@@ -270,8 +270,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     }
     @Override
     public void addRange(String name, CellIdentifier topLeft, CellIdentifier bottomRight) {
-        if (ranges.containsKey(name)) {
-            throw new IllegalArgumentException("Range name already exists");
+        for (Range range: ranges.values()) {
+            if (range.getName().toUpperCase().equals(name.toUpperCase()))
+                throw new IllegalArgumentException("Range name already exists");
         }
         if (!isRangeWithinBounds(topLeft, bottomRight)) {
             throw new IllegalArgumentException("Range is out of bounds");

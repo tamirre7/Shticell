@@ -58,7 +58,7 @@ public class FilterServlet extends HttpServlet {
 
         } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Error filter range" + e.getMessage());
+            resp.getWriter().write(e.getMessage());
 
         }
 

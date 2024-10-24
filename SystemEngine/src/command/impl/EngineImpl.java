@@ -54,7 +54,7 @@ public class EngineImpl implements Engine {
             int numCols = stlLayout.getColumns();
 
             if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
-                return new SaveLoadFileDto(false, "Invalid sheet size: Rows must be between 1 and 50 and columns between 1 and 20, but got: Rows: " + numRows + ", Cols: " + numCols);
+                return new SaveLoadFileDto(false, "Invalid sheet size- \nRows must be between 1 and 50 \nColumns must be between 1 and 20");
             }
 
             // Create Dimensions object

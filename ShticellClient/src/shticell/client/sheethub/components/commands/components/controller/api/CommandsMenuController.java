@@ -9,7 +9,8 @@ public interface CommandsMenuController {
     void setMainController(SheetHubMainController mainController);
     void refreshList();
     void setPermissionTableController(PermissionTableController permissionTableController);
-    void returnToHub();
+    void permissionReturnToHub();
+    void chatReturnToHub();
     void setAvailableSheetsControllerTableController(AvailableSheetsController availableSheetsController);
     void setLoginController(LoginController loginController);
     void activatePermissionRefresher();

@@ -165,9 +165,11 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         Platform.runLater(() -> commandsList.getSelectionModel().clearSelection());
     }
 
-    @FXML
-    public void returnToHub(){mainController.closePermissionPopup();}
+    @Override
+    public void permissionReturnToHub(){mainController.closePermissionPopup();}
 
+    @Override
+    public void chatReturnToHub(){mainController.closeChatPopup();}
 
     @Override
     public void refreshList()

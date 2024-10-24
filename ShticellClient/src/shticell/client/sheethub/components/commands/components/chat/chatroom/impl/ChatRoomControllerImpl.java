@@ -45,7 +45,7 @@ public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpd
 
     @Override
     public void close() throws IOException {
-        commandsMenuComponent.returnToHub();
+        commandsMenuComponent.chatReturnToHub();
     }
     @Override
     public void setCommandsMenuComponent(CommandsMenuController commandsMenuComponent)

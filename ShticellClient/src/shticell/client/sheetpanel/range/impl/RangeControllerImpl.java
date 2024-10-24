@@ -124,13 +124,14 @@ public class RangeControllerImpl implements RangeController {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
+                        rangeItems.add(rangeName);
                         SheetDto updatedSheet = HttpClientUtil.extractSheetFromResponseBody(responseBody);
                         spreadsheetController.setCurrentSheet(updatedSheet);
-                        rangeItems.add(rangeName);
                     });
                 } else {
+                    String errorMessage = response.body() != null ? response.body().string() : "Unknown error";
                     Platform.runLater(() ->
-                            showAlert("Error", "Failed to add range: " + response.message())
+                            showAlert("Error", errorMessage)
                     );
                 }
             }
@@ -154,11 +155,6 @@ public class RangeControllerImpl implements RangeController {
             return null;
         }
         String rangeName = rangeNameResult.get();
-        if (rangeItems.contains(rangeName))
-        {
-            showAlert("Error", "Cannot add range - Range's name already exists");
-            return null;
-        }
         return rangeName;
     }
 

@@ -39,7 +39,7 @@ public class LoginControllerImpl implements LoginController {
 
         String userName = userNameTextField.getText();
         if (userName.isEmpty()) {
-            errorMessageProperty.set("User name is empty. You can't login with an empty user name");
+            errorMessageProperty.set("You can't login with an empty user name.");
             return;
         }
 
@@ -64,7 +64,7 @@ public class LoginControllerImpl implements LoginController {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            errorMessageProperty.set("Something went wrong: " + responseBody)
+                            errorMessageProperty.set(responseBody)
                     );
                 } else {
                     Platform.runLater(() -> {

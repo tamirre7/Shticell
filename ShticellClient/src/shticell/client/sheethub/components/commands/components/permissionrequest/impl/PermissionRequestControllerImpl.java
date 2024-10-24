@@ -54,7 +54,7 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
     public void handleSubmit(ActionEvent event){
         if(validateInput()){
             sendPermissionRequest(sheetNamesBox.getValue(), permissionTypeBox.getValue(), messageField.getText());
-            commandsMenuController.returnToHub();
+            commandsMenuController.permissionReturnToHub();
         }
         else
         {
@@ -69,7 +69,7 @@ public class PermissionRequestControllerImpl implements PermissionRequestControl
         permissionTypeBox.getSelectionModel().clearSelection();
         messageField.clear();
         // Return to hub page
-        commandsMenuController.returnToHub();
+        commandsMenuController.permissionReturnToHub();
     }
 
 

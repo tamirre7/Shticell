@@ -129,9 +129,8 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
                         spreadsheetController.displayTemporarySheet(filterdSheetDto,false);
                     });
                 } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to sort data: " + response.message())
-
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to filter data: \n" + errorMessage)
                     );
                 }
             }
@@ -185,9 +184,8 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
                         spreadsheetController.displayTemporarySheet(sortedSheetDto,false);
                     });
                 } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to sort data: " + response.message())
-
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to sort data: \n" + errorMessage)
                     );
                 }
             }
@@ -334,6 +332,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
     private List<String> showColumnDialog(ComboBox<String> columnComboBox, Button addButton, ListView<String> selectedColumnsListView, Button removeButton) {
         Dialog<List<String>> columnDialog = new Dialog<>();
+        columnDialog.getDialogPane().setPrefSize(300, 500);
         columnDialog.setTitle("Select Columns");
         columnDialog.setHeaderText("Select columns (in order):");
 

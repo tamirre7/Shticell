@@ -51,7 +51,8 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
         requestTableView.setItems(requests);
 
         requestTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null && !newSelection.getMessage().isEmpty()) {
+            messageArea.clear();
+            if (newSelection != null && newSelection.getMessage()!=null) {
                 messageArea.setText(newSelection.getMessage());
             }
         });
@@ -84,7 +85,7 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
 
     @FXML
     private void handleClose(ActionEvent event){
-        commandsMenuController.returnToHub();
+        commandsMenuController.permissionReturnToHub();
     }
 
     private void sendResponseMessage(PermissionResponseDto responseDto){

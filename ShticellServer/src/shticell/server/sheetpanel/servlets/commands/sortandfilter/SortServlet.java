@@ -17,7 +17,6 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
 import spreadsheet.range.impl.RangeImpl;
 import spreadsheet.sheetimpl.DimensionImpl;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -57,7 +56,7 @@ public class SortServlet extends HttpServlet {
             resp.getWriter().write(jsonResp);
         }catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Error sort range" + e.getMessage());
+            resp.getWriter().write(e.getMessage());
         }
 
 

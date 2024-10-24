@@ -11,9 +11,9 @@
 
 <VBox xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheetpanel.action.line.impl.ActionLineControllerImpl">
    <children>
-      <HBox alignment="CENTER_LEFT" style="-fx-background-color: #f0f0f0; -fx-border-color: #cccccc; -fx-border-width: 0 0 1 0;">
+      <HBox alignment="CENTER_LEFT">
          <children>
-            <Label fx:id="usernameLabel" text="User Name:" style="-fx-font-weight: bold;">
+            <Label fx:id="usernameLabel" style="-fx-font-weight: bold;" text="User Name:">
                <font>
                   <Font size="14.0" />
                </font>
@@ -21,17 +21,17 @@
                   <Insets right="10.0" />
                </HBox.margin>
             </Label>
-            <Label fx:id="usernameValueLabel" text="User Name" style="-fx-font-weight: normal;">
+            <Label fx:id="usernameValueLabel" style="-fx-font-weight: normal;" text="User Name">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
          </children>
          <padding>
-            <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+            <Insets left="15.0" right="15.0" top="10.0" />
          </padding>
          <VBox.margin>
-            <Insets bottom="10.0" />
+            <Insets />
          </VBox.margin>
       </HBox>
       <HBox>

@@ -164,6 +164,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         cellLabel.setContextMenu(contextMenu);
     }
 
+
+
     @Override
     public void setupHeaderContextMenu(Label cellLabel, int index, boolean isColumn) {
         ContextMenu contextMenu = new ContextMenu();
