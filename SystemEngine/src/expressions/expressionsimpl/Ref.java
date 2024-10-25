@@ -20,11 +20,11 @@ public class Ref implements Expression {
     public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         if (cellIdentifier.getRow() < 1
                 || cellIdentifier.getRow() > spreadSheet.getSheetDimentions().getNumRows()
-        || cellIdentifier.getCol() < 'A'
-        || cellIdentifier.getCol() > spreadSheet.getSheetDimentions().getNumCols() + 'A')
-            throw new IllegalArgumentException("Invalid cell identifier for REF - ROW: Expected number between 1-" + spreadSheet.getSheetDimentions().getNumRows()+
-                    " but got " + cellIdentifier.getRow() + "\n" + "COL: Expected character between A -" + spreadSheet.getSheetDimentions().getNumCols() + 'A'
-            + " but got " + cellIdentifier.getCol());
+                || cellIdentifier.getCol() < 'A'
+                || cellIdentifier.getCol() > spreadSheet.getSheetDimentions().getNumCols() + 'A')
+            throw new IllegalArgumentException("\nInvalid cell identifier for REF function-\n" +
+                    "ROW: Expected number between 1-" + spreadSheet.getSheetDimentions().getNumRows() +
+                    "\n" + "COL: Expected character between A-" + (char) ('A' + spreadSheet.getSheetDimentions().getNumCols() - 1));
 
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
         if (cellEffectiveVal == null)

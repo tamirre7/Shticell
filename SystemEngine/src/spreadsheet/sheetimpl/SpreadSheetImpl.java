@@ -17,13 +17,14 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// Implementation of a spreadsheet that supports cell dependencies, ranges, and formula calculations
+// Manages a collection of cells and provides operations for updating and calculating cell values
 public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     private final Dimension sheetDimension;
     private final Map<CellIdentifier, Cell> activeCells;
     private Map<String, Range> ranges = new HashMap<>();
     private String sheetName;
-
 
     public SpreadSheetImpl(Dimension sheetDimension,SheetManager sheetManager) {
         this.activeCells = new HashMap<>();
@@ -32,9 +33,12 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         this.sheetName = sheetManager.getSheetName();
     }
 
+    // Returns the name of the spreadsheet
     @Override
     public String getSheetName(){return this.sheetName;}
 
+    // Validates if a cell identifier is in correct format (e.g., A1, B2) and within sheet bounds
+    // Throws IllegalArgumentException if the format is invalid or out of bounds
     @Override
     public boolean isValidCellID(String cellID) {
         // Regular expression to match one uppercase letter followed by one or more digits
@@ -61,14 +65,17 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return true;
     }
 
+    // Returns the calculated value of a cell. If cell doesn't exist, creates an empty cell first
     @Override
     public EffectiveValue getCellEffectiveValue(CellIdentifier identifier) {
         Cell cell = activeCells.get(identifier);
         if(cell == null) {
-           addEmptyCell(identifier);
+            addEmptyCell(identifier);
         }
         return cell != null ? cell.getEffectiveValue() : null;
     }
+
+    // Creates and adds an empty cell at the specified identifier
     @Override
     public void addEmptyCell (CellIdentifier identifier){
         CellImpl newCell = new CellImpl(identifier, "",1,this,"");
@@ -77,20 +84,27 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         this.updateDependenciesAndInfluences();
     }
 
+    // Returns the sheet dimensions
     @Override
     public Dimension getSheetDimentions() {
         return sheetDimension;
     }
 
+    // Returns all active (non-empty) cells in the sheet
     @Override
     public Map<CellIdentifier, Cell> getActiveCells() {
         return activeCells;
     }
+
+    // Returns a specific cell by its identifier
     @Override
     public Cell getCell(CellIdentifier identifier) {
         return activeCells.get(identifier);
     }
 
+    // Updates a cell's value and recalculates all dependent cells
+    // Returns UpdateResult containing either the updated sheet or error message
+    // isDynamicUpdate: if true, doesn't increment version number
     @Override
     public UpdateResult updateCellValueAndCalculate(CellIdentifier cellId, String originalValue, boolean isDynamicUpdate,String modifyingUserName,int currentVersion) {
         SpreadSheetImpl newSheetVersion = this.copySheet();
@@ -110,28 +124,28 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                             .filter(Cell::calculateEffectiveValue)
                             .collect(Collectors.toList());
 
-            // successful calculation. update sheet and relevant cells version
             if(!isDynamicUpdate) {
                 cellsThatHaveChanged.forEach(cell -> cell.updateVersion(newVer));
             }
-             newSheetVersion.updateDependenciesAndInfluences();
-             for (Cell cell : newSheetVersion.activeCells.values()) {
-                 cell.calculateEffectiveValue();
-             }
+            newSheetVersion.updateDependenciesAndInfluences();
+            for (Cell cell : newSheetVersion.activeCells.values()) {
+                cell.calculateEffectiveValue();
+            }
 
-        return new UpdateResult(newSheetVersion,null);
+            return new UpdateResult(newSheetVersion,null);
         } catch (Exception e) {
             return new UpdateResult(this, e.getMessage());
         }
     }
 
+    // Updates the dependency graph for all cells in the spreadsheet
+    // Throws IllegalStateException if a circular dependency is detected
     public void updateDependenciesAndInfluences() {
         for (Cell cell : activeCells.values()) {
             cell.resetDependencies();
             cell.resetInfluences();
         }
         for (Cell cell : activeCells.values()) {
-            // Parse the cell's value to find references
             String originalValue = cell.getOriginalValue();
             List<CellIdentifier> referencedCellIds = extractReferences(originalValue);
 
@@ -139,41 +153,34 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 Cell referencedCell = activeCells.get(referencedCellId);
 
                 if (referencedCell != null) {
-                    // Add current cell as a dependency for the referenced cell
                     referencedCell.getInfluences().add(cell.getIdentifier());
-
-                    // Add current cell to the influences of the referenced cell
                     cell.getDependencies().add(referencedCell.getIdentifier());
                 }
             }
         }
-        // Check for cycles immediately after updating dependencies and influences
         try {
-            orderCellsForCalculation();  // If this method fails, it means a cycle exists.
+            orderCellsForCalculation();
         } catch (IllegalStateException e) {
             throw new IllegalStateException(e.getMessage());
         }
     }
 
+    // Extracts cell references from formulas like {REF,A1} or {SUM,range1}
+    // Returns list of cell identifiers that are referenced in the formula
     private List<CellIdentifier> extractReferences(String value) {
         List<CellIdentifier> references = new ArrayList<>();
         int i = 0;
 
         while (i < value.length()) {
-            // Find the start of a REF, SUM, or AVERAGE command
             int start = value.indexOf("{", i);
-
-            // If no more commands are found, break the loop
             if (start == -1) {
                 break;
             }
 
-            // Extract the command in uppercase (but not the whole value)
             String upperCommandPart = value.substring(start).toUpperCase();
 
             if (upperCommandPart.startsWith("{REF,")) {
-                // Handle REF command (direct cell reference)
-                int cellIdStart = start + 5; // Move past "{REF,"
+                int cellIdStart = start + 5;
                 int cellIdEnd = findCellIdEnd(value, cellIdStart);
                 if (cellIdEnd > cellIdStart) {
                     String cellId = value.substring(cellIdStart, cellIdEnd).trim().toUpperCase();
@@ -181,23 +188,24 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 }
                 i = cellIdEnd;
             } else if (upperCommandPart.startsWith("{SUM,") || upperCommandPart.startsWith("{AVERAGE,")) {
-                // Handle SUM or AVERAGE command with a range name
-                int rangeNameStart = start + (upperCommandPart.startsWith("{SUM,") ? 5 : 9); // Move past "{SUM," or "{AVERAGE,"
+                int rangeNameStart = start + (upperCommandPart.startsWith("{SUM,") ? 5 : 9);
                 int rangeNameEnd = findCellIdEnd(value, rangeNameStart);
                 if (rangeNameEnd > rangeNameStart) {
-                    String rangeName = value.substring(rangeNameStart, rangeNameEnd).trim(); // Keep original case for the range name
-                    Range range = this.getRange(rangeName); // Fetch range by its name
+                    String rangeName = value.substring(rangeNameStart, rangeNameEnd).trim();
+                    Range range = this.getRange(rangeName);
                     if (range != null) {
-                        references.addAll(range.getCellsInRange()); // Add all cells in range
+                        references.addAll(range.getCellsInRange());
                     }
                 }
                 i = rangeNameEnd;
             } else {
-                i = start + 1;} // Skip invalid command
+                i = start + 1;
+            }
         }
         return references;
     }
 
+    // Helper method to find the end of a cell identifier in a formula
     private int findCellIdEnd(String value, int start) {
         int end = start;
         while (end < value.length() && value.charAt(end) != ',' && value.charAt(end) != '}') {
@@ -206,14 +214,14 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return end;
     }
 
+    // Orders cells for calculation based on their dependencies
+    // Returns a list of cells in topological order for safe calculation
     private List<Cell> orderCellsForCalculation() {
         DirGraph<Cell> graph = new DirGraphImpl<>();
 
-        // Step 1: Build the Graph
         for (Map.Entry<CellIdentifier, Cell> entry : activeCells.entrySet()) {
             Cell cell = entry.getValue();
             graph.addNode(cell);
-            // Add edges based on cell dependencies
             for (CellIdentifier dependency : cell.getDependencies()) {
                 Cell dependencyCell = activeCells.get(dependency);
                 if (dependencyCell != null) {
@@ -222,13 +230,11 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             }
         }
 
-        // Step 2: Perform Topological Sort
-        List<Cell> orderedCells = graph.topologicalSort();
-
-        // Step 3: Return the ordered list
-        return orderedCells;
+        return graph.topologicalSort();
     }
 
+    // Creates a deep copy of the current spreadsheet state
+    // Used for safe calculation of updates without modifying original sheet
     private SpreadSheetImpl copySheet() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -239,11 +245,11 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
             return (SpreadSheetImpl) ois.readObject();
         } catch (Exception e) {
-            // deal with the runtime error that was discovered as part of invocation
             return this;
         }
     }
 
+    // Compares two spreadsheets for equality based on their active cells
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -253,14 +259,19 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return Objects.equals(activeCells, sheet.activeCells);
     }
 
+    // Generates hash code for the spreadsheet based on its active cells
     @Override
     public int hashCode() {
         return Objects.hash(activeCells);
     }
+
+    // Verifies if a range defined by two corner cells is within sheet boundaries
     @Override
     public boolean isRangeWithinBounds(CellIdentifier topLeft, CellIdentifier bottomRight) {
         return isCellWithinBounds(topLeft) && isCellWithinBounds(bottomRight);
     }
+
+    // Checks if a single cell is within sheet boundaries
     @Override
     public boolean isCellWithinBounds(CellIdentifier cell) {
         int row = cell.getRow();
@@ -268,6 +279,9 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
         return row >= 1 && row <= sheetDimension.getNumRows()
                 && col >= 'A' && col < ('A' + sheetDimension.getNumCols());
     }
+
+    // Creates a new named range in the spreadsheet
+    // Throws IllegalArgumentException if name exists or range is invalid
     @Override
     public void addRange(String name, CellIdentifier topLeft, CellIdentifier bottomRight) {
         for (Range range: ranges.values()) {
@@ -284,8 +298,26 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
                 addEmptyCell(cellIdentifier);
             }
         }
-
     }
+
+    // Returns a specific range by its name
+    @Override
+    public Range getRange(String name) {
+        for (Range range : ranges.values()) {
+            if (range.getName().toUpperCase().equals(name.toUpperCase()))
+                return range;
+        }
+        return null;
+    }
+
+    // Returns all ranges defined in the spreadsheet
+    @Override
+    public Map<String, Range> getRanges()  {
+        return ranges;
+    }
+
+    // Removes a named range if it exists and is not being used in any formulas
+    // Throws IllegalArgumentException if range doesn't exist or is in use
     @Override
     public void removeRange(String name) {
         updateRangeActivation(name);
@@ -296,29 +328,16 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
             throw new IllegalArgumentException("Range in use cannot be removed");
         ranges.remove(name);
     }
-    @Override
-    public Range getRange(String name) {
-        if (!ranges.containsKey(name)) {
-            return null;
-        }
-        return ranges.get(name);
-    }
-    @Override
-    public Map<String, Range> getRanges()  {
-        return ranges;
-    }
 
-    private void updateRangeActivation (String name) {
+    // Updates the active status of a range by checking if it's used in any cell formulas
+    private void updateRangeActivation(String name) {
         Range range = ranges.get(name);
         for (Cell cell: activeCells.values()) {
-            if (cell.getOriginalValue().toUpperCase().equals("{SUM,"+name.toUpperCase()+"}") || cell.getOriginalValue().toUpperCase().equals("{AVERAGE,"+name.toUpperCase()+"}")) {
-                return;}
+            if (cell.getOriginalValue().toUpperCase().equals("{SUM,"+name.toUpperCase()+"}") ||
+                    cell.getOriginalValue().toUpperCase().equals("{AVERAGE,"+name.toUpperCase()+"}")) {
+                return;
+            }
         }
         range.setActive(false);
     }
-
-
 }
-
-
-

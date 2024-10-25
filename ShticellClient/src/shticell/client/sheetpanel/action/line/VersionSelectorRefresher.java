@@ -11,21 +11,22 @@ import java.util.TimerTask;
 import java.util.function.Consumer;
 
 public class VersionSelectorRefresher extends TimerTask {
-    private final Consumer<Integer> latestVersionConsumer;
-    private final String sheetName;
-    private boolean isActive = true;
+    private final Consumer<Integer> latestVersionConsumer; // Consumer to handle latest version updates
+    private final String sheetName; // Name of the sheet to query
+    private boolean isActive = true; // Flag to control the active state of the refresher
 
     public VersionSelectorRefresher(Consumer<Integer> latestVersionConsumer, String sheetName) {
-        this.latestVersionConsumer = latestVersionConsumer;
-        this.sheetName = sheetName;
+        this.latestVersionConsumer = latestVersionConsumer; // Initialize consumer
+        this.sheetName = sheetName; // Set sheet name
     }
 
     @Override
     public void run() {
-        if (!isActive) {
-            return;
+        if (!isActive) { // Check if refresher is active
+            return; // Exit if not active
         }
 
+        // Build URL to fetch the latest version of the specified sheet
         String finalUrl = HttpUrl
                 .parse(Constants.LATEST_VERSION)
                 .newBuilder()
@@ -33,26 +34,29 @@ public class VersionSelectorRefresher extends TimerTask {
                 .build()
                 .toString();
 
+        // Execute HTTP request asynchronously
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                // Handle request failure
                 Platform.runLater(() ->
-                        HttpClientUtil.showAlert("Error", e.getMessage())
+                        HttpClientUtil.showAlert("Error", e.getMessage()) // Show error alert
                 );
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                // Check response status
                 if (response.code() != 200) {
-                    String responseBody = response.body().string();
+                    String responseBody = response.body().string(); // Get response body
                     Platform.runLater(() ->
-                            HttpClientUtil.showAlert("Error", responseBody)
+                            HttpClientUtil.showAlert("Error", responseBody) // Show error alert
                     );
                 } else {
-                    String responseBody = response.body().string();
+                    String responseBody = response.body().string(); // Get response body
                     Platform.runLater(() -> {
-                        int latestVersion = Integer.parseInt(responseBody);
-                        latestVersionConsumer.accept(latestVersion);
+                        int latestVersion = Integer.parseInt(responseBody); // Parse latest version
+                        latestVersionConsumer.accept(latestVersion); // Update consumer with latest version
                     });
                 }
             }
@@ -60,6 +64,6 @@ public class VersionSelectorRefresher extends TimerTask {
     }
 
     public void setActive(boolean active) {
-        this.isActive = active;
+        this.isActive = active; // Set active state for the refresher
     }
 }

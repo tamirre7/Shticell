@@ -6,12 +6,10 @@ import spreadsheet.cell.impl.CellIdentifierImpl;
 import java.util.List;
 
 public interface Range {
-
-     CellIdentifier getTopLeft();
-
-     CellIdentifier getBottomRight();
-
+    CellIdentifier getTopLeft();
+    CellIdentifier getBottomRight();
     void setActive(boolean active);
+    void InitRangeList();
     boolean isActive();
     String getName();
     List<CellIdentifier> getCellsInRange();

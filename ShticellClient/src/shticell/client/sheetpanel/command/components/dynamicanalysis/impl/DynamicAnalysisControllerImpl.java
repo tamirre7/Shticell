@@ -33,22 +33,25 @@ import java.util.stream.Collectors;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
+// Controller for handling dynamic analysis of spreadsheet cells with real-time updates
 public class DynamicAnalysisControllerImpl implements DynamicAnalysisController {
     SpreadsheetControllerImpl spreadsheetController;
     @FXML
     private Button dynamicAnalysisButton;
 
+    // Initialize cell selection dialog with checkboxes for numeric cells
+    @Override
     public void handleAnalysisButtonPress() {
-
         Map<String, CheckBox> cellCheckboxes = getNumericCellCheckboxes();
         ScrollPane scrollPane = createScrollPane(cellCheckboxes);
         VBox mainContent = createMainContent(scrollPane, cellCheckboxes);
         Dialog<List<String>> dialog = createCellSelectionDialog(cellCheckboxes, mainContent);
-        dialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
+        dialog.initModality(Modality.APPLICATION_MODAL);
         Optional<List<String>> result = dialog.showAndWait();
         result.ifPresent(this::openSliderSetupDialog);
     }
 
+    // Create scrollable container for cell checkboxes
     private ScrollPane createScrollPane(Map<String, CheckBox> cellCheckboxes) {
         VBox cellListBox = new VBox(5);
         cellListBox.setPadding(new Insets(10));
@@ -59,6 +62,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return scrollPane;
     }
 
+    // Create checkboxes for cells containing numeric values only
     private Map<String, CheckBox> getNumericCellCheckboxes() {
         Map<String, CheckBox> cellCheckboxes = new HashMap<>();
         for (Map.Entry<String, CellDto> entry : spreadsheetController.getCurrentSheet().getCells().entrySet()) {
@@ -76,6 +80,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return cellCheckboxes;
     }
 
+    // Create main content layout with selection buttons
     private VBox createMainContent(ScrollPane scrollPane, Map<String, CheckBox> cellCheckboxes) {
         Button selectAllButton = createSelectAllButton(cellCheckboxes);
         Button deselectAllButton = createDeselectAllButton(cellCheckboxes);
@@ -86,6 +91,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return mainContent;
     }
 
+    // Create button to select all numeric cells
     private Button createSelectAllButton(Map<String, CheckBox> cellCheckboxes) {
         Button selectAllButton = new Button("Select All");
         selectAllButton.setOnAction(e -> cellCheckboxes.values().forEach(cb -> cb.setSelected(true)));
@@ -93,6 +99,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return selectAllButton;
     }
 
+    // Create button to deselect all numeric cells
     private Button createDeselectAllButton(Map<String, CheckBox> cellCheckboxes) {
         Button deselectAllButton = new Button("Deselect All");
         deselectAllButton.setOnAction(e -> cellCheckboxes.values().forEach(cb -> cb.setSelected(false)));
@@ -100,13 +107,14 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return deselectAllButton;
     }
 
+    // Create dialog for selecting cells to analyze
     private Dialog<List<String>> createCellSelectionDialog(Map<String, CheckBox> cellCheckboxes, VBox mainContent) {
         Dialog<List<String>> dialog = new Dialog<>();
         dialog.setTitle("Select Cells for Dynamic Analysis");
         dialog.setHeaderText("Choose cells with numeric values:");
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         dialog.getDialogPane().setContent(mainContent);
-        dialog.initModality(Modality.APPLICATION_MODAL); // Disable background interaction
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
                 return cellCheckboxes.values().stream()
@@ -119,6 +127,8 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return dialog;
     }
 
+    // Show error if no cells selected, otherwise open slider setup dialog
+    @Override
     public void openSliderSetupDialog(List<String> cellIds) {
         if (cellIds.isEmpty()) {
             showAlert("ERROR", "No cells selected for dynamic analysis");
@@ -126,7 +136,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         }
         VBox dialogContent = createSliderSetupContent();
         Dialog<ButtonType> setupDialog = createSliderSetupDialog(dialogContent);
-        setupDialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
+        setupDialog.initModality(Modality.APPLICATION_MODAL);
         setupDialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK) {
                 processSliderSetupDialog(cellIds, dialogContent);
@@ -136,6 +146,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         setupDialog.showAndWait();
     }
 
+    // Create input fields for slider configuration
     private VBox createSliderSetupContent() {
         TextField minValueField = new TextField("0");
         TextField maxValueField = new TextField("100");
@@ -152,15 +163,17 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return dialogContent;
     }
 
+    // Create dialog for configuring slider parameters
     private Dialog<ButtonType> createSliderSetupDialog(VBox dialogContent) {
         Dialog<ButtonType> setupDialog = new Dialog<>();
         setupDialog.setTitle("Slider Setup");
         setupDialog.getDialogPane().setContent(dialogContent);
         setupDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        setupDialog.initModality(Modality.APPLICATION_MODAL); // Disable background interaction
+        setupDialog.initModality(Modality.APPLICATION_MODAL);
         return setupDialog;
     }
 
+    // Process slider setup input and show slider dialog
     private void processSliderSetupDialog(List<String> cellIds, VBox dialogContent) {
         TextField minValueField = (TextField) dialogContent.getChildren().get(1);
         TextField maxValueField = (TextField) dialogContent.getChildren().get(3);
@@ -175,6 +188,8 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         }
     }
 
+    // Create and show dialog with sliders for selected cells
+    @Override
     public void showMultiCellSliderDialog(List<String> cellIds, double min, double max, double step) {
         GridPane layout = createGridPane();
         Map<String, Slider> sliders = new HashMap<>();
@@ -190,13 +205,14 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         ScrollPane scrollPane = createScrollPane(contentBox, cellIds.size());
 
         Stage dialog = createDialog(scrollPane);
-        dialog.initModality(Modality.APPLICATION_MODAL); // הוספנו את זה
-        setDialogProperties(dialog, okButton, cellIds, sliders, originalValues);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        setDialogProperties(dialog, cellIds, sliders, originalValues);
 
-        dialog.showAndWait(); // שינינו מ-show ל-showAndWait
+        dialog.showAndWait();
         centerDialog(dialog);
     }
 
+    // Create grid layout for sliders
     private GridPane createGridPane() {
         GridPane layout = new GridPane();
         layout.setHgap(10);
@@ -205,6 +221,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return layout;
     }
 
+    // Add sliders and labels to grid layout
     private void populateGridWithSliders(List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues, GridPane layout, double min, double max, double step) {
         for (int i = 0; i < cellIds.size(); i++) {
             String cellId = cellIds.get(i);
@@ -231,6 +248,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         }
     }
 
+    // Create label to display current slider value
     private Label createValueLabel(double initialValue) {
         Label valueLabel = new Label(String.format("%.2f", initialValue));
         valueLabel.setMinWidth(50);
@@ -238,6 +256,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return valueLabel;
     }
 
+    // Add listener to update cell value when slider changes
     private void attachSliderListener(Slider slider, double step, Label valueLabel, String cellId) {
         slider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double roundedValue = Math.round(newValue.doubleValue() / step) * step;
@@ -249,6 +268,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         });
     }
 
+    // Create OK button to close dialog and restore original values
     private Button createOkButton(List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues) {
         Button okButton = new Button("OK");
         okButton.setDefaultButton(true);
@@ -263,6 +283,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return okButton;
     }
 
+    // Create container for dialog buttons
     private HBox createButtonBox(Button okButton) {
         HBox buttonBox = new HBox(okButton);
         buttonBox.setAlignment(Pos.CENTER);
@@ -270,12 +291,14 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return buttonBox;
     }
 
+    // Create container for dialog content
     private VBox createContentBox(GridPane layout) {
         VBox contentBox = new VBox(layout);
         contentBox.setPadding(new Insets(0, 10, 0, 10));
         return contentBox;
     }
 
+    // Create scrollable container for dialog content
     private ScrollPane createScrollPane(VBox contentBox, int cellCount) {
         ScrollPane scrollPane = new ScrollPane(contentBox);
         scrollPane.setFitToWidth(true);
@@ -284,6 +307,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return scrollPane;
     }
 
+    // Create dialog window
     private Stage createDialog(ScrollPane scrollPane) {
         StackPane root = new StackPane(scrollPane);
         root.setPrefWidth(400);
@@ -298,7 +322,10 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return dialog;
     }
 
-    private void setDialogProperties(Stage dialog, Button okButton, List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues) {
+    // Sets the properties for the dialog used in dynamic analysis, including the close request behavior
+    // and maximum height constraints.
+    // When the dialog is closed, it resets cell values to their original state and updates the display.
+    private void setDialogProperties(Stage dialog, List<String> cellIds, Map<String, Slider> sliders, Map<String, String> originalValues) {
         dialog.setOnCloseRequest(e -> {
             for (String cellId : cellIds) {
                 sendDynamicAnalysisUpdateRequest(cellId, originalValues.get(cellId), sliders.get(cellId), spreadsheetController.getCurrentSheet());
@@ -312,11 +339,14 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         }
     }
 
+    // Centers the dialog window on the screen.
     private void centerDialog(Stage dialog) {
         dialog.setX((Screen.getPrimary().getVisualBounds().getWidth() - dialog.getWidth()) / 2);
         dialog.setY((Screen.getPrimary().getVisualBounds().getHeight() - dialog.getHeight()) / 2);
     }
 
+    // Creates sliders for each specified cell ID.
+    // Returns a map containing the original values for each cell ID.
     private Map<String, String> createSliders(List<String> cellIds, Map<String, Slider> sliders, double min, double max, double step) {
         Map<String, String> originalValues = new HashMap<>();
         for (String cellId : cellIds) {
@@ -330,6 +360,7 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return originalValues;
     }
 
+    // Creates a slider for a cell's original value with specified minimum, maximum, and step values.
     private Slider createSlider(double min, double max, double step, String originalValue) {
         double initialValue = Double.parseDouble(originalValue);
         Slider slider = new Slider(min, max, initialValue);
@@ -339,6 +370,8 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         return slider;
     }
 
+    // Sends an asynchronous request to update a cell's value during dynamic analysis.
+    @Override
     public void sendDynamicAnalysisUpdateRequest(String cellId, String cellOriginalValue, Slider slider, SheetDto sheetToUpdate) {
         Map<String, String> cellUpdateData = new HashMap<>();
         cellUpdateData.put("cellId", cellId);
@@ -382,15 +415,19 @@ public class DynamicAnalysisControllerImpl implements DynamicAnalysisController 
         });
     }
 
+    // Sets the SpreadsheetController instance for this class.
+    @Override
     public void setSpreadsheetController(SpreadsheetControllerImpl spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
     }
 
+    // Enables the dynamic analysis feature by enabling the dynamic analysis button.
     @Override
     public void enableDynamicAnalysis() {
         dynamicAnalysisButton.setDisable(false);
     }
 
+    // Disables the dynamic analysis feature by disabling the dynamic analysis button.
     @Override
     public void disableDynamicAnalysis() {
         dynamicAnalysisButton.setDisable(true);

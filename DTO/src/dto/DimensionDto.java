@@ -1,11 +1,12 @@
 package dto;
 
 public class DimensionDto {
-    private final int numRows;
-    private final int numCols;
-    private final int widthCol;
-    private final int heightRow;
+    private final int numRows;    // Number of rows in the sheet
+    private final int numCols;    // Number of columns in the sheet
+    private final int widthCol;    // Width of each column
+    private final int heightRow;   // Height of each row
 
+    // Constructor to initialize the dimensions of the sheet
     public DimensionDto(int numRows, int numCols, int widthCol, int heightRow) {
         this.numRows = numRows;
         this.numCols = numCols;
@@ -14,18 +15,18 @@ public class DimensionDto {
     }
 
     public int getNumRows() {
-        return numRows;
+        return numRows; // Returns the number of rows
     }
 
     public int getNumCols() {
-        return numCols;
+        return numCols; // Returns the number of columns
     }
 
     public int getWidthCol() {
-        return widthCol;
+        return widthCol; // Returns the width of each column
     }
 
     public int getHeightRow() {
-        return heightRow;
+        return heightRow; // Returns the height of each row
     }
 }

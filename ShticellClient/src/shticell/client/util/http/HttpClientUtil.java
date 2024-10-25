@@ -22,47 +22,46 @@ public class HttpClientUtil {
                     .followRedirects(false)
                     .build();
 
-    public static void setCookieManagerLoggingFacility(Consumer<String> logConsumer) {
-        CookieManager.setLogData(logConsumer);
-    }
-
+    // Method to remove cookies for a specified domain
     public static void removeCookiesOf(String domain) {
         CookieManager.removeCookiesOf(domain);
     }
 
+    // Asynchronously execute an HTTP request using a callback
     public static void runAsync(Request request, Callback callback) {
         Call call = HTTP_CLIENT.newCall(request);
         call.enqueue(callback);
     }
 
+    // Overloaded method to create a request from a URL and execute it
     public static void runAsync(String finalUrl, Callback callback) {
         Request request = new Request.Builder()
                 .url(finalUrl)
                 .build();
 
         Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
-
         call.enqueue(callback);
     }
 
+    // Extracts a SheetDto object from a JSON response
     public static SheetDto extractSheetFromResponseBody(String response) {
         Gson gson = new Gson();
         try {
-            // Parse the JSON response into a SheetDto object
             return gson.fromJson(response, SheetDto.class);
         } catch (JsonSyntaxException e) {
-            // Handle the case where the JSON is not valid
             System.err.println("Failed to parse JSON: " + e.getMessage());
             return null;
         }
     }
 
+    // Shuts down the HTTP client and cleans up resources
     public static void shutdown() {
         System.out.println("Shutting down HTTP CLIENT");
         HTTP_CLIENT.dispatcher().executorService().shutdown();
         HTTP_CLIENT.connectionPool().evictAll();
     }
 
+    // Displays an error alert in the UI
     public static void showAlert(String title, String content) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -70,12 +69,25 @@ public class HttpClientUtil {
             alert.setHeaderText(null);
             alert.setContentText(content);
 
-            // Resize the alert window by setting its width and height
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
-            dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+            dialogPane.setMinHeight(Region.USE_PREF_SIZE);
+            dialogPane.setMinWidth(Region.USE_PREF_SIZE);
 
             alert.showAndWait();
         });
+    }
+
+    // Displays an informational alert in the UI
+    public static void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE);
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);
+
+        alert.showAndWait();
     }
 }

@@ -33,70 +33,79 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class SheetViewMainController {
     @FXML
-    private ActionLineControllerImpl actionLineComponentController;
+    private ActionLineControllerImpl actionLineComponentController; // Controller for action line
     @FXML
-    private SortAndFilterControllerImpl sortAndFilterComponentController;
+    private SortAndFilterControllerImpl sortAndFilterComponentController; // Controller for sorting and filtering
     @FXML
-    private GraphBuilderControllerImpl graphBuilderComponentController;
+    private GraphBuilderControllerImpl graphBuilderComponentController; // Controller for graph building
     @FXML
-    private RangeControllerImpl rangeComponentController;
+    private RangeControllerImpl rangeComponentController; // Controller for range operations
     @FXML
-    private MiscControllerImpl miscComponentController;
+    private MiscControllerImpl miscComponentController; // Controller for miscellaneous functions
     @FXML
-    private SpreadsheetControllerImpl spreadsheetComponentController;
+    private SpreadsheetControllerImpl spreadsheetComponentController; // Controller for spreadsheet operations
     @FXML
-    private DynamicAnalysisControllerImpl dynamicAnalysisComponentController;
+    private DynamicAnalysisControllerImpl dynamicAnalysisComponentController; // Controller for dynamic analysis
 
-    private Scene scene;
-
-    private SkinManager skinManager;
-
-    private SheetHubMainController sheetHubMainController;
-
-    private EditingManager editingManager;
+    private Scene scene; // Scene reference
+    private SkinManager skinManager; // Manages UI skin
+    private SheetHubMainController sheetHubMainController; // Main controller for the sheet hub
+    private EditingManager editingManager; // Manages editing operations
 
     @FXML
-    public void initialize() {
-        UISheetModel uiSheetModel = new UISheetModel();
-        FormulaBuilder formulaBuilder = new FormulaBuilder();
-        skinManager = new SkinManager();
+    public void initialize() { // Initialization method
+        UISheetModel uiSheetModel = new UISheetModel(); // Create UI sheet model
+        FormulaBuilder formulaBuilder = new FormulaBuilder(); // Create formula builder
+        skinManager = new SkinManager(); // Initialize skin manager
+
+        // Set up controllers with spreadsheet controller
         graphBuilderComponentController.setSpreadsheetController(spreadsheetComponentController);
         formulaBuilder.setActionLineController(actionLineComponentController);
         formulaBuilder.setSpreadsheetController(spreadsheetComponentController);
         actionLineComponentController.setSpreadsheetController(spreadsheetComponentController);
         sortAndFilterComponentController.setSpreadsheetController(spreadsheetComponentController);
         rangeComponentController.setSpreadsheetController(spreadsheetComponentController);
-        rangeComponentController.setUiSheetModel(uiSheetModel);
-        spreadsheetComponentController.setActionLineController(actionLineComponentController);
-        spreadsheetComponentController.setRangeController(rangeComponentController);
-        spreadsheetComponentController.setUiSheetModel(uiSheetModel);
-        spreadsheetComponentController.setFormulaBuilder(formulaBuilder);
-        spreadsheetComponentController.setMiscController(miscComponentController);
-        miscComponentController.setSkinManager(skinManager);
-        dynamicAnalysisComponentController.setSpreadsheetController(spreadsheetComponentController);
-        editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,sortAndFilterComponentController,actionLineComponentController,dynamicAnalysisComponentController,graphBuilderComponentController);
-        spreadsheetComponentController.setEditingManager(editingManager);
+
+        rangeComponentController.setUiSheetModel(uiSheetModel); // Link range component to UI model
+        spreadsheetComponentController.setActionLineController(actionLineComponentController); // Link action line to spreadsheet
+        spreadsheetComponentController.setRangeController(rangeComponentController); // Link range controller to spreadsheet
+        spreadsheetComponentController.setUiSheetModel(uiSheetModel); // Assign UI model to spreadsheet
+        spreadsheetComponentController.setFormulaBuilder(formulaBuilder); // Link formula builder to spreadsheet
+        spreadsheetComponentController.setMiscController(miscComponentController); // Link miscellaneous controller to spreadsheet
+        miscComponentController.setSkinManager(skinManager); // Set skin manager in misc controller
+        dynamicAnalysisComponentController.setSpreadsheetController(spreadsheetComponentController); // Link dynamic analysis to spreadsheet
+
+        // Initialize editing manager with various components
+        editingManager = new EditingManagerImpl(spreadsheetComponentController, rangeComponentController,
+                sortAndFilterComponentController, actionLineComponentController, dynamicAnalysisComponentController,
+                graphBuilderComponentController);
+        spreadsheetComponentController.setEditingManager(editingManager); // Set editing manager in spreadsheet controller
     }
-    public SpreadsheetController getSpreadsheetController() {return spreadsheetComponentController;}
+
+    public SpreadsheetController getSpreadsheetController() {
+        return spreadsheetComponentController; // Return the spreadsheet controller
+    }
 
     public void setSheetHubMainController(SheetHubMainController sheetHubMainController) {
-        this.sheetHubMainController = sheetHubMainController;
+        this.sheetHubMainController = sheetHubMainController; // Set the sheet hub main controller
     }
 
     @FXML
-    private void returnToHub(){sheetHubMainController.switchToHubPage();}
+    private void returnToHub() {
+        sheetHubMainController.switchToHubPage(); // Navigate back to the hub page
+    }
 
     public void initSheet(Scene scene, String loggedUserName) {
-        actionLineComponentController.setUsernameLabel(loggedUserName);
-        miscComponentController.setScene(scene);
-        skinManager.applySkin(scene,"Default");
-        actionLineComponentController.startVersionSelectorRefresher();
-   }
+        actionLineComponentController.setUsernameLabel(loggedUserName); // Set username in action line
+        miscComponentController.setScene(scene); // Set the scene in misc controller
+        skinManager.applySkin(scene, "Default"); // Apply default skin to the scene
+        actionLineComponentController.startVersionSelectorRefresher(); // Start refresher for version selector
+    }
 
+    public void setViewMatchToPermission() {
+        String sheetName = spreadsheetComponentController.getCurrentSheet().getSheetName(); // Get current sheet name
 
-    public void setViewMatchToPermission(){
-        String sheetName = spreadsheetComponentController.getCurrentSheet().getSheetName();
-
+        // Build URL for user permissions
         String finalUrl = HttpUrl
                 .parse(Constants.USER_PERMISSON_FOR_SHEET)
                 .newBuilder()
@@ -104,31 +113,30 @@ public class SheetViewMainController {
                 .build()
                 .toString();
 
+        // Run async HTTP call to get permissions
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        PermissionInfoDto permissionInfoDto = new Gson().fromJson(responseBody, PermissionInfoDto.class);
-                        spreadsheetComponentController.setPermission(permissionInfoDto.getPermissionType());
-                        editingManager.enableSheetViewEditing(permissionInfoDto.getPermissionType());
+                    String responseBody = response.body().string(); // Get response body
+                    Platform.runLater(() -> { // Update UI on JavaFX Application Thread
+                        PermissionInfoDto permissionInfoDto = new Gson().fromJson(responseBody, PermissionInfoDto.class); // Deserialize response
+                        spreadsheetComponentController.setPermission(permissionInfoDto.getPermissionType()); // Set permission in spreadsheet
+                        editingManager.enableSheetViewEditing(permissionInfoDto.getPermissionType()); // Enable editing based on permissions
                     });
                 } else {
-                    Platform.runLater(() ->
+                    Platform.runLater(() -> // Show alert on error
                             showAlert("Error", "Failed to sort data: " + response.message())
-
                     );
                 }
             }
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
+                Platform.runLater(() -> // Show alert on failure
                         showAlert("Error", "An error occurred while sorting: " + e.getMessage())
                 );
             }
         });
     }
-
 }

@@ -6,12 +6,11 @@ import spreadsheet.api.ReadOnlySpreadSheet;
 import spreadsheet.cell.api.CellType;
 import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
-import spreadsheet.range.impl.RangeImpl;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+
 
 public enum FunctionParser {
     IDENTITY {
@@ -357,8 +356,8 @@ public enum FunctionParser {
                 throw new IllegalArgumentException("Invalid number of arguments for SUM function. Expected 1, but got " + arguments.size());
             }
 
-            String rangeName = arguments.get(0);
-            Range range = ReadOnlySheet.getRanges().get(rangeName);
+            String rangeName = arguments.getFirst();
+            Range range = ReadOnlySheet.getRange(rangeName);
 
             return new Sum(range);
         }
@@ -370,65 +369,86 @@ public enum FunctionParser {
                 throw new IllegalArgumentException("Invalid number of arguments for AVERAGE function. Expected 1, but got " + arguments.size());
             }
 
-            String rangeName = arguments.get(0);
-            Range range = ReadOnlySheet.getRanges().get(rangeName);
+            String rangeName = arguments.getFirst();
+            Range range = ReadOnlySheet.getRange(rangeName);
 
             return new Average(range);
         }
     };
 
-
+    // Abstract method to parse function arguments into an Expression
+    // Parameters:
+    // - arguments: List of function arguments as strings
+    // - ReadOnlySheet: Reference to the spreadsheet for context
+    // Returns: Parsed Expression object
     abstract public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet);
 
+    // Static method to parse a string input into an Expression object
+    // Handles both function expressions (enclosed in {}) and identity expressions
+    // Parameters:
+    // - input: String to parse (e.g., "{SUM,A1,B1}" or "42")
+    // - ReadOnlySheet: Reference to the spreadsheet for context
+    // Returns: Parsed Expression object
+    // Throws: IllegalArgumentException if function name is unknown
     public static Expression parseExpression(String input, ReadOnlySpreadSheet ReadOnlySheet) {
-
+        // Check if input is a function (enclosed in curly braces)
         if (input.startsWith("{") && input.endsWith("}")) {
-
+            // Extract function content without braces
             String functionContent = input.substring(1, input.length() - 1);
+
+            // Parse function into parts (function name and arguments)
             List<String> topLevelParts = parseMainParts(functionContent);
+
+            // Get function name and convert to uppercase for case-insensitive matching
             String functionName = topLevelParts.getFirst().toUpperCase();
-            topLevelParts.removeFirst();
+            topLevelParts.removeFirst(); // Remove function name from arguments list
 
             try {
-                // Try to get the function parser for the given function name
+                // Attempt to get the corresponding function parser
                 FunctionParser functionParser = FunctionParser.valueOf(functionName);
                 return functionParser.parse(topLevelParts, ReadOnlySheet);
             } catch (IllegalArgumentException e) {
-                // Check if the exception was due to an unknown function name
+                // Check if exception was due to unknown function name
                 if (Arrays.stream(FunctionParser.values()).noneMatch(f -> f.name().equals(functionName))) {
                     throw new IllegalArgumentException("Unknown function: " + functionName);
                 } else {
-                    throw e; // Rethrow if the exception is not due to an unknown function
+                    throw e; // Rethrow if exception was due to other reasons
                 }
             }
         }
-
-        // handle identity expression
+        // If not a function, treat as identity expression (direct value)
         return FunctionParser.IDENTITY.parse(List.of(input), ReadOnlySheet);
     }
 
+    // Helper method to parse function content into main parts while respecting nested functions
+    // Handles nested curly braces and splits only on top-level commas
+    // Parameters:
+    // - input: Function content string to parse (without outer braces)
+    // Returns: List of function parts (function name and arguments)
     private static List<String> parseMainParts(String input) {
         List<String> parts = new ArrayList<>();
         StringBuilder buffer = new StringBuilder();
         Stack<Character> stack = new Stack<>();
 
+        // Iterate through each character
         for (char c : input.toCharArray()) {
+            // Track nested braces using stack
             if (c == '{')
                 stack.push(c);
             else if (c == '}') {
                 stack.pop();
             }
 
+            // Split on commas only at top level (when stack is empty)
             if (c == ',' && stack.isEmpty()) {
-                // If we are at a comma and the stack is empty, it's a separator for top-level parts
                 parts.add(buffer.toString());
-                buffer.setLength(0); // Clear the buffer for the next part
+                buffer.setLength(0); // Reset buffer for next part
             } else {
                 buffer.append(c);
             }
         }
 
-        // Add the last part
+        // Add final part if buffer not empty
         if (!buffer.isEmpty()) {
             parts.add(buffer.toString());
         }

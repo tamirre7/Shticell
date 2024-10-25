@@ -11,14 +11,13 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-
 import javafx.scene.layout.*;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
-
+import shticell.client.util.Constants;
 
 import java.util.*;
 
-
+// Manages UI components and visual representation of a spreadsheet
 public class UISheetModel {
     private GridPane gridPane;
     private SpreadsheetController spreadSheetController;
@@ -26,10 +25,18 @@ public class UISheetModel {
     private String lastSelectedCell = null;
     private Set<String> currentlyHighlightedCells = new HashSet<>();
 
-    public void modelSetUp(GridPane gridPane, SpreadsheetController spreadSheetController) {this.gridPane = gridPane; this.spreadSheetController = spreadSheetController;}
+    // Initializes the model with grid and controller components
+    public void modelSetUp(GridPane gridPane, SpreadsheetController spreadSheetController) {
+        this.gridPane = gridPane;
+        this.spreadSheetController = spreadSheetController;
+    }
 
-    public Label getCellLabel(String label) {return cellLabels.get(label);}
+    // Returns the Label component for a given cell identifier
+    public Label getCellLabel(String label) {
+        return cellLabels.get(label);
+    }
 
+    // Creates the grid cells including row and column headers
     public void createCells(int numRows, int numCols) {
         for (int col = 0; col <= numCols; col++) {
             for (int row = 0; row <= numRows; row++) {
@@ -50,6 +57,7 @@ public class UISheetModel {
         }
     }
 
+    // Configures individual cell properties and event handlers
     private void setupCell(Label cellLabel, int col, int row) {
         cellLabel.getStyleClass().add("cell");
         if (col == 0) {
@@ -75,34 +83,39 @@ public class UISheetModel {
         }
     }
 
-    public void applyStyle(Label cellLabel, String cellId,String style) {
+    // Applies custom CSS style to a cell
+    public void applyStyle(Label cellLabel, String cellId, String style) {
         if (style != null) {
             cellLabel.setStyle(style);
         }
     }
 
-    public void clearCells(){gridPane.getChildren().clear();}
-
-    public String toRgbString(Color color) {
-        return String.format("#%02X%02X%02X",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255));
+    // Removes all cells from the grid
+    public void clearCells() {
+        gridPane.getChildren().clear();
     }
 
+    // Converts a Color object to RGB string format (#RRGGBB)
+    public String toRgbString(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * Constants.RGB_MAX_VALUE),
+                (int) (color.getGreen() * Constants.RGB_MAX_VALUE),
+                (int) (color.getBlue() * Constants.RGB_MAX_VALUE));
+    }
+
+    // Adds a pulsing animation effect to a cell
     public void addPulsingEffect(Node cell) {
-        ScaleTransition pulse = new ScaleTransition(Duration.seconds(0.5), cell); // Shorter duration for a quicker pulse
+        ScaleTransition pulse = new ScaleTransition(Duration.seconds(0.5), cell);
         pulse.setFromX(1.0);
         pulse.setFromY(1.0);
-        pulse.setToX(1.1);  // Slightly larger increase in size
-        pulse.setToY(1.1);  // Ensure both axes scale together
+        pulse.setToX(1.1);
+        pulse.setToY(1.1);
         pulse.setCycleCount(4);
-        pulse.setAutoReverse(true);  // Creates the pulsing effect
-
+        pulse.setAutoReverse(true);
         pulse.play();
     }
 
-
+    // Animates the initial appearance of the spreadsheet
     public void animateSheetAppearance() {
         FadeTransition fadeTransition = new FadeTransition(Duration.seconds(1), gridPane);
         fadeTransition.setFromValue(0.0);
@@ -118,11 +131,12 @@ public class UISheetModel {
         parallelTransition.play();
     }
 
-    public void setupGridDimensions(int numRows, int numCols,int rowHeight, int colWidth) {
+    // Sets up grid dimensions and constraints
+    public void setupGridDimensions(int numRows, int numCols, int rowHeight, int colWidth) {
         gridPane.getColumnConstraints().clear();
         gridPane.getRowConstraints().clear();
 
-        ColumnConstraints headerColumn = new ColumnConstraints(30);
+        ColumnConstraints headerColumn = new ColumnConstraints(Constants.ROW_COL_INIT_CONSTRAINT);
         headerColumn.setHgrow(Priority.NEVER);
         gridPane.getColumnConstraints().add(headerColumn);
 
@@ -132,17 +146,18 @@ public class UISheetModel {
             gridPane.getColumnConstraints().add(column);
         }
 
-        RowConstraints headerRow = new RowConstraints(30);
+        RowConstraints headerRow = new RowConstraints(Constants.ROW_COL_INIT_CONSTRAINT);
         headerRow.setVgrow(Priority.NEVER);
         gridPane.getRowConstraints().add(headerRow);
 
         for (int row = 0; row <= numRows; row++) {
-            RowConstraints rowConstraint = new RowConstraints(rowHeight); // Default height
+            RowConstraints rowConstraint = new RowConstraints(rowHeight);
             rowConstraint.setVgrow(Priority.SOMETIMES);
             gridPane.getRowConstraints().add(rowConstraint);
         }
     }
 
+    // Removes highlights from previously selected cell dependencies
     public void clearPreviousHighlights() {
         if (lastSelectedCell != null) {
             CellDto lastCellDto = spreadSheetController.getCurrentSheet().getCells().get(lastSelectedCell);
@@ -153,7 +168,7 @@ public class UISheetModel {
         }
     }
 
-
+    // Removes highlighting from specified cells
     private void clearHighlights(List<String> cellIds) {
         for (String cellId : cellIds) {
             Label cellLabel = cellLabels.get(cellId);
@@ -163,13 +178,14 @@ public class UISheetModel {
         }
     }
 
-
+    // Highlights cells that depend on or influence the selected cell
     public void highlightDependenciesAndInfluences(CellDto cellDto) {
         lastSelectedCell = cellDto.getCellId();
-        highlightCells(cellDto.getDependencies(), "lightblue");
-        highlightCells(cellDto.getInfluences(), "lightgreen");
+        highlightCells(cellDto.getDependencies(), Constants.DEPENDENCIES_HIGHLIGHT_COLOR);
+        highlightCells(cellDto.getInfluences(), Constants.INFLUENCE_HIGHLIGHT_COLOR);
     }
 
+    // Shows dialog for resizing rows or columns
     public void showResizeDialog(int index, boolean isColumn) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Resize " + (isColumn ? "Column" : "Row"));
@@ -191,30 +207,33 @@ public class UISheetModel {
         });
     }
 
+    // Applies highlighting to specified cells
     private void highlightCells(List<String> cellIds, String color) {
         for (String cellId : cellIds) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {
                 String currentStyle = spreadSheetController.getCurrentSheet().getCells().get(cellId).getStyle();
-                String newStyle = currentStyle + "-fx-background-color: " + color + ";";
-                cellLabel.setStyle(newStyle); }
+                String newStyle = currentStyle + Constants.BACKGROUND_COLOR + color + ";";
+                cellLabel.setStyle(newStyle);
+            }
         }
     }
 
+    // Shows error alert dialog
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
 
-        // Resize the alert window by setting its width and height
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setMinHeight(Region.USE_PREF_SIZE); // Adjust height to fit content
-        dialogPane.setMinWidth(Region.USE_PREF_SIZE);  // Adjust width to fit content
+        dialogPane.setMinHeight(Region.USE_PREF_SIZE);
+        dialogPane.setMinWidth(Region.USE_PREF_SIZE);
 
         alert.showAndWait();
     }
 
+    // Highlights a range of cells between two points
     public void highlightRange(String topLeft, String bottomRight) {
         clearPreviousRangeHighlight();
 
@@ -228,10 +247,9 @@ public class UISheetModel {
                 String cellId = "" + (char)('A' + col - 1) + row;
                 Label cellLabel = cellLabels.get(cellId);
                 if (cellLabel != null) {
-                    // Check if the cell is already highlighted
                     if (!spreadSheetController.getCurrentSheet().getCells().get(cellId).getStyle().contains("-fx-border-color: blue; -fx-border-width: 1px; ")) {
                         String currentStyle = spreadSheetController.getCurrentSheet().getCells().get(cellId).getStyle();
-                        String newStyle = currentStyle + "-fx-border-color: blue; -fx-border-width: 1px; ";
+                        String newStyle = currentStyle + Constants.RANGE_HIGHLIGHT_STYLE;
                         cellLabel.setStyle(newStyle);
                         currentlyHighlightedCells.add(cellId);
                     }
@@ -240,12 +258,13 @@ public class UISheetModel {
         }
     }
 
+    // Clears highlighting from previously highlighted range
     public void clearPreviousRangeHighlight() {
         for (String cellId : currentlyHighlightedCells) {
             Label cellLabel = cellLabels.get(cellId);
             if (cellLabel != null) {
                 String style = spreadSheetController.getCurrentSheet().getCells().get(cellId).getStyle();
-                style = style.replaceAll("-fx-border-color: blue; -fx-border-width: 1px; ", "");
+                style = style.replaceAll(Constants.RANGE_HIGHLIGHT_STYLE, "");
                 cellLabel.setStyle(style);
             }
         }

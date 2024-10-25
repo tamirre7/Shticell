@@ -29,6 +29,7 @@ public class EditingManagerImpl implements EditingManager {
 
 
     @Override
+    // Deciding which parts of the ui to enable based on the permission
     public void enableSheetViewEditing(Permission permission) {
         disableFullEditing();
         switch (permission) {
@@ -42,6 +43,7 @@ public class EditingManagerImpl implements EditingManager {
         }
     }
 
+    // Enabling all th sheet UI parts
     private void enableFullEditing() {
         spreadsheetController.enableCellClick();
         actionLineController.enableEditing();
@@ -51,6 +53,7 @@ public class EditingManagerImpl implements EditingManager {
         graphBuilderController.enableGraphBuild();
     }
 
+    // Enabling read only view
     private void enableReaderView() {
         spreadsheetController.enableCellClick();
         actionLineController.enableVersionView();
@@ -59,12 +62,16 @@ public class EditingManagerImpl implements EditingManager {
         dynamicAnalysisController.enableDynamicAnalysis();
         graphBuilderController.enableGraphBuild();
     }
+
     @Override
+    // Enabling read only view when viewing a sheet by an older version
     public void enableVersionViewRead(){
         disableFullEditing();
         enableReaderView();
     }
+
     @Override
+    // Enabling specific parts when viewing a sheet in a specific state (e.g. after sorting or filtering)
     public void enableSheetStateView(){
         disableFullEditing();
         spreadsheetController.enableCellClick();
@@ -75,7 +82,7 @@ public class EditingManagerImpl implements EditingManager {
         graphBuilderController.enableGraphBuild();
     }
 
-
+    // Disabling all th sheet UI parts
     private void disableFullEditing() {
         spreadsheetController.disableCellClick();
         actionLineController.disableEditing();

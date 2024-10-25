@@ -76,6 +76,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         });
     }
 
+    // Fetches permission for the specified sheet asynchronously.
     private void fetchPermissionForSheet(String sheetName, Consumer<String> permissionConsumer) {
         String finalUrl = HttpUrl
                 .parse(Constants.USER_PERMISSON_FOR_SHEET)
@@ -109,6 +110,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         });
     }
 
+    // Updates the permission for the specified sheet.
     @Override
     public void updateSheetPermission(String sheetName, Permission newPermission) {
         Platform.runLater(() -> {
@@ -121,7 +123,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         });
     }
 
-
+    // Handles the selection of a sheet and updates related components.
     @Override
     public void handleSheetSelection(SheetPermissionDtoProperty selectedSheet) {
         if (selectedSheet != null) {
@@ -133,6 +135,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         }
     }
 
+    // Updates the table with the list of available sheets.
     private void updateTable(List<SheetPermissionDto> availableSheets) {
         Platform.runLater(() -> {
             // Save the currently selected sheet (if any)
@@ -156,6 +159,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         });
     }
 
+    // Starts the table refresher to periodically update the sheet list.
     public void startTableRefresher() {
         stopTableRefresher();
 
@@ -164,6 +168,7 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         timer.schedule(tableRefresher, REFRESH_RATE, REFRESH_RATE);
     }
 
+    // Stops the table refresher.
     public void stopTableRefresher() {
         if (tableRefresher != null) {
             tableRefresher.setActive(false);
@@ -174,14 +179,17 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         }
     }
 
+    // Sets the spreadsheet controller for managing sheets.
     public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;
     }
 
+    // Sets the permission table controller for managing permissions.
     public void setPermissionTableController(PermissionTableController permissionTableController) {
         this.permissionTableController = permissionTableController;
     }
 
+    // Retrieves the names of available sheets excluding those uploaded by the logged-in user.
     @Override
     public List<String> getAvailableSheetsNames() {
         return sheetList.stream()
@@ -190,11 +198,15 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
                 .collect(Collectors.toList());
     }
 
+    // Checks if a sheet is currently selected.
     @Override
     public boolean isSheetSelected() {
         return spreadsheetController.getCurrentSheet() != null;
     }
 
+    // Sets the login controller for managing user sessions.
     @Override
-    public void setLoginController(LoginController loginController){this.loginController = loginController;}
+    public void setLoginController(LoginController loginController) {
+        this.loginController = loginController;
+    }
 }

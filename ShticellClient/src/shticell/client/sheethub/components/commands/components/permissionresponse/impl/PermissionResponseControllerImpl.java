@@ -32,81 +32,83 @@ import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class PermissionResponseControllerImpl implements PermissionResponseController {
 
-    private CommandsMenuController commandsMenuController;
-    private AvailableSheetsController availableSheetsController;
+    private CommandsMenuController commandsMenuController; // Controller for commands menu
+    private AvailableSheetsController availableSheetsController; // Controller for available sheets
 
-    @FXML private TableView<PermissionRequestDtoProperty> requestTableView;
-    @FXML private TextArea messageArea;
-    @FXML private Button approveButton;
-    @FXML private Button denyButton;
+    @FXML private TableView<PermissionRequestDtoProperty> requestTableView; // Table for displaying requests
+    @FXML private TextArea messageArea; // Area for showing messages related to requests
+    @FXML private Button approveButton; // Button to approve requests
+    @FXML private Button denyButton; // Button to deny requests
     @FXML private Button closeButton;
 
-    private RequestRefresher requestRefresher;
-    private Timer timer;
+    private RequestRefresher requestRefresher; // Refresher for updating requests
+    private Timer timer; // Timer for scheduling the refresher
 
-    private ObservableList<PermissionRequestDtoProperty> requests = FXCollections.observableArrayList();
+    private ObservableList<PermissionRequestDtoProperty> requests = FXCollections.observableArrayList(); // List of requests
 
     @FXML
     public void initialize() {
-        requestTableView.setItems(requests);
+        requestTableView.setItems(requests); // Set items in the table view
 
+        // Listener for selection changes in the table
         requestTableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            messageArea.clear();
-            if (newSelection != null && newSelection.getMessage()!=null) {
-                messageArea.setText(newSelection.getMessage());
+            messageArea.clear(); // Clear message area
+            if (newSelection != null && newSelection.getMessage() != null) {
+                messageArea.setText(newSelection.getMessage()); // Set message for selected request
             }
         });
 
+        // Disable buttons if no item is selected
         approveButton.disableProperty().bind(requestTableView.getSelectionModel().selectedItemProperty().isNull());
         denyButton.disableProperty().bind(requestTableView.getSelectionModel().selectedItemProperty().isNull());
     }
 
     @FXML
-    private void handleDeny(ActionEvent event){
-        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
+    private void handleDeny(ActionEvent event) {
+        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem(); // Get selected request
         if (selectedRequest != null) {
-            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(),false);
-            sendResponseMessage(response);
-            requests.remove(selectedRequest);
+            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(), false); // Create denial response
+            sendResponseMessage(response); // Send response message
+            requests.remove(selectedRequest); // Remove request from list
         }
     }
 
     @FXML
-    private void handleApprove(ActionEvent event){
-        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem();
+    private void handleApprove(ActionEvent event) {
+        PermissionRequestDtoProperty selectedRequest = requestTableView.getSelectionModel().getSelectedItem(); // Get selected request
         if (selectedRequest != null) {
-            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(),true);
-            sendResponseMessage(response);
-            requests.remove(selectedRequest);
+            PermissionResponseDto response = new PermissionResponseDto(selectedRequest.toDto(), true); // Create approval response
+            sendResponseMessage(response); // Send response message
+            requests.remove(selectedRequest); // Remove request from list
 
+            // Update the sheet permission for the approved request
             availableSheetsController.updateSheetPermission(selectedRequest.getSheetName(), selectedRequest.getPermissionType());
         }
     }
 
     @FXML
-    private void handleClose(ActionEvent event){
-        commandsMenuController.permissionReturnToHub();
+    private void handleClose(ActionEvent event) {
+        commandsMenuController.permissionReturnToHub(); // Return to the commands menu
     }
 
-    private void sendResponseMessage(PermissionResponseDto responseDto){
-        Gson gson = new Gson();
-        String responseJson = gson.toJson(responseDto);
+    private void sendResponseMessage(PermissionResponseDto responseDto) {
+        Gson gson = new Gson(); // Gson instance for JSON conversion
+        String responseJson = gson.toJson(responseDto); // Convert response DTO to JSON
 
-
-        RequestBody requestBody = RequestBody.create(responseJson, MediaType.parse("application/json"));
+        RequestBody requestBody = RequestBody.create(responseJson, MediaType.parse("application/json")); // Create request body
 
         Request request = new Request.Builder()
-                .url(Constants.PERMISSION_RESPONSE)
-                .post(requestBody)
+                .url(Constants.PERMISSION_RESPONSE) // Set request URL
+                .post(requestBody) // Set request method to POST
                 .build();
 
+        // Execute the request asynchronously
         HttpClientUtil.runAsync(request, new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
                     Platform.runLater(() ->
                             showAlert("Error", "Failed to sort data: " + response.message())
-
                     );
                 }
             }
@@ -120,7 +122,7 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
         });
     }
 
-    private void updateRequestTable(List<PermissionRequestDto> newRequests){
+    private void updateRequestTable(List<PermissionRequestDto> newRequests) {
         Platform.runLater(() -> {
             // Create a set for easy lookup of existing request IDs
             Set<Integer> existingRequestIds = requests.stream()
@@ -142,33 +144,33 @@ public class PermissionResponseControllerImpl implements PermissionResponseContr
     }
 
     @Override
-    public void startRequestRefresher()
-    {
-        stopRequestRefresher();
+    public void startRequestRefresher() {
+        stopRequestRefresher(); // Stop any existing refresher
 
-        timer = new Timer();
-        requestRefresher = new RequestRefresher(this::updateRequestTable);
-        timer.schedule(requestRefresher, REFRESH_RATE, REFRESH_RATE);
-
+        timer = new Timer(); // Create a new timer
+        requestRefresher = new RequestRefresher(this::updateRequestTable); // Create a new refresher
+        timer.schedule(requestRefresher, REFRESH_RATE, REFRESH_RATE); // Schedule the refresher
     }
+
     @Override
-    public void stopRequestRefresher(){
-        if(requestRefresher != null)
-            requestRefresher.setActive(false);
+    public void stopRequestRefresher() {
+        if (requestRefresher != null)
+            requestRefresher.setActive(false); // Deactivate the refresher
 
         if (timer != null) {
-            timer.cancel();
-            timer.purge();
+            timer.cancel(); // Cancel the timer
+            timer.purge(); // Purge the timer
         }
-
     }
+
     @Override
     public void setCommandsMenuController(CommandsMenuController commandsMenuController) {
-        this.commandsMenuController = commandsMenuController;
+        this.commandsMenuController = commandsMenuController; // Set the commands menu controller
     }
+
     @Override
     public void setAvailableSheetsController(AvailableSheetsController availableSheetsController) {
-        this.availableSheetsController = availableSheetsController;
+        this.availableSheetsController = availableSheetsController; // Set the available sheets controller
     }
 
 }

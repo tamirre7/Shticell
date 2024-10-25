@@ -7,7 +7,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
+/**
+ * Property class that encapsulates data from the PermissionInfoDto DTO.
+ * Provides JavaFX properties for username,permission type,sheet name and the request status,
+ * enabling easy binding to UI components in a JavaFX application.
+ */
 public class PermissionInfoDtoProperty {
     private final StringProperty username;
     private final ObjectProperty<Permission> permissionType;

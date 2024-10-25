@@ -7,7 +7,11 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-
+/**
+ * Property class that encapsulates data from the SheetPermissionDto DTO.
+ * Provides JavaFX properties for sheet name, uploader, size, and user permissions,
+ * enabling easy binding to UI components in a JavaFX application.
+ */
 public class SheetPermissionDtoProperty {
     private final StringProperty sheetName;
     private final StringProperty uploadedBy;

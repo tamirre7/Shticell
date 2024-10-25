@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
+// TimerTask implementation that periodically fetches the updated list of users
 public class UserListRefresher extends TimerTask {
 
     private final Consumer<String> httpRequestLoggerConsumer;
@@ -21,7 +22,7 @@ public class UserListRefresher extends TimerTask {
     private int requestNumber;
     private final BooleanProperty shouldUpdate;
 
-
+    // Initializes the refresher with necessary callbacks
     public UserListRefresher(BooleanProperty shouldUpdate, Consumer<String> httpRequestLoggerConsumer, Consumer<List<String>> usersListConsumer) {
         this.shouldUpdate = shouldUpdate;
         this.httpRequestLoggerConsumer = httpRequestLoggerConsumer;
@@ -29,9 +30,9 @@ public class UserListRefresher extends TimerTask {
         requestNumber = 0;
     }
 
+    // Executes the refresh operation to fetch updated user list
     @Override
     public void run() {
-
         if (!shouldUpdate.get()) {
             return;
         }
@@ -43,21 +44,20 @@ public class UserListRefresher extends TimerTask {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 httpRequestLoggerConsumer.accept("Users Request # " + finalRequestNumber + " | Ended with failure...");
-
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) { String jsonArrayOfUsersNames = response.body().string();
+                if (response.isSuccessful()) {
+                    String jsonArrayOfUsersNames = response.body().string();
                     httpRequestLoggerConsumer.accept("Users Request # " + finalRequestNumber + " | Response: " + jsonArrayOfUsersNames);
                     Gson gson = new Gson();
                     List<String> usersNames = gson.fromJson(jsonArrayOfUsersNames, new TypeToken<List<String>>(){}.getType());
-                    usersListConsumer.accept(usersNames);}
-                else
-                {System.out.println("Users Request # " + finalRequestNumber + " | Ended with failure...");}
+                    usersListConsumer.accept(usersNames);
+                } else {
+                    System.out.println("Users Request # " + finalRequestNumber + " | Ended with failure...");
+                }
             }
-
         });
     }
 }
-

@@ -64,7 +64,53 @@ public class Constants {
     //chat resources
 
     public final static String USERS_LIST = FULL_SERVER_PATH + CHAT_PATH + "/userslist";
-    public final static String SEND_CHAT_LINE = FULL_SERVER_PATH + CHAT_PATH + "sendChat";
+    public final static String SEND_CHAT_LINE = FULL_SERVER_PATH + CHAT_PATH + "/sendChat";
     public final static String CHAT_LINES_LIST = FULL_SERVER_PATH + CHAT_PATH +  "/chatlines";
 
+
+    //
+    public final static String STYLES_FOLDER_LOCATION = "/shticell/client/sheetpanel/skinmanager/styles/";
+    // Dimensions for the Hub page
+    public static final double HUB_PAGE_WIDTH = 1000;
+    public static final double HUB_PAGE_HEIGHT = 600;
+
+    // Dimensions for the Login page
+    public static final double LOGIN_PAGE_WIDTH = 330;
+    public static final double LOGIN_PAGE_HEIGHT = 270;
+
+    // Dimensions for the Sheet view page
+    public static final double SHEET_VIEW_PAGE_WIDTH = 1200;
+    public static final double SHEET_VIEW_PAGE_HEIGHT = 675;
+
+    // Dimensions for Permission request popup
+    public static final double PERMISSION_REQUEST_POPUP_WIDTH = 500;
+    public static final double PERMISSION_REQUEST_POPUP_HEIGHT = 400;
+
+    // Dimensions for Permission response popup
+    public static final double PERMISSION_RESPONSE_POPUP_WIDTH = 700;
+    public static final double PERMISSION_RESPONSE_POPUP_HEIGHT = 550;
+
+    // Dimensions for Chat popup
+    public static final double CHAT_POPUP_WIDTH = 1000;
+    public static final double CHAT_POPUP_HEIGHT = 550;
+
+    // Sheet grid pane
+    public static final double SHEET_GRID_PANE_WIDTH = 800;
+    public static final double SHEET_GRID_PANE_HEIGHT = 600;
+
+    //alignment
+    public final static String ALIGNMENT_LEFT = "-fx-alignment: center-left;";
+    public final static String ALIGNMENT_RIGHT = "-fx-alignment: center-right;";
+    public final static String ALIGNMENT_CENTER = "-fx-alignment: center;";
+
+    // Styling
+    public final static String TEXT_COLOR ="-fx-text-fill: ";
+    public final static String BACKGROUND_COLOR ="-fx-background-color: ";
+
+    // UI sheet model
+    public final static int RGB_MAX_VALUE = 255;
+    public final static int ROW_COL_INIT_CONSTRAINT = 30;
+    public final static String DEPENDENCIES_HIGHLIGHT_COLOR = "-ligntblue";
+    public final static String INFLUENCE_HIGHLIGHT_COLOR = "lightgreen";
+    public final static String RANGE_HIGHLIGHT_STYLE = "-fx-border-color: blue; -fx-border-width: 1px; ";
 }

@@ -22,29 +22,33 @@ public class GraphDialogControllerImpl implements GraphDialogController {
 
     private boolean isConfirmed = false;
 
-
+    @Override
     public String getXTopCell() {
         return xTopCellField.getText();
     }
 
+    @Override
     public String getXBottomCell() {
         return xBottomCellField.getText();
     }
 
+    @Override
     public String getYTopCell() {
         return yTopCellField.getText();
     }
 
+    @Override
     public String getYBottomCell() {
         return yBottomCellField.getText();
     }
 
-    public void CloseDialog(ActionEvent actionEvent) {
+    @Override
+    public void CloseDialog() {
         isConfirmed = true;
         Stage stage = (Stage) xTopCellField.getScene().getWindow();
         stage.close();
     }
-
+    @Override
     public boolean isConfirmed() {
         return isConfirmed;
     }

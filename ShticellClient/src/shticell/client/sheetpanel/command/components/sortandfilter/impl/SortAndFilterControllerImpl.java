@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
+// Implements sorting and filtering functionality for spreadsheet data
 public class SortAndFilterControllerImpl implements SortAndFilterController {
     @FXML
     private Button sortButton;
@@ -35,12 +36,13 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
     RangeDto sortOrFilterRange;
     SpreadsheetController spreadsheetController;
 
-
     @Override
     public void handleFilter() {
+        // Show dialog to get range and columns for filtering
         sortAndFilterDialog();
         if (!isSortOrFilterInputValid()) {
-            return;}
+            return;
+        }
 
         Map<String, List<String>> selectedValuesForColumns = collectSelectedFilterValues();
 
@@ -49,30 +51,29 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
     }
 
+    // Validate that required range and column data is present
     private boolean isSortOrFilterInputValid() {
         return sortOrFilterRange != null && columnsToSortOrFilter != null && !columnsToSortOrFilter.isEmpty();
     }
 
+    // Collect filter values for each selected column
     private Map<String, List<String>> collectSelectedFilterValues() {
         Map<String, List<String>> selectedValuesForColumns = new HashMap<>();
-
         for (String column : columnsToSortOrFilter) {
             List<String> uniqueValues = getUniqueValuesForColumn(sortOrFilterRange, column);
-
             if (uniqueValues.isEmpty()) {
                 showAlert("Error", "No values found in the selected column: " + column);
-                continue;
-            }
+                continue;}
 
             List<String> selectedValues = showFilterDialogForColumn(column, uniqueValues);
             if (selectedValues != null) {
                 selectedValuesForColumns.put(column, selectedValues);
             }
         }
-
         return selectedValuesForColumns;
     }
 
+    // Create dialog with checkboxes for selecting filter values
     private List<String> showFilterDialogForColumn(String column, List<String> uniqueValues) {
         Dialog<List<String>> filterDialog = new Dialog<>();
         filterDialog.setTitle("Filter Criteria for Column " + column);
@@ -104,13 +105,13 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         return selectedValuesResult.orElse(null);
     }
 
+    // Prepare and send filter request to server
     private void sendFilterRequest(Map<String, List<String>> selectedValuesForColumns) {
         DimensionDto sheetDimensions = spreadsheetController.getCurrentSheet().getSheetDimension();
-        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns, sheetDimensions,spreadsheetController.getCurrentSheet().getSheetName());
+        DataToFilterDto dataToFilterDto = new DataToFilterDto(sortOrFilterRange, selectedValuesForColumns, sheetDimensions, spreadsheetController.getCurrentSheet().getSheetName());
 
-       Gson gson = new Gson();
-       String dataToFilterJson = gson.toJson(dataToFilterDto);
-
+        Gson gson = new Gson();
+        String dataToFilterJson = gson.toJson(dataToFilterDto);
 
         RequestBody requestBody = RequestBody.create(dataToFilterJson, MediaType.parse("application/json"));
 
@@ -142,18 +143,18 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
                 );
             }
         });
-
     }
 
-
+    // Reset sheet to original state without sorting or filtering
     @Override
     public void handleResetSortFilter() {
         spreadsheetController.displayOriginalSheet(false);
-
     }
 
+    // Prepare and send sort request
     @Override
     public void handleSort() {
+        // Show dialog to get range and columns for sorting
         sortAndFilterDialog();
 
         if (!isSortOrFilterInputValid()) {
@@ -165,7 +166,6 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
         Gson gson = new Gson();
         String dataToSortJson = gson.toJson(dataToSort);
-
 
         RequestBody requestBody = RequestBody.create(dataToSortJson, MediaType.parse("application/json"));
 
@@ -197,10 +197,9 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
                 );
             }
         });
-
-
     }
 
+    // Get unique values from a specific column within the range
     private List<String> getUniqueValuesForColumn(RangeDto range, String column) {
         Set<String> uniqueValues = new HashSet<>();
         SheetDto sheet = spreadsheetController.getCurrentSheet();
@@ -218,10 +217,12 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         return new ArrayList<>(uniqueValues);
     }
 
+    // Create cell identifier in format 'A1', 'B2', etc.
     private String createCellId(int row, int col) {
         return String.valueOf((char) ('A' + col)) + (row);
     }
 
+    // Extract row number from cell reference (e.g., 'A1' -> 1)
     private static int extractRowFromCell(String cell) {
         Pattern pattern = Pattern.compile("[A-Z](\\d+)");
         Matcher matcher = pattern.matcher(cell);
@@ -233,19 +234,17 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         }
     }
 
-
+    // Get range selection from user through dialog
     private Optional<RangeDto> getRangeFromUser(String rangeName) {
-        // Prompt for top-left cell identifier
         Optional<String> topLeftResult = promptForCell("Top-Left Cell", "Enter top-left cell (example: A1):");
         if (topLeftResult.isEmpty()) {
-            return Optional.empty(); // User canceled, do nothing
+            return Optional.empty();
         }
         String StrTopLeft = topLeftResult.get().toUpperCase();
 
-        // Prompt for bottom-right cell identifier
         Optional<String> bottomRightResult = promptForCell("Bottom-Right Cell", "Enter bottom-right cell (example: B2):");
         if (bottomRightResult.isEmpty()) {
-            return Optional.empty(); // User canceled, do nothing
+            return Optional.empty();
         }
         String StrBottomRight = bottomRightResult.get().toUpperCase();
 
@@ -253,7 +252,7 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         return Optional.of(range);
     }
 
-
+    // Show dialog for cell selection
     private Optional<String> promptForCell(String title, String headerText) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(title);
@@ -268,34 +267,29 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         return result;
     }
 
+    // Create UI for column selection
     private List<String> getColumnsFromUser(char leftCol, char rightCol) {
         int numOfColumns = rightCol - leftCol + 1;
-
-        // Create a ComboBox for column selection
         ComboBox<String> columnComboBox = new ComboBox<>();
         for (int i = 0; i < numOfColumns; i++) {
             String columnName = String.valueOf((char) (leftCol + i));
             columnComboBox.getItems().add(columnName);
         }
         columnComboBox.setPromptText("Select a column");
-
-        // Create a ListView to display selected columns
         ListView<String> selectedColumnsListView = new ListView<>();
         ObservableList<String> selectedColumns = FXCollections.observableArrayList();
         selectedColumnsListView.setItems(selectedColumns);
 
-        // Create Add/Remove buttons
         Button addButton = createAddButton(columnComboBox, selectedColumns);
         Button removeButton = createRemoveButton(selectedColumnsListView, selectedColumns);
 
-        // Create and show dialog
         return showColumnDialog(columnComboBox, addButton, selectedColumnsListView, removeButton);
     }
 
-
+    // Create button for adding selected columns
     private Button createAddButton(ComboBox<String> columnComboBox, ObservableList<String> selectedColumns) {
         Button addButton = new Button("Add");
-        addButton.setDisable(true); // Initially disable the button
+        addButton.setDisable(true);
 
         columnComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             addButton.setDisable(newVal == null || selectedColumns.contains(newVal));
@@ -306,15 +300,16 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             if (selectedColumn != null && !selectedColumns.contains(selectedColumn)) {
                 selectedColumns.add(selectedColumn);
             }
-            columnComboBox.setValue(null); // Reset the ComboBox for the next selection
+            columnComboBox.setValue(null);
         });
 
         return addButton;
     }
 
+    // Create button for removing selected columns
     private Button createRemoveButton(ListView<String> selectedColumnsListView, ObservableList<String> selectedColumns) {
         Button removeButton = new Button("Remove Selected");
-        removeButton.setDisable(true);  // Initially disable the button
+        removeButton.setDisable(true);
 
         selectedColumnsListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             removeButton.setDisable(newVal == null);
@@ -330,25 +325,22 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         return removeButton;
     }
 
+    // Show dialog for column selection
     private List<String> showColumnDialog(ComboBox<String> columnComboBox, Button addButton, ListView<String> selectedColumnsListView, Button removeButton) {
         Dialog<List<String>> columnDialog = new Dialog<>();
         columnDialog.getDialogPane().setPrefSize(300, 500);
         columnDialog.setTitle("Select Columns");
         columnDialog.setHeaderText("Select columns (in order):");
 
-        // Set dialog buttons
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         columnDialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
 
-        // Layout for the ComboBox, ListView, and buttons
         VBox layout = new VBox(10);
         layout.getChildren().addAll(new Label("Choose a column and click 'Add':"), columnComboBox, addButton, new Label("Selected columns:"), selectedColumnsListView, removeButton);
         layout.setPadding(new Insets(10));
 
-        // Set content of the dialog
         columnDialog.getDialogPane().setContent(layout);
 
-        // Convert the result to the list of selected columns
         columnDialog.setResultConverter(dialogButton -> {
             if (dialogButton == okButtonType) {
                 return new ArrayList<>(selectedColumnsListView.getItems());
@@ -356,12 +348,11 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
             return null;
         });
 
-        // Show the dialog and capture the result
         Optional<List<String>> result = columnDialog.showAndWait();
         return result.orElse(Collections.emptyList());
     }
 
-
+    // Show dialog for selecting range and columns
     private void sortAndFilterDialog() {
         Optional<RangeDto> rangeResult = getRangeFromUser("sortAndFilterRange");
         if (rangeResult.isEmpty()) {
@@ -376,13 +367,13 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
 
         List<String> columns = getColumnsFromUser(leftCol, rightCol);
         if (columns.isEmpty()) {
-            return; // User canceled or no columns selected
+            return;
         }
 
         this.columnsToSortOrFilter = columns;
     }
 
-
+    // Enables the sort and filter functionalities by enabling the sort, filter, and reset buttons.
     @Override
     public void enableSortAndFilter() {
         sortButton.setDisable(false);
@@ -390,21 +381,22 @@ public class SortAndFilterControllerImpl implements SortAndFilterController {
         resetButton.setDisable(false);
     }
 
+    // Enables only the reset functionality by disabling sort and filter, but keeping the reset button enabled.
     @Override
-    public void enableResetOnly(){
+    public void enableResetOnly() {
         disableSortAndFilter();
         resetButton.setDisable(false);
     }
 
+    // Disables all sort, filter, and reset functionalities by disabling the corresponding buttons.
     @Override
     public void disableSortAndFilter() {
         sortButton.setDisable(true);
         filterButton.setDisable(true);
-     resetButton.setDisable(true);
-
+        resetButton.setDisable(true);
     }
 
-
+    // Sets the SpreadsheetController instance.
     @Override
     public void setSpreadsheetController(SpreadsheetController spreadsheetController) {
         this.spreadsheetController = spreadsheetController;

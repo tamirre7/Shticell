@@ -28,14 +28,20 @@ import java.io.IOException;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class CommandsMenuControllerImpl implements CommandsMenuController {
+    // Reference to the main controller of the application
     private SheetHubMainController mainController;
+    // Controllers for managing permissions
     private PermissionTableController permissionTableController;
     private PermissionRequestController permissionRequestController;
     private PermissionResponseController permissionResponseController;
+    // Controller for chat functionality
     private ChatRoomController chatRoomController;
+    // Controller for managing available sheets
     private AvailableSheetsController availableSheetsController;
+    // Controller for login functionality
     private LoginController loginController;
 
+    // UI elements for different pages
     private BorderPane requestPage;
     private BorderPane responsePage;
     private BorderPane chatPage;
@@ -45,28 +51,31 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
 
     @FXML
     public void initialize() throws IOException {
-
+        // Load the permission request page and its controller
         FXMLLoader reqLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_REQUEST_RESOURCE_LOCATION));
         requestPage = reqLoader.load();
         permissionRequestController = reqLoader.getController();
-
         permissionRequestController.setCommandsMenuController(this);
 
-        FXMLLoader respLoader = new FXMLLoader(getClass().getResource(Constants.CHAT_ROOM_RESOURCE_LOCATION));
-        chatPage = respLoader.load();
-        chatRoomController = respLoader.getController();
+        // Load the chat room page and its controller
+        FXMLLoader chatLoader = new FXMLLoader(getClass().getResource(Constants.CHAT_ROOM_RESOURCE_LOCATION));
+        chatPage = chatLoader.load();
+        chatRoomController = chatLoader.getController();
         chatRoomController.setCommandsMenuComponent(this);
 
-        FXMLLoader chatLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
-        responsePage = chatLoader.load();
-        permissionResponseController = chatLoader.getController();
+        // Load the permission response page and its controller
+        FXMLLoader respLoader = new FXMLLoader(getClass().getResource(Constants.PERMISSION_RESPONSE_RESOURCE_LOCATION));
+        responsePage = respLoader.load();
+        permissionResponseController = respLoader.getController();
         permissionResponseController.setCommandsMenuController(this);
 
+        // Set up the commands list with custom cell factory
         commandsList.setCellFactory(lv -> {
             ListCell<String> cell = new ListCell<String>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
+                    // Update the cell display based on item value
                     if (empty || item == null) {
                         setText(null);
                         setGraphic(null);
@@ -76,8 +85,10 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
                 }
             };
 
+            // Handle mouse click events on the list cells
             cell.setOnMouseClicked(event -> {
                 if (!cell.isEmpty()) {
+                    // Change cell background color on click
                     cell.setStyle("-fx-background-color: #2196F3;"); // Set to blue when clicked
                     PauseTransition pause = new PauseTransition(Duration.seconds(0.1));
                     pause.setOnFinished(e -> cell.setStyle(null)); // Reset style after delay
@@ -91,6 +102,8 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
             return cell;
         });
     }
+
+    // Method to handle cell click actions
     private void handleCellClick(String item) {
         switch (item) {
             case "View Selected Sheet":
@@ -108,13 +121,19 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         }
     }
 
+    // View the selected sheet if available
     private void viewSelectedSheet() {
         if (mainController != null) {
-            if(availableSheetsController.isSheetSelected())
-            mainController.switchToSheetViewPage();
-            else{showAlert("Error", "A sheet must be selected before viewing a sheet");}
+            // Check if a sheet is selected before switching views
+            if (availableSheetsController.isSheetSelected()) {
+                mainController.switchToSheetViewPage();
+            } else {
+                showAlert("Error", "A sheet must be selected before viewing a sheet");
+            }
         }
     }
+
+    // Display the permission request form
     private void viewPermissionRequestForm() {
         if (mainController != null) {
             try {
@@ -132,6 +151,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         }
     }
 
+    // Display the response page for permission requests
     private void viewResponsePage() {
         if (mainController != null) {
             try {
@@ -147,6 +167,7 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         }
     }
 
+    // Display the chat page
     private void viewChatPage() {
         if (mainController != null) {
             try {
@@ -161,77 +182,93 @@ public class CommandsMenuControllerImpl implements CommandsMenuController {
         }
     }
 
-    private void clearSelection() {
-        Platform.runLater(() -> commandsList.getSelectionModel().clearSelection());
+    // Return to the hub after permission handling
+    @Override
+    public void permissionReturnToHub() {
+        mainController.closePermissionPopup();
     }
 
+    // Return to the hub after chat handling
     @Override
-    public void permissionReturnToHub(){mainController.closePermissionPopup();}
+    public void chatReturnToHub() {
+        mainController.closeChatPopup();
+    }
 
+    // Refresh the command list display
     @Override
-    public void chatReturnToHub(){mainController.closeChatPopup();}
-
-    @Override
-    public void refreshList()
-    {
+    public void refreshList() {
         commandsList.getSelectionModel().clearSelection();
     }
 
+    // Set the main controller
     @Override
     public void setMainController(SheetHubMainController mainController) {
         this.mainController = mainController;
     }
 
+    // Set the permission table controller
     @Override
     public void setPermissionTableController(PermissionTableController permissionTableController) {
         this.permissionTableController = permissionTableController;
     }
+
+    // Set the available sheets controller and update related controllers
     @Override
     public void setAvailableSheetsControllerTableController(AvailableSheetsController availableSheetsController) {
         this.availableSheetsController = availableSheetsController;
         permissionRequestController.setAvailableSheetsController(availableSheetsController);
         permissionResponseController.setAvailableSheetsController(availableSheetsController);
     }
+
+    // Set the login controller and update the permission request controller
     @Override
     public void setLoginController(LoginController loginController) {
         this.loginController = loginController;
         permissionRequestController.setLoginController(loginController);
     }
+
+    // Handle logout button click event
     @FXML
-    public void logoutButtonClicked(){
+    public void logoutButtonClicked() {
         HttpClientUtil.runAsync(Constants.LOGOUT_PAGE, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                // Handle logout failure (logging, alerting user, etc.)
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                // Check if the logout was successful or redirected
                 if (response.isSuccessful() || response.isRedirect()) {
                     HttpClientUtil.removeCookiesOf(Constants.BASE_DOMAIN);
                     Platform.runLater(() -> mainController.switchToLoginPage());
-
                 }
             }
         });
     }
 
+    // Activate the permission request refresher
     @Override
-    public void activatePermissionRefresher()
-    {
+    public void activatePermissionRefresher() {
         permissionResponseController.startRequestRefresher();
     }
+
+    // Deactivate the permission request refresher
     @Override
-    public void deactivatePermissionRefresher(){
+    public void deactivatePermissionRefresher() {
         permissionResponseController.stopRequestRefresher();
         permissionTableController.stopRequestRefresher();
     }
+
+    // Activate chat refreshers for real-time updates
     @Override
-    public void activateChatRefreshers(){
+    public void activateChatRefreshers() {
         chatRoomController.setActive();
     }
+
+    // Deactivate chat refreshers
     @Override
-    public void deActivateChatRefreshers(){
+    public void deActivateChatRefreshers() {
         chatRoomController.setInActive();
     }
 }

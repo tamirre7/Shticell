@@ -49,15 +49,16 @@ public class SheetHubMainController {
 
     @FXML
     public void initialize() {
+        //setting up controllers and initialize the login page
         commandsMenuComponentController.setMainController(this);
         availableSheetsComponentController.setPermissionTableController(permissionTableComponentController);
         commandsMenuComponentController.setPermissionTableController(permissionTableComponentController);
         commandsMenuComponentController.setAvailableSheetsControllerTableController(availableSheetsComponentController);
-        startUpLoginPage();
+        startUpLoginPage(); // loads the login page
         availableSheetsComponentController.setLoginController(loginController);
     }
 
-
+    // Loads the login page as the startup view
     private void startUpLoginPage() {
         try {
             // Load the login page
@@ -73,11 +74,13 @@ public class SheetHubMainController {
         }
     }
 
+    // Sets the main panel's content
     private void setMainPanelTo(Parent pane) {
         mainPanel.setContent(pane);
 
     }
 
+    // Switches to hub page
     public void switchToHubPage() {
         loadSheetComponentController.setGreetingLabel();
         commandsMenuComponentController.refreshList();
@@ -89,19 +92,21 @@ public class SheetHubMainController {
 
         // Set window size for the Hub page
         Stage stage = (Stage) scene.getWindow();
-        stage.setWidth(1000);
-        stage.setHeight(600);
+        stage.setWidth(Constants.HUB_PAGE_WIDTH);
+        stage.setHeight(Constants.HUB_PAGE_HEIGHT);
         stage.centerOnScreen();  // Centers the stage on the screen
     }
 
+    // Switches to login page
     public void switchToLoginPage(){
         setMainPanelTo(loginComponent);
         Stage stage = (Stage) scene.getWindow();
-        stage.setWidth(330);
-        stage.setHeight(270);
+        stage.setWidth(Constants.LOGIN_PAGE_WIDTH);
+        stage.setHeight(Constants.LOGIN_PAGE_HEIGHT);
         stage.centerOnScreen();  // Centers the stage on the screen
     }
 
+    // Switches to the sheet view page
     public void switchToSheetViewPage() {
         availableSheetsComponentController.stopTableRefresher();
         commandsMenuComponentController.deactivatePermissionRefresher();
@@ -112,10 +117,11 @@ public class SheetHubMainController {
 
         // Set window size for the Sheet view page
         Stage stage = (Stage) scene.getWindow();
-        stage.setWidth(1200);
-        stage.setHeight(675);
+        stage.setWidth(Constants.SHEET_VIEW_PAGE_WIDTH);
+        stage.setHeight(Constants.SHEET_VIEW_PAGE_HEIGHT);
         stage.centerOnScreen();  // Centers the stage on the screen
     }
+    //shows a permission request popup
     public void showPermissionRequestPopup(Parent pane) {
         commandsMenuComponentController.activatePermissionRefresher();
 
@@ -126,12 +132,12 @@ public class SheetHubMainController {
         Scene popupScene = new Scene(pane);
         permissionPopupStage.setScene(popupScene);
         permissionPopupStage.setTitle("Permission Request");
-        permissionPopupStage.setWidth(500);
-        permissionPopupStage.setHeight(400);
+        permissionPopupStage.setWidth(Constants.PERMISSION_REQUEST_POPUP_WIDTH);
+        permissionPopupStage.setHeight(Constants.PERMISSION_REQUEST_POPUP_HEIGHT);
         permissionPopupStage.centerOnScreen();
         permissionPopupStage.showAndWait();
     }
-
+    // Shows a permission response popup
     public void showPermissionResponsePopup(Parent pane) {
         commandsMenuComponentController.activatePermissionRefresher();
 
@@ -142,11 +148,12 @@ public class SheetHubMainController {
         Scene popupScene = new Scene(pane);
         permissionPopupStage.setScene(popupScene);
         permissionPopupStage.setTitle("Permission Response");
-        permissionPopupStage.setWidth(700);
-        permissionPopupStage.setHeight(550);
+        permissionPopupStage.setWidth(Constants.PERMISSION_RESPONSE_POPUP_WIDTH);
+        permissionPopupStage.setHeight(Constants.PERMISSION_RESPONSE_POPUP_HEIGHT);
         permissionPopupStage.centerOnScreen();
         permissionPopupStage.showAndWait();
     }
+    // Show a chat popup
     public void showChatPopup(Parent pane) {
         commandsMenuComponentController.activateChatRefreshers();
 
@@ -157,8 +164,8 @@ public class SheetHubMainController {
         Scene popupScene = new Scene(pane);
         chatPopupStage.setScene(popupScene);
         chatPopupStage.setTitle("Chat");
-        chatPopupStage.setWidth(1000);
-        chatPopupStage.setHeight(550);
+        chatPopupStage.setWidth(Constants.CHAT_POPUP_WIDTH);
+        chatPopupStage.setHeight(Constants.CHAT_POPUP_HEIGHT);
         chatPopupStage.centerOnScreen();
         chatPopupStage.showAndWait();
     }

@@ -21,6 +21,7 @@ public class ServletUtils {
     private static final Object chatManagerLock = new Object();
     public static final Object engineLock = new Object();
 
+    // Retrieves the UserManager instance from the servlet context, creating it if it doesn't exist
     public static UserManager getUserManager(ServletContext servletContext) {
 
         synchronized (userManagerLock) {
@@ -29,7 +30,7 @@ public class ServletUtils {
             }
         }
         return (UserManager) servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME);
-    }
+    } // Retrieves the Engine instance from the servlet context, creating it if it doesn't exist
     public static Engine getEngine(ServletContext servletContext) {
 
         synchronized (engineLock) {
@@ -39,7 +40,7 @@ public class ServletUtils {
         }
         return (Engine) servletContext.getAttribute(ENGINE_ATTRIBUTE_NAME);
     }
-
+    // Retrieves the ChatManager instance from the servlet context, creating it if it doesn't exist
     public static ChatManager getChatManager(ServletContext servletContext) {
         synchronized (chatManagerLock) {
             if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
@@ -48,7 +49,7 @@ public class ServletUtils {
         }
         return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
     }
-
+    // Helper method to retrieve an integer parameter from the request
     public static int getIntParameter(HttpServletRequest request, String name) {
         String value = request.getParameter(name);
         if (value != null) {

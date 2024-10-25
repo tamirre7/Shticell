@@ -12,15 +12,15 @@ import shticell.client.sheethub.components.commands.components.controller.api.Co
 import java.io.IOException;
 
 public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpdate {
-    @FXML
-    private VBox usersListComponent;
-    @FXML private UsersListController usersListComponentController;
-    @FXML private VBox actionCommandsComponent;
-    @FXML private ChatCommandsController chatCommandsComponentController;
-    @FXML private VBox chatAreaComponent;
-    @FXML private ChatAreaController chatAreaComponentController;
-    private CommandsMenuController commandsMenuComponent;
+    @FXML private VBox usersListComponent;            // UI component for displaying users list
+    @FXML private UsersListController usersListComponentController;  // Controller for users list
+    @FXML private VBox actionCommandsComponent;       // UI component for chat commands
+    @FXML private ChatCommandsController chatCommandsComponentController;  // Controller for chat commands
+    @FXML private VBox chatAreaComponent;            // UI component for chat messages
+    @FXML private ChatAreaController chatAreaComponentController;    // Controller for chat area
+    private CommandsMenuController commandsMenuComponent;            // Navigation controller
 
+    // Initializes the chat room by setting up component relationships and bindings
     @FXML
     public void initialize() {
         usersListComponentController.setHttpStatusUpdate(this);
@@ -30,11 +30,15 @@ public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpd
         usersListComponentController.autoUpdatesProperty().bind(chatCommandsComponentController.autoUpdatesProperty());
         chatCommandsComponentController.setChatRoomController(this);
     }
+
+    // Activates the chat room by starting user list and chat area refreshers
     @Override
     public void setActive() {
         usersListComponentController.startListRefresher();
         chatAreaComponentController.startListRefresher();
     }
+
+    // Deactivates the chat room by closing user list and chat area components
     @Override
     public void setInActive() {
         try {
@@ -43,16 +47,19 @@ public class ChatRoomControllerImpl implements ChatRoomController, HttpStatusUpd
         } catch (Exception ignored) {}
     }
 
+    // Closes the chat room and returns to the hub
     @Override
     public void close() throws IOException {
         commandsMenuComponent.chatReturnToHub();
     }
+
+    // Sets the commands menu component for navigation between views
     @Override
-    public void setCommandsMenuComponent(CommandsMenuController commandsMenuComponent)
-    {
+    public void setCommandsMenuComponent(CommandsMenuController commandsMenuComponent) {
         this.commandsMenuComponent = commandsMenuComponent;
     }
 
+    // Updates the HTTP status line in the UI
     @Override
     public void updateHttpLine(String line) {
         System.out.println(line);

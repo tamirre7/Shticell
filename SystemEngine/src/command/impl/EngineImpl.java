@@ -27,24 +27,31 @@ import xml.generated.*;
 import java.io.*;
 import java.util.*;
 
+import static constants.Constants.*;
 import static expressions.parser.FunctionParser.parseExpression;
 
+// Main implementation of the Engine interface for spreadsheet operations
 public class EngineImpl implements Engine {
+    // Maps sheet names to their corresponding sheet managers
     private Map<String, SheetManager> sheetMap = new HashMap<>();
 
     @Override
-    public SaveLoadFileDto loadFile(InputStream fileContent,String username) {
+    public SaveLoadFileDto loadFile(InputStream fileContent, String username) {
         try {
-            // Initialize JAXB context and unmarshaller
+            // Set up JAXB for XML parsing
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
-            // Unmarshal the XML file to STLSheet object
+            // Parse XML file into STLSheet object
             STLSheet stlSheet = (STLSheet) unmarshaller.unmarshal(fileContent);
 
+            // Check for duplicate sheet names
             String sheetName = stlSheet.getName();
-            if (sheetMap.containsKey(sheetName)) {
-                return new SaveLoadFileDto(false, "Sheet name '" + sheetName + "' already exists. Each sheet must have a unique name.");
+            for (String name: sheetMap.keySet()) {
+                SheetManager sheetManager = sheetMap.get(name);
+                if (sheetManager.getSheetName().equalsIgnoreCase(sheetName)) {
+                    return new SaveLoadFileDto(false, "Sheet name '" + sheetName + "' already exists. Each sheet must have a unique name.");
+                }
             }
 
             // Validate sheet dimensions
@@ -53,11 +60,12 @@ public class EngineImpl implements Engine {
             int numRows = stlLayout.getRows();
             int numCols = stlLayout.getColumns();
 
-            if (numRows < 1 || numRows > 50 || numCols < 1 || numCols > 20) {
-                return new SaveLoadFileDto(false, "Invalid sheet size- \nRows must be between 1 and 50 \nColumns must be between 1 and 20");
+            // Check if dimensions are within allowed limits
+            if (numRows < MIN_ROW || numRows > MAX_ROW || numCols < MIN_COL || numCols > MAX_COL) {
+                return new SaveLoadFileDto(false, "Invalid sheet size- \nRows must be between "+MIN_ROW+" and "+MAX_ROW+ "\nColumns must be between "+MIN_COL+" and "+MAX_COL);
             }
 
-            // Create Dimensions object
+            // Create dimension object with sheet specifications
             Dimension sheetDimensions = new DimensionImpl(
                     numRows,
                     numCols,
@@ -65,18 +73,19 @@ public class EngineImpl implements Engine {
                     stlSize.getRowsHeightUnits()
             );
 
-            // Create a new SpreadSheet instance with the provided dimensions
-            SheetManager sheetManager = new SheetManagerImpl(stlSheet.getName(),username);
+            // Initialize new sheet manager and spreadsheet
+            SheetManager sheetManager = new SheetManagerImpl(stlSheet.getName(), username);
             SpreadSheet spreadSheet = new SpreadSheetImpl(sheetDimensions, sheetManager);
             sheetManager.updateSheetVersion(spreadSheet);
 
+            // Process and validate ranges in the sheet
             STLRanges stlRanges = stlSheet.getSTLRanges();
             for (STLRange stlRange : stlRanges.getSTLRange()) {
                 String startCell = stlRange.getSTLBoundaries().getFrom();
                 String endCell = stlRange.getSTLBoundaries().getTo();
                 String rangeName = stlRange.getName();
 
-                // Validate the start and end cells
+                // Validate range boundaries
                 if (!spreadSheet.isValidCellID(startCell) || !spreadSheet.isValidCellID(endCell)) {
                     return new SaveLoadFileDto(false, "Invalid range: " + startCell + " to " + endCell);
                 }
@@ -86,9 +95,10 @@ public class EngineImpl implements Engine {
                 spreadSheet.addRange(rangeName, startCellId, endCellId);
             }
 
-            // Iterate over the cells and validate their positions
+            // Process and validate cells in the sheet
             STLCells stlCells = stlSheet.getSTLCells();
             for (STLCell stlCell : stlCells.getSTLCell()) {
+                // Validate cell position and format
                 int row = stlCell.getRow();
                 String columnStr = stlCell.getColumn();
                 if (columnStr.length() != 1) {
@@ -101,7 +111,7 @@ public class EngineImpl implements Engine {
                 spreadSheet.isValidCellID(cellID);
                 CellIdentifierImpl cellId = new CellIdentifierImpl(cellID);
 
-                // Evaluate the expression and validate function arguments
+                // Parse and validate cell expression
                 Expression expression;
                 try {
                     expression = parseExpression(stlCell.getSTLOriginalValue(), spreadSheet);
@@ -110,46 +120,43 @@ public class EngineImpl implements Engine {
                 }
                 EffectiveValue effectiveValue = expression.evaluate(spreadSheet);
 
-                CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet,username);
+                // Create and initialize cell with parsed values
+                CellImpl cell = new CellImpl(cellId, stlCell.getSTLOriginalValue(), 1, spreadSheet, username);
                 cell.setEffectiveValue(effectiveValue);
 
                 spreadSheet.getActiveCells().put(cell.getIdentifier(), cell);
             }
 
-            // Update dependencies and influences
+            // Update cell dependencies and influences
             spreadSheet.updateDependenciesAndInfluences();
 
-            // Update the map
+            // Store the sheet in the map
             sheetMap.put(stlSheet.getName(), sheetManager);
 
             return new SaveLoadFileDto(true, "File loaded successfully.");
-        }  catch (JAXBException e) {
+        } catch (JAXBException e) {
             return new SaveLoadFileDto(false, "XML parsing error: " + e.getMessage());
         } catch (Exception e) {
             return new SaveLoadFileDto(false, e.getMessage());
         }
     }
 
-
-
+    // Convert SpreadSheet object to SheetDto for client communication
     private SheetDto convertSheetToSheetDto(SpreadSheet spreadSheet) {
-
-
         String name = spreadSheet.getSheetName();
         int version = sheetMap.get(spreadSheet.getSheetName()).getLatestVersion();
         String uploadedBy = sheetMap.get(spreadSheet.getSheetName()).getUploadedBy();
         Dimension dimensions = spreadSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
+        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(), dimensions.getNumCols(), dimensions.getWidthCol(), dimensions.getHeightRow());
 
-        // Convert cells from Cell to CellDto
+        // Convert cells and ranges to DTOs
         Map<String, CellDto> cellDtos = convertCellsToCellDtos(spreadSheet.getActiveCells());
-
-        // Convert Ranges from Ranges to RangesDto
         Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(spreadSheet.getRanges());
 
         return new SheetDto(dimensionDto, name, version, cellDtos, cellsInRangeDto, uploadedBy);
     }
 
+    // Convert cell identifiers to string format
     private List<String> convertToListOfStrings(List<CellIdentifier> cellIdentifiers) {
         List<String> result = new ArrayList<>();
         for (CellIdentifier cellIdentifier : cellIdentifiers) {
@@ -157,103 +164,98 @@ public class EngineImpl implements Engine {
         }
         return result;
     }
+
+    // Update cell and increment sheet version
     @Override
-     public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName,int sheetVersionToEdit)
-    {
-        return updateCell(cellid, originalValue, false,modifyingUserName,sheetName,sheetVersionToEdit);
+    public SheetDto updateCellWithSheetVersionUpdate(String cellid, String originalValue, String modifyingUserName, String sheetName, int sheetVersionToEdit) {
+        return updateCell(cellid, originalValue, false, modifyingUserName, sheetName, sheetVersionToEdit);
     }
 
+    // Update cell without incrementing sheet version
     @Override
-    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue,String modifyingUserName,String sheetName,int sheetVersionToEdit)
-    {
-        return updateCell(cellid, originalValue, true,modifyingUserName,sheetName,sheetVersionToEdit);
+    public SheetDto updateCellWithoutSheetVersionUpdate(String cellid, String originalValue, String modifyingUserName, String sheetName, int sheetVersionToEdit) {
+        return updateCell(cellid, originalValue, true, modifyingUserName, sheetName, sheetVersionToEdit);
     }
 
-
-
-    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate,String modifyingUserName,String sheetName,int sheetVersionToEdit) {
+    // Core cell update logic
+    private SheetDto updateCell(String cellid, String originalValue, boolean isDynamicUpdate, String modifyingUserName, String sheetName, int sheetVersionToEdit) {
         SheetManager relevantManager = sheetMap.get(sheetName);
-        if(sheetVersionToEdit != relevantManager.getLatestVersion() && !isDynamicUpdate)
-        {
+
+        // Verify sheet version for non-dynamic updates
+        if(sheetVersionToEdit != relevantManager.getLatestVersion() && !isDynamicUpdate) {
             throw new IllegalArgumentException("Cell update must be performed on the most recent sheet version");
         }
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
+        // Validate input parameters
         if (originalValue == null) {
-            throw new IllegalArgumentException("Original value must be entered (can also be empty)");}
-
-        // Check if cellid is null or empty
+            throw new IllegalArgumentException("Original value must be entered (can also be empty)");
+        }
         if (cellid == null || cellid.isEmpty()) {
-            throw new IllegalArgumentException("Cell ID cannot be empty");}
+            throw new IllegalArgumentException("Cell ID cannot be empty");
+        }
 
         relevantSheet.isValidCellID(cellid);
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
 
+        // Perform the update and handle results
         UpdateResult updateRes;
         SpreadSheet updateSpreadSheet;
-        updateRes = relevantSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate,modifyingUserName,relevantManager.getLatestVersion());
+        updateRes = relevantSheet.updateCellValueAndCalculate(cellIdentifier, originalValue, isDynamicUpdate, modifyingUserName, relevantManager.getLatestVersion());
         if (updateRes.isSuccess()) {
             updateSpreadSheet = updateRes.getSheet();
-            if(!isDynamicUpdate) {sheetMap.get(relevantSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);}
+            if(!isDynamicUpdate) {
+                sheetMap.get(relevantSheet.getSheetName()).updateSheetVersion(updateSpreadSheet);
+            }
             relevantSheet = updateSpreadSheet;
         } else {
-            throw new RuntimeException(updateRes.getErrorMessage());}
+            throw new RuntimeException(updateRes.getErrorMessage());
+        }
 
         return convertSheetToSheetDto(relevantSheet);
-
     }
 
+    // Retrieve sheet by specific version
     @Override
-    public SheetDto displaySheetByVersion(int version,String sheetName) {
+    public SheetDto displaySheetByVersion(int version, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
-        // Retrieve the SpreadSheet from the version map
         SpreadSheet sheet = sheetMap.get(relevantSheet.getSheetName()).getSheetByVersion(version);
         if (sheet == null) {
-            throw new IllegalArgumentException("No spreadsheet found for the specified version");}
+            throw new IllegalArgumentException("No spreadsheet found for the specified version");
+        }
 
-       return convertSheetToSheetDto(sheet);
+        return convertSheetToSheetDto(sheet);
     }
 
+    // Add new range to sheet
     @Override
-    public SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight,String sheetName) {
+    public SheetDto addRange(String name, CellIdentifierImpl topLeft, CellIdentifierImpl bottomRight, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
         relevantSheet.addRange(name, topLeft, bottomRight);
-        // Convert cells from Cell to CellDto
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(relevantSheet.getActiveCells());
 
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(relevantSheet.getRanges());
-
-        Dimension dimensions = relevantSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, relevantSheet.getSheetName(), relevantManager.getLatestVersion(), cellDtos, cellsInRangeDto,relevantManager.getUploadedBy());
+       return convertSheetToSheetDto(relevantSheet);
     }
 
+    // Remove range from sheet
     @Override
-    public SheetDto removeRange(String rangeName,String sheetName) {
+    public SheetDto removeRange(String rangeName, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
 
         relevantSheet.removeRange(rangeName);
-        Map<String, CellDto> cellDtos = convertCellsToCellDtos(relevantSheet.getActiveCells());
 
-        // Convert Ranges from Ranges to RangesDto
-        Map<String, RangeDto> cellsInRangeDto = convertRangesToRangeDtos(relevantSheet.getRanges());
-
-        Dimension dimensions = relevantSheet.getSheetDimentions();
-        DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(),dimensions.getNumCols(),dimensions.getWidthCol(),dimensions.getHeightRow());
-
-
-        // Return a SheetDto with the retrieved SpreadSheet
-        return new SheetDto(dimensionDto, relevantSheet.getSheetName(), relevantManager.getLatestVersion(), cellDtos, cellsInRangeDto,relevantManager.getUploadedBy());
+      return convertSheetToSheetDto(relevantSheet);
     }
 
+    // Filters the specified range of cells based on selected values for specific columns.
+    //param range -  The range of cells to filter.
+    //param selectedValuesForColumns - A map where each key is a column name, and the value is a list of values to filter by.
+    //param sheetName - The name of the sheet from which to filter the cells.
+    //Return A new SheetDto representing the filtered sheet.
     @Override
     public SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName) {
 
@@ -314,6 +316,8 @@ public class EngineImpl implements Engine {
                 sheet.getUploadedBy());
     }
 
+    //Sorts the specified range of cells based on the provided column order.
+    //Return A new SheetDto representing the sorted sheet.
     @Override
     public SheetDto sortRange(Range range, List<String> colsToSort,String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
@@ -411,6 +415,7 @@ public class EngineImpl implements Engine {
     }
 
     // Helper method to create cell IDs based on row and column numbers
+    @Override
     public String createCellId(int row, int col) {
         return String.valueOf((char) ('A' + col)) + (row);
     }
@@ -424,6 +429,8 @@ public class EngineImpl implements Engine {
         }
     }
 
+    //Adds an empty cell to the specified sheet.
+    //Return A new SheetDto representing the updated sheet.
     @Override
     public SheetDto addEmptyCell (String cellId,String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
@@ -433,25 +440,26 @@ public class EngineImpl implements Engine {
         return convertSheetToSheetDto(relevantSheet);
     }
 
+    // Sets the style of a specified cell in the given sheet.
     @Override
     public SheetDto setCellStyle(String cellid, String style,String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
         CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
         relevantSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
-
         return convertSheetToSheetDto(relevantSheet);
     }
 
     @Override
-    public int getLatestVersion(String sheetName){
+    // Retrieves the latest version number of the specified sheet.
+    public int getLatestVersion(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         return relevantManager.getLatestVersion();
     }
 
     @Override
-    public String evaluateOriginalValue(String originalValue,String sheetName)
-    {
+    // Evaluates the original value of a cell based on its expression and the latest version of the specified sheet.
+    public String evaluateOriginalValue(String originalValue, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
         Expression expression = parseExpression(originalValue, relevantSheet);
@@ -459,6 +467,7 @@ public class EngineImpl implements Engine {
         return newEffectiveValue.getValue().toString();
     }
 
+    // Converts active cell data into a map of CellDto objects.
     private Map<String, CellDto> convertCellsToCellDtos(Map<CellIdentifier, Cell> activeCells) {
         Map<String, CellDto> cellDtos = new HashMap<>();
         for (Map.Entry<CellIdentifier, Cell> entry : activeCells.entrySet()) {
@@ -477,6 +486,8 @@ public class EngineImpl implements Engine {
         }
         return cellDtos;
     }
+
+    // Converts range data into a map of RangeDto objects.
     private Map<String, RangeDto> convertRangesToRangeDtos(Map<String, Range> ranges) {
         Map<String, RangeDto> rangeDtos = new HashMap<>();
         for (Map.Entry<String, Range> entry : ranges.entrySet()) {
@@ -493,32 +504,32 @@ public class EngineImpl implements Engine {
         return rangeDtos;
     }
 
-
     @Override
-    public List<SheetPermissionDto>getAllSheets(String userName)
-    {
+    // Retrieves all sheets and their corresponding permissions for the specified user.
+    public List<SheetPermissionDto> getAllSheets(String userName) {
         List<SheetPermissionDto> sheetPermissionsDtos = new ArrayList<>();
-        for(Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
+        for (Map.Entry<String, SheetManager> entry : sheetMap.entrySet()) {
             SheetManager sheetManager = entry.getValue();
             SpreadSheet sheet = sheetManager.getSheetByVersion(sheetManager.getLatestVersion());
 
             SheetDto sheetDto = convertSheetToSheetDto(sheet);
             Permission userPermission = sheetManager.getPermission(userName);
 
-            sheetPermissionsDtos.add(new SheetPermissionDto(sheetDto,userPermission));
+            sheetPermissionsDtos.add(new SheetPermissionDto(sheetDto, userPermission));
         }
 
         return sheetPermissionsDtos;
     }
 
     @Override
-    public PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName)
-    {
+    // Retrieves permission information for a specific user on a specified sheet.
+    public PermissionInfoDto getUserPermissionFromSheet(String username, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
-        return new PermissionInfoDto(username,relevantManager.getPermission(username),sheetName, RequestStatus.APPROVED);
+        return new PermissionInfoDto(username, relevantManager.getPermission(username), sheetName, RequestStatus.APPROVED);
     }
 
     @Override
+    // Retrieves all permission information for a specified sheet, including approved, pending, and denied requests.
     public List<PermissionInfoDto> getAllSheetPermissions(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
 
@@ -568,14 +579,19 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void permissionRequest(int requestId,String sheetName, Permission permissionType, String message,String username){
+    // Processes a permission request for a specified sheet, including a message from the requester.
+    public void permissionRequest(int requestId, String sheetName, Permission permissionType, String message, String username) {
         SheetManager relevantManager = sheetMap.get(sheetName);
 
-        PermissionRequest request = new PermissionRequest(requestId,permissionType,username);
-        if(!message.isEmpty()){request.setMessage(message);}
+        PermissionRequest request = new PermissionRequest(requestId, permissionType, username);
+        if (!message.isEmpty()) {
+            request.setMessage(message);
+        }
         relevantManager.addPendingPermissionRequest(request);
     }
+
     @Override
+    // Approves a permission request based on the provided response data transfer object.
     public void permissionApproval(PermissionResponseDto responseDto) {
         PermissionRequestDto requestDto = responseDto.getPermissionRequestDto();
         PermissionRequest request = new PermissionRequest(requestDto.getId(), requestDto.getPermissionType(), requestDto.getRequester());
@@ -584,26 +600,29 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void permissionDenial(PermissionResponseDto responseDto)
-    {
+    // Denies a permission request based on the provided response data transfer object.
+    public void permissionDenial(PermissionResponseDto responseDto) {
         PermissionRequestDto requestDto = responseDto.getPermissionRequestDto();
-        PermissionRequest request = new PermissionRequest(requestDto.getId(),requestDto.getPermissionType(),requestDto.getRequester());
+        PermissionRequest request = new PermissionRequest(requestDto.getId(), requestDto.getPermissionType(), requestDto.getRequester());
         SheetManager relevantManager = sheetMap.get(requestDto.getSheetName());
         relevantManager.denyPendingRequest(request);
     }
 
     @Override
+    // Retrieves a list of sheets owned by a specified user.
     public List<SheetDto> getOwnedSheets(String username) {
         List<SheetDto> ownedSheets = new ArrayList<>();
-
-        for (Map.Entry<String,SheetManager> entry : sheetMap.entrySet()) {
+        for (Map.Entry<String, SheetManager> entry : sheetMap.entrySet()) {
             SheetManager manager = entry.getValue();
-            if (manager.getUploadedBy().equals(username))
+            if (manager.getUploadedBy().equalsIgnoreCase(username)) {
                 ownedSheets.add(convertSheetToSheetDto(manager.getSheetByVersion(manager.getLatestVersion())));
+            }
         }
         return ownedSheets;
     }
+
     @Override
+    // Retrieves a list of pending permission requests for a specified sheet.
     public List<PermissionRequestDto> getPendingRequests(String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         Map<String, List<PermissionRequest>> pendingPermissions = relevantManager.getPendingPermissionRequests();
@@ -627,6 +646,4 @@ public class EngineImpl implements Engine {
         }
         return pendingRequests;
     }
-
-
 }

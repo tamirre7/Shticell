@@ -1,7 +1,6 @@
 package spreadsheet.api;
 
 import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.util.UpdateResult;
 
 public interface UpdateSheet {

@@ -1,6 +1,5 @@
 package shticell.client.sheethub.components.permission.table.impl;
 
-
 import dto.permission.PermissionInfoDto;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -16,58 +15,64 @@ import java.util.Timer;
 import static shticell.client.util.Constants.REFRESH_RATE;
 
 public class PermissionTableControllerImpl implements PermissionTableController {
-    @FXML
-    private TableView<PermissionInfoDtoProperty> permissionTable;
 
     @FXML
-    private TableColumn<PermissionInfoDtoProperty, String> userNameColumn;
+    private TableView<PermissionInfoDtoProperty> permissionTable; // Table view for displaying permissions.
 
     @FXML
-    private TableColumn<PermissionInfoDtoProperty, String> permissionTypeColumn;
+    private TableColumn<PermissionInfoDtoProperty, String> userNameColumn; // Column for displaying usernames.
 
     @FXML
-    private TableColumn<PermissionInfoDtoProperty, String> permissionStatusColumn;
+    private TableColumn<PermissionInfoDtoProperty, String> permissionTypeColumn; // Column for displaying permission types.
 
-    private ObservableList<PermissionInfoDtoProperty> permissionList = FXCollections.observableArrayList();
+    @FXML
+    private TableColumn<PermissionInfoDtoProperty, String> permissionStatusColumn; // Column for displaying permission statuses.
 
-    private PermissionRefresher permissionRefresher;
-    private Timer timer;
+    private ObservableList<PermissionInfoDtoProperty> permissionList = FXCollections.observableArrayList(); // List of permissions.
+
+    private PermissionRefresher permissionRefresher; // Refresher for updating permissions.
+    private Timer timer; // Timer for scheduling permission refreshes.
 
     @FXML
     private void initialize() {
+        // Sets up the cell value factories for each column.
         userNameColumn.setCellValueFactory(cellData -> cellData.getValue().usernameProperty());
         permissionTypeColumn.setCellValueFactory(cellData -> cellData.getValue().permissionTypeProperty().asString());
         permissionStatusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty().asString());
 
+        // Binds the permission table to the observable list.
         permissionTable.setItems(permissionList);
     }
 
     @Override
     public void startRequestRefresher(String sheetName) {
+        // Stops any existing refreshers before starting a new one.
         stopRequestRefresher();
 
-        timer = new Timer();
-        permissionRefresher = new PermissionRefresher(this::updatePermissionTable,sheetName);
-        timer.schedule(permissionRefresher, REFRESH_RATE, REFRESH_RATE);
-
+        timer = new Timer(); // Initializes the timer.
+        permissionRefresher = new PermissionRefresher(this::updatePermissionTable, sheetName); // Creates a new PermissionRefresher.
+        timer.schedule(permissionRefresher, REFRESH_RATE, REFRESH_RATE); // Schedules the refresher task.
     }
 
     private void updatePermissionTable(List<PermissionInfoDto> permissions) {
+        // Updates the permission table with new data.
         Platform.runLater(() -> {
             List<PermissionInfoDtoProperty> propertyList = permissions.stream()
-                    .map(PermissionInfoDtoProperty::new)
+                    .map(PermissionInfoDtoProperty::new) // Maps DTOs to properties.
                     .toList();
-            permissionList.setAll(propertyList);
+            permissionList.setAll(propertyList); // Updates the observable list.
         });
     }
+
     @Override
     public void stopRequestRefresher() {
-        if(permissionRefresher != null)
-            permissionRefresher.setActive(false);
+        // Stops the permission refresher if it exists.
+        if (permissionRefresher != null)
+            permissionRefresher.setActive(false); // Deactivates the refresher.
 
         if (timer != null) {
-            timer.cancel();
-            timer.purge();
+            timer.cancel(); // Cancels the timer.
+            timer.purge(); // Clears the timer queue.
         }
     }
 }

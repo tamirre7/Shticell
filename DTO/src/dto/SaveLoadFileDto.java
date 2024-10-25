@@ -1,10 +1,10 @@
 package dto;
 
 public class SaveLoadFileDto {
-    private final boolean succeeded;
-    private final String message;
+    private final boolean succeeded; // Indicates whether the save/load operation was successful
+    private final String message;     // Message providing additional information about the operation
 
-    // Constructor
+    // Constructor to initialize the SaveLoadFileDto with success status and message
     public SaveLoadFileDto(boolean succeeded, String message) {
         this.succeeded = succeeded;
         this.message = message;
@@ -12,12 +12,11 @@ public class SaveLoadFileDto {
 
     // Getter for succeeded
     public boolean isSucceeded() {
-        return succeeded;
+        return succeeded; // Returns whether the operation succeeded
     }
 
     // Getter for message
     public String getMessage() {
-        return message;
+        return message; // Returns the message associated with the operation
     }
-
 }

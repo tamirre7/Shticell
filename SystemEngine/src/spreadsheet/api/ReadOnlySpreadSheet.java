@@ -3,9 +3,7 @@ package spreadsheet.api;
 import spreadsheet.cell.api.Cell;
 import spreadsheet.cell.api.EffectiveValue;
 import spreadsheet.cell.api.CellIdentifier;
-import spreadsheet.cell.impl.CellIdentifierImpl;
 import spreadsheet.range.api.Range;
-import spreadsheet.range.impl.RangeImpl;
 import java.util.Map;
 
 public interface ReadOnlySpreadSheet {

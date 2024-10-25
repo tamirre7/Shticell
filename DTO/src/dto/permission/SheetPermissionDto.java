@@ -3,23 +3,37 @@ package dto.permission;
 import dto.SheetDto;
 
 public class SheetPermissionDto {
-    private final SheetDto sheetDto;
-    private final Permission userPermission;
+    private final SheetDto sheetDto; // The sheet associated with the permission
+    private final Permission userPermission; // The user's permission level for the sheet
 
+    // Constructor
     public SheetPermissionDto(SheetDto sheetDto, Permission userPermission) {
-       this.sheetDto = sheetDto;
+        this.sheetDto = sheetDto;
         this.userPermission = userPermission;
     }
 
-    public String getUploadedBy() {return sheetDto.getUploadedBy();}
+    // Returns the uploader's username
+    public String getUploadedBy() {
+        return sheetDto.getUploadedBy();
+    }
 
+    // Returns the sheet's name
     public String getSheetName() {
         return sheetDto.getSheetName();
     }
 
-    public String getSize(){return sheetDto.getSheetDimension().getNumRows() + "x" + sheetDto.getSheetDimension().getNumCols();}
+    // Returns the size of the sheet as "rows x cols"
+    public String getSize() {
+        return sheetDto.getSheetDimension().getNumRows() + "x" + sheetDto.getSheetDimension().getNumCols();
+    }
 
-    public Permission getUserPermission() {return userPermission;}
+    // Returns the user's permission for the sheet
+    public Permission getUserPermission() {
+        return userPermission;
+    }
 
-    public SheetDto getSheetDto() {return sheetDto;}
+    // Returns the associated SheetDto
+    public SheetDto getSheetDto() {
+        return sheetDto;
+    }
 }

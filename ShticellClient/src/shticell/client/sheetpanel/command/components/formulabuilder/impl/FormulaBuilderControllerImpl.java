@@ -36,9 +36,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     private TextArea subFormulaPreviews;
     @FXML
     private TextField resultPreview;
-
     private StringProperty finalResultProperty = new SimpleStringProperty();
-
     private ActionLineController actionLineController;
     private SpreadsheetController spreadsheetController;
 
@@ -50,6 +48,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         setupFormulaEditorListener();
     }
 
+    // Sets up the function tree with categories and functions
     private void setupFunctionTree() {
         TreeItem<String> root = new TreeItem<>("Functions");
         root.setExpanded(true);
@@ -64,6 +63,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         functionTreeView.setShowRoot(false);
     }
 
+    // Adds a function category to the parent node
     private void addFunctionCategory(TreeItem<String> parent, String category, String... functions) {
         TreeItem<String> categoryItem = new TreeItem<>(category);
         for (String function : functions) {
@@ -72,16 +72,19 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         parent.getChildren().add(categoryItem);
     }
 
+    // Sets up a listener for the tree view to handle function selection
     private void setupTreeViewListener() {
         functionTreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue.isLeaf()) {
-                insertFunctionIntoEditor(newValue.getValue());
-                PauseTransition pause = new PauseTransition(Duration.millis(200));
-                pause.setOnFinished(event -> functionTreeView.getSelectionModel().clearSelection());
-                pause.play();
+            if (newValue != null && newValue.isLeaf()) { // Check if a leaf node is selected
+                insertFunctionIntoEditor(newValue.getValue()); // Insert the selected function into the formula editor
+                PauseTransition pause = new PauseTransition(Duration.millis(200)); // Pause transition to clear selection
+                pause.setOnFinished(event -> functionTreeView.getSelectionModel().clearSelection()); // Clear selection after pause
+                pause.play(); // Play the pause transition
             }
         });
     }
+
+    // Inserts the selected function into the formula editor
     private void insertFunctionIntoEditor(String functionName) {
         String template = "{" + functionName + ",}";
         int caretPosition = formulaEditor.getCaretPosition();
@@ -91,6 +94,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         formulaEditor.positionCaret(caretPosition + template.length() - 1);
     }
 
+    // Sets up a listener for the formula editor to update previews
     private void setupFormulaEditorListener() {
         formulaEditor.textProperty().addListener((observable, oldValue, newValue) -> {
             updateFormulaPreview();
@@ -99,24 +103,27 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         });
     }
 
+    // Extracts nested formulas from the formula string
     private List<String> extractNestedFormulas(String formula) {
-        List<String> formulas = new ArrayList<>();
-        Stack<Integer> stack = new Stack<>();
+        List<String> formulas = new ArrayList<>(); // List to hold nested formulas
+        Stack<Integer> stack = new Stack<>(); // Stack to manage nested structures
 
         for (int i = 0; i < formula.length(); i++) {
             if (formula.charAt(i) == '{') {
-                stack.push(i);
+                stack.push(i); // Push the index of the opening brace onto the stack
             } else if (formula.charAt(i) == '}') {
                 if (!stack.isEmpty()) {
-                    int start = stack.pop();
-                    String subFormula = formula.substring(start, i + 1);
-                    formulas.add(subFormula);
+                    int start = stack.pop(); // Pop the index of the matching opening brace
+                    String subFormula = formula.substring(start, i + 1); // Extract the nested formula
+                    formulas.add(subFormula); // Add it to the list
                 }
             }
         }
 
-        return formulas;
+        return formulas; // Return the list of nested formulas
     }
+
+    // Updates the sub-formula previews by evaluating each sub-formula
     private void updateSubFormulaPreviews() {
         StringBuilder previews = new StringBuilder();
         String formula = formulaEditor.getText();
@@ -128,6 +135,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         }
     }
 
+    // Sends an evaluation request for a sub-formula
     private void sendEvaluationRequestForSubFormulas(StringBuilder previews, String subFormula) {
         Map<String,String> formulaToEval = new HashMap<>();
         formulaToEval.put("formula", subFormula);
@@ -171,11 +179,13 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         });
     }
 
+    // Updates the final result preview
     private void updateResultPreview() {
         sendEvaluationRequestForFinalResult(formulaPreview.getText());
 
     }
 
+    // Sends an evaluation request for the final result
     private void sendEvaluationRequestForFinalResult(String formula) {
         Map<String,String> formulaToEval = new HashMap<>();
         formulaToEval.put("formula", formula);
@@ -216,6 +226,9 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     }
 
     @FXML
+    // Retrieve the formula text from the formula editor
+    // Updates the value of the active cell in the spreadsheet with the formula entered by the user
+    // Closes the formula editor window after the update
     public void applyFormula() {
         String formula = formulaEditor.getText();
         actionLineController.updateCellValue(formula);
@@ -223,6 +236,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
     }
 
     @FXML
+    // Closes the formula editor window without applying any changes
     public void cancelFormula() {
         closeWindow();
     }
@@ -232,13 +246,17 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         stage.close();
     }
 
+    // Updates the preview area with the current text from the formula editor
+    // Provides real-time feedback to the user on the formula being constructed
     private void updateFormulaPreview() {
         formulaPreview.setText(formulaEditor.getText());
     }
 
+    // Sets the action line controller
     @Override
     public void setActionLineController(ActionLineController actionLineController) {this.actionLineController = actionLineController;}
 
+    // Sets the spreadsheet controller
     @Override
     public void setSpreadsheetController(SpreadsheetController spreadsheetController){this.spreadsheetController = spreadsheetController;}
 }

@@ -9,14 +9,10 @@ import dto.permission.Permission;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import shticell.client.sheetpanel.action.line.api.ActionLineController;
@@ -35,7 +31,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
-
+// Implementation of the SpreadsheetController interface that manages spreadsheet UI interactions
+// and handles cell operations, styling, and display logic
 public class SpreadsheetControllerImpl implements SpreadsheetController {
     @FXML
     private GridPane gridPane;
@@ -52,7 +49,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     private EditingManager editingManager;
     private Permission permission;
 
-
+    // Initializes the ScrollPane and GridPane with appropriate settings and listeners
+    // for proper display and scrolling behavior
     @FXML
     public void initialize() {
         scrollPane.setContent(gridPane);
@@ -62,8 +60,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         // Set a minimum width for the GridPane
-        gridPane.setMinWidth(800);
-        gridPane.setMinHeight(600);
+        gridPane.setMinWidth(Constants.SHEET_GRID_PANE_WIDTH);
+        gridPane.setMinHeight(Constants.SHEET_GRID_PANE_HEIGHT);
 
         // Add a listener to adjust the ScrollPane's width
         scrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
@@ -72,6 +70,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         });
     }
 
+    // Displays a sheet by setting up dimensions, creating cells, and updating their content
+    // Also handles range display and animations if enabled
     @Override
     public void displaySheet(SheetDto sheetDto) {
         uiSheetModel.clearCells();
@@ -98,6 +98,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
     }
 
+    // Displays a temporary sheet view, used for version history or state viewing
+    // Saves the current sheet state and updates display settings accordingly
     @Override
     public void displayTemporarySheet(SheetDto sheetDto, boolean versionView) {
         uiSheetModel.clearPreviousRangeHighlight();
@@ -113,9 +115,10 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
             editingManager.enableSheetStateView();
         }
         updateAllCells(sheetDto.getCells());
-
     }
 
+    // Restores the display to the original sheet after viewing a temporary sheet
+    // Resets cell display and editing permissions
     @Override
     public void displayOriginalSheet(boolean versionView) {
         if (savedSheet != null && !versionView) {currentSheet = savedSheet;}
@@ -124,9 +127,10 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         editingManager.enableSheetViewEditing(permission);
 
         updateAllCells(currentSheet.getCells());
-
     }
 
+    // Handles cell click events by highlighting dependencies and influences
+    // Updates action line with cell data and adds visual effects if animations are enabled
     @Override
     public void handleCellClick(String cellId) {
         uiSheetModel.clearPreviousHighlights();
@@ -149,6 +153,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
     }
 
+    // Sets up the context menu for individual cells with style, reset, and formula building options
     @Override
     public void setupCellContextMenu(Label cellLabel, String cellId) {
         ContextMenu contextMenu = new ContextMenu();
@@ -164,8 +169,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         cellLabel.setContextMenu(contextMenu);
     }
 
-
-
+    // Sets up the context menu for header cells (rows/columns) with resize and alignment options
     @Override
     public void setupHeaderContextMenu(Label cellLabel, int index, boolean isColumn) {
         ContextMenu contextMenu = new ContextMenu();
@@ -177,6 +181,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         cellLabel.setContextMenu(contextMenu);
     }
 
+    // Updates all cells in the sheet with their current values and clears empty cells
     @Override
     public void updateAllCells(Map<String, CellDto> cells) {
         for (Map.Entry<String, CellDto> entry : cells.entrySet()) {
@@ -196,6 +201,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
     }
 
+    // Updates a single cell's display with its value and style
     private void updateCell(String cellId, CellDto cellDto) {
         Label cellLabel = uiSheetModel.getCellLabel(cellId);
         if (cellLabel != null) {
@@ -205,16 +211,18 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
     }
 
+    // Recalculates and updates the grid dimensions based on current content
     @Override
     public void recalculateGridDimensions() {
         double totalWidth = calculateTotalGridWidth();
         double totalHeight = calculateTotalGridHeight();
-        gridPane.setMinWidth(Math.max(800, totalWidth));
-        gridPane.setPrefWidth(Math.max(800, totalWidth));
-        gridPane.setMinHeight(Math.max(600, totalHeight));
-        gridPane.setPrefHeight(Math.max(600, totalHeight));
+        gridPane.setMinWidth(Math.max(Constants.SHEET_GRID_PANE_WIDTH, totalWidth));
+        gridPane.setPrefWidth(Math.max(Constants.SHEET_GRID_PANE_WIDTH, totalWidth));
+        gridPane.setMinHeight(Math.max(Constants.SHEET_GRID_PANE_HEIGHT, totalHeight));
+        gridPane.setPrefHeight(Math.max(Constants.SHEET_GRID_PANE_HEIGHT, totalHeight));
     }
 
+    // Calculates the total width of the grid including all columns
     private double calculateTotalGridWidth() {
         double totalWidth = gridPane.getColumnConstraints().getFirst().getPrefWidth(); // Header column
         for (int i = 0; i <= currentSheetNumCols; i++) {
@@ -223,6 +231,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         return totalWidth;
     }
 
+    // Calculates the total height of the grid including all rows
     private double calculateTotalGridHeight() {
         double totalHeight = gridPane.getRowConstraints().getFirst().getPrefHeight(); // Header row
         for (int i = 0; i <= currentSheetNumRows; i++) {
@@ -230,6 +239,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
         return totalHeight;
     }
+
+    // Disables cell click events and context menus for all cells
     @Override
     public void disableCellClick() {
         for (int col = 1; col <= currentSheetNumCols; col++) {  // Skip column 0 (headers)
@@ -238,11 +249,13 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                 Label cellLabel = uiSheetModel.getCellLabel(cellId);
                 if (cellLabel != null) {
                     cellLabel.setOnMouseClicked(null);  // Disable the click event
+                    cellLabel.setContextMenu(null);     // Disable the context menu
                 }
             }
         }
     }
 
+    // Enables cell click events and context menus for all cells based on user permissions
     @Override
     public void enableCellClick() {
         for (int col = 1; col <= currentSheetNumCols; col++) {  // Skip column 0 (headers)
@@ -251,22 +264,28 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                 Label cellLabel = uiSheetModel.getCellLabel(cellId);
                 if (cellLabel != null) {
                     cellLabel.setOnMouseClicked(event -> handleCellClick(cellId));  // Enable click event
+                    if(permission == Permission.OWNER || permission == Permission.WRITER)
+                    {
+                        setupCellContextMenu(cellLabel, cellId);
+                    }
                 }
             }
         }
     }
 
+    // Returns the current sheet
     @Override
     public SheetDto getCurrentSheet() {
         return currentSheet;
     }
 
+    // Setter methods for various controllers and components
     @Override
     public void setFormulaBuilder(FormulaBuilder formulaBuilder) {this.formulaBuilder = formulaBuilder;}
 
     @Override
     public void setCurrentSheet(SheetDto sheet) {currentSheet = sheet;
-    rangeController.displayRanges(sheet.getSheetRanges());}
+        rangeController.displayRanges(sheet.getSheetRanges());}
 
     @Override
     public void setUiSheetModel(UISheetModel uiSheetModel){
@@ -286,6 +305,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     @Override
     public void setEditingManager(EditingManager editingManager){this.editingManager = editingManager;}
 
+    // Resets the style of a cell to default
     private void resetCellStyle(Label cellLabel, String cellId) {
         if (currentSheet.getCells().get(cellId) != null) {
             sendCellStyleUpdateRequest (cellId, "");
@@ -293,6 +313,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         }
     }
 
+    // Shows a dialog for setting cell styles including background and text colors
     public void showCellStyleDialog(Label cellLabel, String cellId) {
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Set Cell Style");
@@ -360,19 +381,22 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         dialog.showAndWait();
     }
 
+    // Generates a new cell style string by adding specified background and text colors
     private String generateNewStyle(Color backgroundColor, Color textColor, String prevStyle) {
         StringBuilder newStyle = new StringBuilder(prevStyle);
 
         if (backgroundColor != null) {
-            newStyle.append("-fx-background-color: ").append(uiSheetModel.toRgbString(backgroundColor)).append(";");
+            newStyle.append(Constants.BACKGROUND_COLOR).append(uiSheetModel.toRgbString(backgroundColor)).append(";");
+
         }
         if (textColor != null) {
-            newStyle.append("-fx-text-fill: ").append(uiSheetModel.toRgbString(textColor)).append(";");
+            newStyle.append(Constants.TEXT_COLOR).append(uiSheetModel.toRgbString(textColor)).append(";");
         }
 
         return newStyle.toString();
     }
 
+    // Sends an asynchronous request to update the style of a specified cell
     private void sendCellStyleUpdateRequest(String cellId,String cellStyle) {
         Map<String,String> cellStyleParams = new HashMap<>();
         cellStyleParams.put("cellId", cellId);
@@ -413,6 +437,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
     }
 
+    // Shows a dialog for setting text alignment for cells in a specified row or column
     public void showAlignmentDialog(int index, boolean isColumn) {
         ChoiceDialog<String> dialog = new ChoiceDialog<>("Left", "Left", "Center", "Right");
         dialog.setTitle("Set Alignment");
@@ -421,9 +446,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
         dialog.showAndWait().ifPresent(result -> {
             String alignment = switch (result) {
-                case "Left" -> "-fx-alignment: center-left;";
-                case "Center" -> "-fx-alignment: center;";
-                case "Right" -> "-fx-alignment: center-right;";
+                case "Left" -> Constants.ALIGNMENT_LEFT;
+                case "Center" -> Constants.ALIGNMENT_CENTER;
+                case "Right" -> Constants.ALIGNMENT_RIGHT;
                 default -> "";
             };
             if (isColumn) {
@@ -463,6 +488,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         });
     }
 
+    // Sending the server a request to add an empty cell to the sheet
     private void sendAddEmptyCellRequest(String cellId) {
         Map<String,String> cellParams = new HashMap<>();
         cellParams.put("cellId", cellId);
@@ -500,7 +526,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         });
     }
 
-
+    // Setting the permission of the user for the held sheet
     @Override
     public void setPermission(Permission permission)
     {

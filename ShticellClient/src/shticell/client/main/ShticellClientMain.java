@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import shticell.client.sheethub.main.SheetHubMainController;
 import shticell.client.sheetpanel.main.SheetViewMainController;
 import shticell.client.util.Constants;
+import shticell.client.util.http.HttpClientUtil;
+
 import java.io.IOException;
 
 public class ShticellClientMain extends Application {
@@ -23,6 +25,7 @@ public class ShticellClientMain extends Application {
             Parent mainView = loader.load();
             sheetHubMainController = loader.getController();
 
+            // Load the sheet view page and setting it up
             FXMLLoader sheetViewLoader = new FXMLLoader(getClass().getResource(Constants.SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION));
             ScrollPane sheetViewPane = sheetViewLoader.load();
             sheetViewMainController = sheetViewLoader.getController();
@@ -47,6 +50,7 @@ public class ShticellClientMain extends Application {
     @Override
     public void stop() {
         sheetHubMainController.logout();
+        HttpClientUtil.shutdown();
     }
 
 

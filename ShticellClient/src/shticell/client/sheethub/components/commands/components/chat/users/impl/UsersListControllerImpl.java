@@ -15,9 +15,9 @@ import shticell.client.sheethub.components.commands.components.chat.users.UserLi
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import static shticell.client.util.Constants.REFRESH_RATE;
 
+// Implementation of UsersListController that manages the UI for displaying chat users
 public class UsersListControllerImpl implements shticell.client.sheethub.components.commands.components.chat.users.api.UsersListController {
 
     private Timer timer;
@@ -26,29 +26,34 @@ public class UsersListControllerImpl implements shticell.client.sheethub.compone
     private final IntegerProperty totalUsers;
     private HttpStatusUpdate httpStatusUpdate;
 
-    @FXML
-    private ListView<String> usersListView;
+    @FXML private ListView<String> usersListView;
     @FXML private Label chatUsersLabel;
 
+    // Initializes controller with default properties
     public UsersListControllerImpl() {
         autoUpdate = new SimpleBooleanProperty();
         totalUsers = new SimpleIntegerProperty();
     }
 
+    // Sets up UI bindings after FXML loading
     @FXML
     public void initialize() {
         chatUsersLabel.textProperty().bind(Bindings.concat("Chat Users: (", totalUsers.asString(), ")"));
     }
+
+    // Sets the HTTP status update handler
     @Override
     public void setHttpStatusUpdate(HttpStatusUpdate httpStatusUpdate) {
         this.httpStatusUpdate = httpStatusUpdate;
-
     }
+
+    // Returns the auto-update property
     @Override
     public BooleanProperty autoUpdatesProperty() {
         return autoUpdate;
     }
 
+    // Updates the UI with new list of users
     private void updateUsersList(List<String> usersNames) {
         Platform.runLater(() -> {
             ObservableList<String> items = usersListView.getItems();
@@ -57,6 +62,8 @@ public class UsersListControllerImpl implements shticell.client.sheethub.compone
             totalUsers.set(usersNames.size());
         });
     }
+
+    // Starts the periodic refresh task
     @Override
     public void startListRefresher() {
         listRefresher = new UserListRefresher(
@@ -67,6 +74,7 @@ public class UsersListControllerImpl implements shticell.client.sheethub.compone
         timer.schedule(listRefresher, REFRESH_RATE, REFRESH_RATE);
     }
 
+    // Cleans up resources and stops refresh task
     @Override
     public void close() {
         usersListView.getItems().clear();

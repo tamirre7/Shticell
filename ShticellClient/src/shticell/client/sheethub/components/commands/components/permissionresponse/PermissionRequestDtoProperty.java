@@ -3,7 +3,11 @@ package shticell.client.sheethub.components.commands.components.permissionrespon
 import dto.permission.Permission;
 import dto.permission.PermissionRequestDto;
 import javafx.beans.property.*;
-
+/**
+ * Property class that encapsulates data from the PermissionRequestDto DTO.
+ * Provides JavaFX properties for request ID,sheet name, permission type etc.
+ * enabling easy binding to UI components in a JavaFX application.
+ */
 public class PermissionRequestDtoProperty {
     private final IntegerProperty id;
     private final StringProperty sheetName;

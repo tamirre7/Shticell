@@ -3,7 +3,6 @@ package spreadsheet.sheetmanager.api;
 import spreadsheet.api.SpreadSheet;
 import dto.permission.Permission;
 import spreadsheet.sheetmanager.permissionmanager.permissionrequest.PermissionRequest;
-
 import java.util.List;
 import java.util.Map;
 

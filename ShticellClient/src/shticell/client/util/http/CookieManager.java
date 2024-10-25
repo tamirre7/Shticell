@@ -8,15 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * CookieManager manages HTTP cookies for OkHttpClient.
+ */
 public class CookieManager implements CookieJar {
     private final static String CACHE_MANAGER_PREFIX = "    [Cookie Manager] ---> ";
-    Map<String, Map<String, Cookie>> cookies = new HashMap<>();
-    private Consumer<String> logData = System.out::println;
+    private Map<String, Map<String, Cookie>> cookies = new HashMap<>();
+    private Consumer<String> logData = System.out::println; // For logging cookie operations
 
-    public void setLogData(Consumer<String> logData) {
-        this.logData = logData;
-    }
-
+    // Loads cookies for a given URL.
     @NotNull
     @Override
     public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
@@ -34,6 +34,7 @@ public class CookieManager implements CookieJar {
         return cookiesPerDomain;
     }
 
+    //Saves cookies from an HTTP response.
     @Override
     public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> responseCookies) {
         String host = httpUrl.host();
@@ -41,7 +42,7 @@ public class CookieManager implements CookieJar {
             Map<String, Cookie> cookiesMap = cookies.computeIfAbsent(host, key -> new HashMap<>());
             responseCookies
                     .stream()
-                    .filter(cookie -> !cookiesMap.containsKey(cookie.name()))
+                    .filter(cookie -> !cookiesMap.containsKey(cookie.name())) // Avoid duplicates
                     .forEach(cookie -> {
                         logData.accept(CACHE_MANAGER_PREFIX + "Storing cookie [" + cookie.name() + "] --> [" + cookie.value() + "]");
                         cookiesMap.put(cookie.name(), cookie);
@@ -49,6 +50,7 @@ public class CookieManager implements CookieJar {
         }
     }
 
+    // Removes cookies associated with a domain.
     public void removeCookiesOf(String domain) {
         synchronized (this) {
             cookies.remove(domain);

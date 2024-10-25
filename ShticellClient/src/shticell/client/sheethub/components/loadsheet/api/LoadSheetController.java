@@ -6,9 +6,15 @@ import shticell.client.sheethub.components.login.api.LoginController;
 import java.io.File;
 
 public interface LoadSheetController {
+    // Handles the action when the load button is clicked.
     void loadButtonClicked(ActionEvent event);
-    void uploadFile(File file);
-    void setLoginController(LoginController loginSheetController);
-    void setGreetingLabel();
 
+    // Uploads a file for loading a sheet.
+    void uploadFile(File file);
+
+    // Sets the login controller for managing user sessions.
+    void setLoginController(LoginController loginSheetController);
+
+    // Sets the greeting label to display a welcome message or user information.
+    void setGreetingLabel();
 }
