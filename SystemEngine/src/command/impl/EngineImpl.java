@@ -85,10 +85,6 @@ public class EngineImpl implements Engine {
                 String endCell = stlRange.getSTLBoundaries().getTo();
                 String rangeName = stlRange.getName();
 
-                // Validate range boundaries
-                if (!spreadSheet.isValidCellID(startCell) || !spreadSheet.isValidCellID(endCell)) {
-                    return new SaveLoadFileDto(false, "Invalid range: " + startCell + " to " + endCell);
-                }
                 CellIdentifierImpl startCellId = new CellIdentifierImpl(startCell);
                 CellIdentifierImpl endCellId = new CellIdentifierImpl(endCell);
 
@@ -432,11 +428,13 @@ public class EngineImpl implements Engine {
     //Adds an empty cell to the specified sheet.
     //Return A new SheetDto representing the updated sheet.
     @Override
-    public SheetDto addEmptyCell (String cellId,String sheetName) {
+    public SheetDto addEmptyCells (List<String> cellIds,String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
-        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
-        relevantSheet.addEmptyCell(cellIdentifier);
+        for(String cellId : cellIds) {
+            CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
+            relevantSheet.addEmptyCell(cellIdentifier);
+        }
         return convertSheetToSheetDto(relevantSheet);
     }
 

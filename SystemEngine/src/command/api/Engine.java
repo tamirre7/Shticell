@@ -35,7 +35,7 @@ public interface Engine {
     SheetDto sortRange(Range range, List<String>colsToSort,String sheetName);
 
     // Creates an empty cell at the specified location
-    SheetDto addEmptyCell (String cellid,String sheetName);
+    SheetDto addEmptyCells (List<String> cellId,String sheetName);
 
     // Sets the visual style for a specific cell
     SheetDto setCellStyle(String cellid, String style,String sheetName);

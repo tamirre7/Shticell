@@ -84,7 +84,7 @@ public class UISheetModel {
     }
 
     // Applies custom CSS style to a cell
-    public void applyStyle(Label cellLabel, String cellId, String style) {
+    public void applyStyle(Label cellLabel,String style) {
         if (style != null) {
             cellLabel.setStyle(style);
         }

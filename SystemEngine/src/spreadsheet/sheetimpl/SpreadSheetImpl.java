@@ -286,10 +286,11 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
     public void addRange(String name, CellIdentifier topLeft, CellIdentifier bottomRight) {
         for (Range range: ranges.values()) {
             if (range.getName().toUpperCase().equals(name.toUpperCase()))
-                throw new IllegalArgumentException("Range name already exists");
+                throw new IllegalArgumentException("Each range must have a unique name. Please check and try again.");
         }
         if (!isRangeWithinBounds(topLeft, bottomRight)) {
-            throw new IllegalArgumentException("Range is out of bounds");
+            throw new IllegalArgumentException("The range '"+ name +"' is out of bounds\n"+"The bounds are-\n"+"Rows between 1-" +
+                    this.sheetDimension.getNumRows() + "\nCol between A -"+ (char) (this.sheetDimension.getNumCols() - 1 + 'A'));
         }
         ranges.put(name, new RangeImpl (name, topLeft, bottomRight,sheetDimension));
         List<CellIdentifier> cellsInRange = ranges.get(name).getCellsInRange();

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Main-Class: shticell.client.main.ShticellClientMain
+Class-Path: lib/dto/dto.jar lib/gson/gson-2.1.jar lib/gson/gson-2.1-java
+ doc.jar lib/gson/gson-2.1-sources.jar lib/okhttp/annotations-13.0.jar l
+ ib/okhttp/kotlin-stdlib-1.4.10.jar lib/okhttp/kotlin-stdlib-common-1.4.
+ 10.jar lib/okhttp/okhttp-4.9.1.jar lib/okhttp/okio-2.8.0.jar
+

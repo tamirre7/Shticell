@@ -6,6 +6,7 @@ import dto.CellDto;
 import dto.DimensionDto;
 import dto.SheetDto;
 import dto.permission.Permission;
+import dto.permission.PermissionInfoDto;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +26,9 @@ import shticell.client.sheetpanel.misc.api.MiscController;
 import shticell.client.util.Constants;
 import shticell.client.util.http.HttpClientUtil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -207,7 +210,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         if (cellLabel != null) {
             cellLabel.setText(cellDto != null ? cellDto.getEffectiveValue() : "");
             String style = cellDto.getStyle();
-            uiSheetModel.applyStyle(cellLabel, cellId,style);
+            uiSheetModel.applyStyle(cellLabel,style);
         }
     }
 
@@ -345,7 +348,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         String prevStyle;
         if (currentSheet.getCells().get(cellId) == null) {
             prevStyle = "";
-            sendAddEmptyCellRequest(cellId);
+            List<String> cellToAdd = new ArrayList<>();
+            cellToAdd.add(cellId);
+            sendAddEmptyCellsRequest(cellToAdd);
         }
         else {
             prevStyle = currentSheet.getCells().get(cellId).getStyle();
@@ -354,27 +359,27 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         previewButton.addEventFilter(ActionEvent.ACTION, event -> {
             event.consume();
             String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
-            uiSheetModel.applyStyle(cellLabel,cellId,newStyle);
+            uiSheetModel.applyStyle(cellLabel,newStyle);
             isPrev.set(true);
         });
 
         okButton.addEventFilter(ActionEvent.ACTION, event -> {
             String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
             sendCellStyleUpdateRequest(cellId, newStyle);
-            uiSheetModel.applyStyle(cellLabel,cellId,newStyle);
+            uiSheetModel.applyStyle(cellLabel,newStyle);
             isPrev.set(false);
             dialog.close();
         });
 
         cancelButton.addEventFilter(ActionEvent.ACTION, event -> {
-            uiSheetModel.applyStyle(cellLabel,cellId,prevStyle);
+            uiSheetModel.applyStyle(cellLabel,prevStyle);
             isPrev.set(false);
             dialog.close();
         });
 
         dialog.setOnHidden(event -> {
             if (dialog.getResult() == null || isPrev.get()) {
-                uiSheetModel.applyStyle(cellLabel,cellId,prevStyle);
+                uiSheetModel.applyStyle(cellLabel,prevStyle);
             }
         });
 
@@ -421,8 +426,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
                 } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to set the cell style: " + response.message())
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to set cell style: \n" + errorMessage)
                     );
                 }
             }
@@ -439,6 +444,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
     // Shows a dialog for setting text alignment for cells in a specified row or column
     public void showAlignmentDialog(int index, boolean isColumn) {
+
+        List<String>cellsToAdd = new ArrayList<>();
+
         ChoiceDialog<String> dialog = new ChoiceDialog<>("Left", "Left", "Center", "Right");
         dialog.setTitle("Set Alignment");
         dialog.setHeaderText("Choose alignment for " + (isColumn ? "column" : "row") + ":");
@@ -459,14 +467,12 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                         String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
                         sendCellStyleUpdateRequest (cellId, newStyle);
                         Label cell = uiSheetModel.getCellLabel(cellId);
-                        uiSheetModel.applyStyle(cell, cellId,newStyle);
+                        uiSheetModel.applyStyle(cell,newStyle);
                     }
                     else {
-                        sendAddEmptyCellRequest(cellId);
-                        String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
-                        sendCellStyleUpdateRequest (cellId, newStyle);
-                        Label cell = uiSheetModel.getCellLabel(cellId);
-                        uiSheetModel.applyStyle(cell, cellId,newStyle);
+                      cellsToAdd.add(cellId);
+                      Label cell = uiSheetModel.getCellLabel(cellId);
+                      uiSheetModel.applyStyle(cell,alignment);
                     }
                 }
             } else {
@@ -474,33 +480,80 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     String cellId = "" + (char)('A' + col - 1) + index;
                     CellDto cellDto = currentSheet.getCells().get(cellId);
                     if (cellDto != null) {
-                        String newStyle = cellDto.getStyle() + alignment;
+                        String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
                         sendCellStyleUpdateRequest (cellId, newStyle);
+                        Label cell = uiSheetModel.getCellLabel(cellId);
+                        uiSheetModel.applyStyle(cell,newStyle);
                     }
                     else {
-                        sendAddEmptyCellRequest(cellId);
-                        cellDto = currentSheet.getCells().get(cellId);
-                        String newStyle = cellDto.getStyle() + alignment;
-                        sendCellStyleUpdateRequest (cellId, newStyle);
+                        cellsToAdd.add(cellId);
+                        Label cell = uiSheetModel.getCellLabel(cellId);
+                        uiSheetModel.applyStyle(cell,alignment);
                     }
                 }
+            }
+            if(!cellsToAdd.isEmpty()) {
+                sendUpdateAlignmentRequestForEmptyCell(cellsToAdd,alignment);
             }
         });
     }
 
-    // Sending the server a request to add an empty cell to the sheet
-    private void sendAddEmptyCellRequest(String cellId) {
-        Map<String,String> cellParams = new HashMap<>();
-        cellParams.put("cellId", cellId);
-        cellParams.put("sheetName", currentSheet.getSheetName());
+    // Sends an asynchronous request to update the aligments of new empty cells
+    private void sendUpdateAlignmentRequestForEmptyCell(List <String>cellIds,String cellStyle) {
+        Map<String, Object> requestParams = new HashMap<>();
+        requestParams.put("cellIds", cellIds);
+        requestParams.put("sheetName", currentSheet.getSheetName());
 
         Gson gson = new Gson();
-        String cellIdJson = gson.toJson(cellParams);
+        String cellIdJson = gson.toJson(requestParams);
 
         RequestBody requestBody = RequestBody.create(cellIdJson,MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.ADD_EMPTY_CELL)
+                .url(Constants.ADD_EMPTY_CELLS)
+                .post(requestBody)
+                .build();
+
+        HttpClientUtil.runAsync(request, new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                        currentSheet = extractSheetFromResponseBody(responseBody);
+                        for(String cellId : cellIds) {
+                            sendCellStyleUpdateRequest (cellId, cellStyle);
+                        }
+
+                    });
+                } else {
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to add cell: \n" + errorMessage)
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        showAlert("Error", "Error: " + e.getMessage())
+                );
+            }
+        });}
+
+    // Sending the server a request to add an empty cell to the sheet
+    private void sendAddEmptyCellsRequest(List<String> cellIds) {
+        Map<String, Object> requestParams = new HashMap<>();
+        requestParams.put("cellIds", cellIds);
+        requestParams.put("sheetName", currentSheet.getSheetName());
+
+        Gson gson = new Gson();
+        String cellIdJson = gson.toJson(requestParams);
+
+        RequestBody requestBody = RequestBody.create(cellIdJson,MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(Constants.ADD_EMPTY_CELLS)
                 .post(requestBody)
                 .build();
 
@@ -511,8 +564,8 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> currentSheet = extractSheetFromResponseBody(responseBody));
                 } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to add cell: " + response.message())
+                    String errorMessage = response.body() != null ? response.body().string() : response.message();
+                    Platform.runLater(() -> showAlert("Error", "Failed to add cell: \n" + errorMessage)
                     );
                 }
             }
