@@ -17,6 +17,8 @@ import shticell.client.util.Constants;
 
 import java.util.*;
 
+import static shticell.client.util.http.HttpClientUtil.showAlert;
+
 // Manages UI components and visual representation of a spreadsheet
 public class UISheetModel {
     private GridPane gridPane;
@@ -217,20 +219,6 @@ public class UISheetModel {
                 cellLabel.setStyle(newStyle);
             }
         }
-    }
-
-    // Shows error alert dialog
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setMinHeight(Region.USE_PREF_SIZE);
-        dialogPane.setMinWidth(Region.USE_PREF_SIZE);
-
-        alert.showAndWait();
     }
 
     // Highlights a range of cells between two points

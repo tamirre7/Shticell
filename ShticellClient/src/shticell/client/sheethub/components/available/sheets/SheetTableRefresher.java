@@ -49,7 +49,7 @@ public class SheetTableRefresher extends TimerTask {
                     String responseBody = response.body().string(); // Get the response body
                     // Parse the response body to a list of SheetPermissionDto
                     List<SheetPermissionDto> availableSheets = new Gson().fromJson(responseBody, new TypeToken<List<SheetPermissionDto>>(){}.getType());
-                    tableConsumer.accept(availableSheets); // Pass the data to the consumer
+                    tableConsumer.accept(availableSheets);// Pass the data to the consumer
                 } else {
                     // Show an alert if the response is not successful
                     Platform.runLater(() -> showAlert("Error", "Failed to fetch available sheets: " + response.message()));

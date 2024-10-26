@@ -20,7 +20,7 @@ public class DeleteRangeServlet extends HttpServlet {
 
     // Handles DELETE requests for removing a range from a sheet
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         // Set the response content type to JSON
         resp.setContentType("application/json");
         try {

@@ -4,10 +4,10 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="shticell.client.sheethub.components.commands.components.chat.chatroom.impl.ChatRoomControllerImpl">
    <left>
-      <fx:include fx:id="usersListComponent" maxHeight="1.7976931348623157E308" source="../users/users.fxml" />
+      <fx:include fx:id="usersListComponent" source="../users/users.fxml" />
    </left>
    <center>
-      <fx:include fx:id="chatAreaComponent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="300.0" source="../chatarea/chat-area.fxml" />
+      <fx:include fx:id="chatAreaComponent" source="../chatarea/chat-area.fxml" />
    </center>
    <right>
       <fx:include fx:id="chatCommandsComponent" source="../chatcommands/action-commands.fxml" />

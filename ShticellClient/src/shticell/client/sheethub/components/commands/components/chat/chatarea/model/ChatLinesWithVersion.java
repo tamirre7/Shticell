@@ -1,6 +1,5 @@
 package shticell.client.sheethub.components.commands.components.chat.chatarea.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChatLinesWithVersion {

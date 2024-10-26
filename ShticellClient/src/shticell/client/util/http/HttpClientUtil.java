@@ -12,8 +12,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-import java.util.function.Consumer;
-
 public class HttpClientUtil {
     private final static CookieManager CookieManager = new CookieManager();
     private final static OkHttpClient HTTP_CLIENT =

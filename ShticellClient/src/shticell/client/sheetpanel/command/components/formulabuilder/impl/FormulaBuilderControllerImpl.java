@@ -137,7 +137,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
     // Sends an evaluation request for a sub-formula
     private void sendEvaluationRequestForSubFormulas(StringBuilder previews, String subFormula) {
-        Map<String,String> formulaToEval = new HashMap<>();
+        Map<String, String> formulaToEval = new HashMap<>();
         formulaToEval.put("formula", subFormula);
         formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
@@ -152,20 +152,29 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
         HttpClientUtil.runAsync(request, new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        String responseBody = response.body() != null ? response.body().string() : "No response";
+                        Platform.runLater(() -> {
+                            // Append each subFormula result when it's received
+                            previews.append(subFormula).append(" = ").append(responseBody).append("\n");
+                            // Update the TextArea with the new preview
+                            subFormulaPreviews.setText(previews.toString());
+                        });
+                    } else {
+                        Platform.runLater(() -> {
+                            previews.append(subFormula).append(" = ").append(response.message()).append("\n");
+                            subFormulaPreviews.setText(previews.toString());
+                        });
+                    }
+                } catch (IOException e) {
                     Platform.runLater(() -> {
-                        // Append each subFormula result when it's received
-                        previews.append(subFormula).append(" = ").append(responseBody).append("\n");
-                        // Update the TextArea with the new preview
+                        previews.append(subFormula).append(" = Error: ").append(e.getMessage()).append("\n");
                         subFormulaPreviews.setText(previews.toString());
                     });
-                } else {
-                    Platform.runLater(() -> {
-                        previews.append(subFormula).append(" = ").append(response.message()).append("\n");
-                        subFormulaPreviews.setText(previews.toString());
-                    });
+                } finally {
+                    response.close(); // Ensure response is closed to prevent connection leaks
                 }
             }
 
@@ -179,6 +188,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
         });
     }
 
+
     // Updates the final result preview
     private void updateResultPreview() {
         sendEvaluationRequestForFinalResult(formulaPreview.getText());
@@ -187,14 +197,14 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
     // Sends an evaluation request for the final result
     private void sendEvaluationRequestForFinalResult(String formula) {
-        Map<String,String> formulaToEval = new HashMap<>();
+        Map<String, String> formulaToEval = new HashMap<>();
         formulaToEval.put("formula", formula);
         formulaToEval.put("sheetName", spreadsheetController.getCurrentSheet().getSheetName());
 
         Gson gson = new Gson();
         String formulaToEvalJson = gson.toJson(formulaToEval);
 
-        RequestBody requestBody = RequestBody.create(formulaToEvalJson,MediaType.parse("application/json"));
+        RequestBody requestBody = RequestBody.create(formulaToEvalJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(Constants.EVALUATE_ORIGINAL_VALUE)
@@ -203,16 +213,19 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
 
         HttpClientUtil.runAsync(request, new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                      finalResultProperty.set(responseBody);
-                    });
-                } else {
-                    Platform.runLater(() ->
-                     finalResultProperty.set(response.message())
-                    );
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        String responseBody = response.body() != null ? response.body().string() : "No response";
+                        Platform.runLater(() -> finalResultProperty.set(responseBody));
+                    } else {
+                        String errorMessage = response.message() != null ? response.message() : "Unknown error";
+                        Platform.runLater(() -> finalResultProperty.set(errorMessage));
+                    }
+                } catch (IOException e) {
+                    Platform.runLater(() -> finalResultProperty.set("Error reading response: " + e.getMessage()));
+                } finally {
+                    response.close(); // Ensure response is closed to prevent connection leaks
                 }
             }
 
@@ -224,6 +237,7 @@ public class FormulaBuilderControllerImpl implements FormulaBuilderController {
             }
         });
     }
+
 
     @FXML
     // Retrieve the formula text from the formula editor

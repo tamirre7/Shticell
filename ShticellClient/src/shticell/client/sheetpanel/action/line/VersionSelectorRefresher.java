@@ -45,19 +45,27 @@ public class VersionSelectorRefresher extends TimerTask {
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                // Check response status
-                if (response.code() != 200) {
-                    String responseBody = response.body().string(); // Get response body
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                try {
+                    // Check response status
+                    if (response.code() != 200) {
+                        String responseBody = response.body() != null ? response.body().string() : "Unknown error";
+                        Platform.runLater(() ->
+                                HttpClientUtil.showAlert("Error", responseBody) // Show error alert
+                        );
+                    } else {
+                        String responseBody = response.body() != null ? response.body().string() : "0";
+                        Platform.runLater(() -> {
+                            int latestVersion = Integer.parseInt(responseBody); // Parse latest version
+                            latestVersionConsumer.accept(latestVersion); // Update consumer with latest version
+                        });
+                    }
+                } catch (IOException e) {
                     Platform.runLater(() ->
-                            HttpClientUtil.showAlert("Error", responseBody) // Show error alert
+                            HttpClientUtil.showAlert("Error", "An error occurred while processing the response: \n" + e.getMessage())
                     );
-                } else {
-                    String responseBody = response.body().string(); // Get response body
-                    Platform.runLater(() -> {
-                        int latestVersion = Integer.parseInt(responseBody); // Parse latest version
-                        latestVersionConsumer.accept(latestVersion); // Update consumer with latest version
-                    });
+                } finally {
+                    response.close(); // Ensure response is closed to prevent connection leaks
                 }
             }
         });

@@ -40,7 +40,7 @@ public class LoadSheetControllerImpl implements LoadSheetController {
     }
 
     @Override
-    // Uploads the selected XML file to the server.
+// Uploads the selected XML file to the server.
     public void uploadFile(File file) {
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -55,12 +55,18 @@ public class LoadSheetControllerImpl implements LoadSheetController {
 
         HttpClientUtil.runAsync(request, new Callback() {
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    String errorMessage = response.body() != null ? response.body().string() : response.message();
-                    Platform.runLater(() -> showAlert("Error", "Failed to load file: \n" + errorMessage));
-                } else {
-                    Platform.runLater(() -> showInfoAlert("Load Complete", "File loaded successfully!")); // Displays success message.
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                try {
+                    if (!response.isSuccessful()) {
+                        String errorMessage = response.body() != null ? response.body().string() : response.message();
+                        Platform.runLater(() -> showAlert("Error", "Failed to load file: \n" + errorMessage));
+                    } else {
+                        Platform.runLater(() -> showInfoAlert("Load Complete", "File loaded successfully!")); // Displays success message.
+                    }
+                } catch (IOException e) {
+                    Platform.runLater(() -> showAlert("Error", "An error occurred while reading the response: \n" + e.getMessage()));
+                } finally {
+                    response.close(); // Ensure response is closed to avoid connection leaks
                 }
             }
 
@@ -70,7 +76,6 @@ public class LoadSheetControllerImpl implements LoadSheetController {
             }
         });
     }
-
     @Override
     // Sets the greeting label with the user's name.
     public void setGreetingLabel() {

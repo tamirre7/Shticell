@@ -10,10 +10,6 @@ public class Constants {
     public final static String SHEET_HUB_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/main/shticell-hub-main.fxml";
     public final static String SHEET_VIEW_MAIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/main/shticellApp.fxml";
     public final static String LOGIN_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/login/login-page.fxml";
-    public final static String LOAD_SHEET_PAGE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/loadsheet/load-sheet.fxml";
-    public final static String AVAILABLE_SHEETS_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/available/sheets/available-sheets.fxml";
-    public final static String PERMISSION_TABLE_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/permission/table/permission-table.fxml";
-    public final static String COMMANDS_MENU_FXML_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/commands-menu.fxml";
     public final static String FORMULA_BUILDER_FXML_RESOURCE_LOCATION = "/shticell/client/sheetpanel/command/components/formulabuilder/formulabuilder.fxml";
     public final static String PERMISSION_REQUEST_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionrequest/request-permission.fxml";
     public final static String PERMISSION_RESPONSE_RESOURCE_LOCATION = "/shticell/client/sheethub/components/commands/components/permissionresponse/permission-response.fxml";
@@ -110,7 +106,7 @@ public class Constants {
     // UI sheet model
     public final static int RGB_MAX_VALUE = 255;
     public final static int ROW_COL_INIT_CONSTRAINT = 30;
-    public final static String DEPENDENCIES_HIGHLIGHT_COLOR = "-ligntblue";
+    public final static String DEPENDENCIES_HIGHLIGHT_COLOR = "lightblue";
     public final static String INFLUENCE_HIGHLIGHT_COLOR = "lightgreen";
     public final static String RANGE_HIGHLIGHT_STYLE = "-fx-border-color: blue; -fx-border-width: 1px; ";
 }

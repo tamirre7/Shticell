@@ -48,11 +48,9 @@ public class PermissionRefresher extends TimerTask {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) { // Check if the response is successful.
                     String responseBody = response.body().string(); // Read the response body.
-                    Platform.runLater(() -> {
-                        // Parse the JSON response to a list of PermissionInfoDto.
-                        List<PermissionInfoDto> permissions = new Gson().fromJson(responseBody, new TypeToken<List<PermissionInfoDto>>(){}.getType());
-                        permissionConsumer.accept(permissions); // Pass the permissions to the consumer.
-                    });
+                    // Parse the JSON response to a list of PermissionInfoDto.
+                    List<PermissionInfoDto> permissions = new Gson().fromJson(responseBody, new TypeToken<List<PermissionInfoDto>>(){}.getType());
+                    permissionConsumer.accept(permissions); // Pass the permissions to the consumer.
                 } else {
                     // Show an alert in case of an unsuccessful response.
                     Platform.runLater(() ->

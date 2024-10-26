@@ -1,8 +1,6 @@
 package shticell.client.sheethub.components.available.sheets.impl;
 
-import com.google.gson.Gson;
 import dto.permission.Permission;
-import dto.permission.PermissionInfoDto;
 import dto.SheetDto;
 import dto.permission.SheetPermissionDto;
 import javafx.application.Platform;
@@ -11,26 +9,16 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 import shticell.client.sheethub.components.available.sheets.SheetPermissionDtoProperty;
 import shticell.client.sheethub.components.available.sheets.SheetTableRefresher;
 import shticell.client.sheethub.components.available.sheets.api.AvailableSheetsController;
 import shticell.client.sheethub.components.login.api.LoginController;
 import shticell.client.sheethub.components.permission.table.api.PermissionTableController;
-import shticell.client.sheetpanel.action.line.api.ActionLineController;
 import shticell.client.sheetpanel.spreadsheet.api.SpreadsheetController;
-import shticell.client.util.Constants;
-import shticell.client.util.http.HttpClientUtil;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import static shticell.client.util.Constants.REFRESH_RATE;
-import static shticell.client.util.http.HttpClientUtil.showAlert;
 
 public class AvailableSheetsControllerImpl implements AvailableSheetsController {
 
@@ -76,40 +64,6 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
         });
     }
 
-    // Fetches permission for the specified sheet asynchronously.
-    private void fetchPermissionForSheet(String sheetName, Consumer<String> permissionConsumer) {
-        String finalUrl = HttpUrl
-                .parse(Constants.USER_PERMISSON_FOR_SHEET)
-                .newBuilder()
-                .addQueryParameter("sheetName", sheetName)
-                .build()
-                .toString();
-
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        PermissionInfoDto permissionInfoDto = new Gson().fromJson(responseBody, PermissionInfoDto.class);
-                        permissionConsumer.accept(permissionInfoDto.getPermissionType().toString());
-                    });
-                } else {
-                    Platform.runLater(() ->
-                            showAlert("Error", "Failed to show available sheets: " + response.message())
-                    );
-                }
-            }
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        showAlert("Error", "An error occurred: " + e.getMessage())
-                );
-            }
-        });
-    }
-
     // Updates the permission for the specified sheet.
     @Override
     public void updateSheetPermission(String sheetName, Permission newPermission) {
@@ -130,7 +84,6 @@ public class AvailableSheetsControllerImpl implements AvailableSheetsController 
             SheetDto sheetDto = selectedSheet.getSheetDto();
             spreadsheetController.setCurrentSheet(sheetDto);
             spreadsheetController.displaySheet(sheetDto);
-            permissionTableController.stopRequestRefresher();
             permissionTableController.startRequestRefresher(selectedSheet.sheetNameProperty().get());
         }
     }
