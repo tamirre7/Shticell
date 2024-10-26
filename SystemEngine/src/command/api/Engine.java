@@ -34,11 +34,9 @@ public interface Engine {
     // Sorts cells within a range based on specified columns
     SheetDto sortRange(Range range, List<String>colsToSort,String sheetName);
 
-    // Creates an empty cell at the specified location
-    SheetDto addEmptyCells (List<String> cellId,String sheetName);
+    // Receive a map of cell ids and the style to set for them and setting the cell's styles
+    SheetDto setCellsStyle (Map<String,String> cellParams,String sheetName);
 
-    // Sets the visual style for a specific cell
-    SheetDto setCellsStyle(List<String> cellids, String style,String sheetName);
 
     // Filters cells in a range based on column values
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName);

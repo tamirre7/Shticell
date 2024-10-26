@@ -13,13 +13,12 @@ import shticell.server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "CellStyleServlet", urlPatterns = {"/sheetview/updatecellsstyle"})
 public class CellStyleUpdateServlet extends HttpServlet {
 
-    // Handles POST requests for updating the style of a cell
+    // Handles POST requests for adding an empty cell to a specified sheet
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Set the response content type to JSON
@@ -31,23 +30,23 @@ public class CellStyleUpdateServlet extends HttpServlet {
                 throw new ServletException("No engine found");
             }
 
-            // Read the input stream containing the cell parameters JSON
-            InputStream cellParamsInputStream = req.getInputStream();
-            String cellParamJson = new String(cellParamsInputStream.readAllBytes());
+            // Read the input stream containing the cell ID JSON
+            InputStream cellIdInputStream = req.getInputStream();
+            String cellIdJson = new String(cellIdInputStream.readAllBytes());
 
             // Initialize Gson for JSON processing
             Gson gson = new Gson();
             // Deserialize the JSON data into a Map for easy access
-            Map<String, Object> cellsParams = gson.fromJson(cellParamJson, new TypeToken<Map<String, Object>>(){}.getType());
+            Map<String, Object> cellParams = gson.fromJson(cellIdJson, new TypeToken<Map<String, Object>>() {
+            }.getType());
 
             // Extract relevant data from the Map
-            List<String> cellIds = (List<String>) cellsParams.get("cellIds");
-            // Extract relevant data from the Map
-            String style = (String) cellsParams.get("style");
-            String sheetName = (String) cellsParams.get("sheetName");
+            Map<String, String> cellDetail = (Map<String, String>) cellParams.get("cellParams");
+            String sheetName = (String) cellParams.get("sheetName");
 
-            // Call the engine to set the cell style and retrieve the updated SheetDto
-            SheetDto updatedSheet = engine.setCellsStyle(cellIds, style, sheetName);
+            // updating the cells styles by using the engine
+            SheetDto updatedSheet = engine.setCellsStyle(cellDetail, sheetName);
+
             // Serialize the updated SheetDto to JSON and write it to the response
             String jsonResp = gson.toJson(updatedSheet);
             resp.getWriter().write(jsonResp);
@@ -55,7 +54,7 @@ public class CellStyleUpdateServlet extends HttpServlet {
         } catch (Exception e) {
             // Handle general exceptions by sending a 500 response
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("Error updating cell's style: " + e.getMessage());
+            resp.getWriter().write("Error updating cell: " + e.getMessage());
         }
     }
 }

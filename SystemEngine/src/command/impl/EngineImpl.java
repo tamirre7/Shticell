@@ -425,31 +425,29 @@ public class EngineImpl implements Engine {
         }
     }
 
-    //Adds an empty cell to the specified sheet.
-    //Return A new SheetDto representing the updated sheet.
+    // Receiving cell map with the cell id and its styles and setting the cell styles
     @Override
-    public SheetDto addEmptyCells (List<String> cellIds,String sheetName) {
+    public SheetDto setCellsStyle (Map<String, String> cellParams, String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
-        for(String cellId : cellIds) {
-            CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
-            relevantSheet.addEmptyCell(cellIdentifier);
-        }
-        return convertSheetToSheetDto(relevantSheet);
-    }
 
-    // Sets the style of a specified cell in the given sheet.
-    @Override
-    public SheetDto setCellsStyle(List<String> cellIds, String style,String sheetName) {
-        SheetManager relevantManager = sheetMap.get(sheetName);
-        SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
-        for(String cellId : cellIds) {
+        // Iterate through the map entries
+        for (Map.Entry<String, String> entry : cellParams.entrySet()) {
+            String cellId = entry.getKey();
+            String style = entry.getValue();
+
             CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
+
+            if (relevantSheet.getCell(cellIdentifier) == null) { // checking if it's an empty cell
+                relevantSheet.addEmptyCell(cellIdentifier);
+            }
+
             relevantSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
         }
 
         return convertSheetToSheetDto(relevantSheet);
     }
+
 
     @Override
     // Retrieves the latest version number of the specified sheet.

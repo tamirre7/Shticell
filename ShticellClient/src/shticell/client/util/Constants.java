@@ -44,7 +44,6 @@ public class Constants {
     public final static String ADD_RANGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addrange";
     public final static String DELETE_RANGE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/deleterange";
     public final static String UPDATE_CELLS_STYLE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/updatecellsstyle";
-    public final static String ADD_EMPTY_CELLS = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/addemptycells";
     public final static String DYNAMIC_ANALYSIS_UPDATE = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/dynamicanalysisupdate";
     public final static String SHEET_BY_VERSION = FULL_SERVER_PATH + SHEET_VIEW_SERVER_PATH + "/sheetbyversion";
 
