@@ -6,7 +6,6 @@ import dto.CellDto;
 import dto.DimensionDto;
 import dto.SheetDto;
 import dto.permission.Permission;
-import dto.permission.PermissionInfoDto;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,9 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import static shticell.client.util.http.HttpClientUtil.extractSheetFromResponseBody;
 import static shticell.client.util.http.HttpClientUtil.showAlert;
+
 // Implementation of the SpreadsheetController interface that manages spreadsheet UI interactions
 // and handles cell operations, styling, and display logic
 public class SpreadsheetControllerImpl implements SpreadsheetController {
