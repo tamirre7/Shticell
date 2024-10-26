@@ -38,7 +38,7 @@ public interface Engine {
     SheetDto addEmptyCells (List<String> cellId,String sheetName);
 
     // Sets the visual style for a specific cell
-    SheetDto setCellStyle(String cellid, String style,String sheetName);
+    SheetDto setCellsStyle(List<String> cellids, String style,String sheetName);
 
     // Filters cells in a range based on column values
     SheetDto filterRangeByColumnsAndValues(Range range, Map<String, List<String>> selectedValuesForColumns,String sheetName);

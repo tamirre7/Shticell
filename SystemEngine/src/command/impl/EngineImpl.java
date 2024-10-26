@@ -440,11 +440,14 @@ public class EngineImpl implements Engine {
 
     // Sets the style of a specified cell in the given sheet.
     @Override
-    public SheetDto setCellStyle(String cellid, String style,String sheetName) {
+    public SheetDto setCellsStyle(List<String> cellIds, String style,String sheetName) {
         SheetManager relevantManager = sheetMap.get(sheetName);
         SpreadSheet relevantSheet = relevantManager.getSheetByVersion(relevantManager.getLatestVersion());
-        CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellid);
-        relevantSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
+        for(String cellId : cellIds) {
+            CellIdentifierImpl cellIdentifier = new CellIdentifierImpl(cellId);
+            relevantSheet.getCell(cellIdentifier).setCellStyle(new CellStyleImpl(style));
+        }
+
         return convertSheetToSheetDto(relevantSheet);
     }
 

@@ -309,14 +309,18 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
     // Resets the style of a cell to default
     private void resetCellStyle(Label cellLabel, String cellId) {
+        List<String> cells = new ArrayList<>();
+        cells.add(cellId);
         if (currentSheet.getCells().get(cellId) != null) {
-            sendCellStyleUpdateRequest (cellId, "");
+            sendCellStyleUpdateRequest (cells, "");
             cellLabel.setStyle("");
         }
     }
 
     // Shows a dialog for setting cell styles including background and text colors
     public void showCellStyleDialog(Label cellLabel, String cellId) {
+        List<String> cells = new ArrayList<>();
+        cells.add(cellId);
         Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Set Cell Style");
         dialog.setHeaderText("Choose style:");
@@ -364,7 +368,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
 
         okButton.addEventFilter(ActionEvent.ACTION, event -> {
             String newStyle = generateNewStyle(backgroundColorPicker.getValue(), textColorPicker.getValue(), prevStyle);
-            sendCellStyleUpdateRequest(cellId, newStyle);
+            sendCellStyleUpdateRequest(cells, newStyle);
             uiSheetModel.applyStyle(cellLabel,newStyle);
             isPrev.set(false);
             dialog.close();
@@ -401,9 +405,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
     }
 
     // Sends an asynchronous request to update the style of a specified cell
-    private void sendCellStyleUpdateRequest(String cellId,String cellStyle) {
-        Map<String,String> cellStyleParams = new HashMap<>();
-        cellStyleParams.put("cellId", cellId);
+    private void sendCellStyleUpdateRequest(List<String> cellIds,String cellStyle) {
+        Map<String,Object> cellStyleParams = new HashMap<>();
+        cellStyleParams.put("cellIds", cellIds);
         cellStyleParams.put("style", cellStyle);
         cellStyleParams.put("sheetName", currentSheet.getSheetName());
 
@@ -414,7 +418,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         RequestBody requestBody = RequestBody.create(cellStyleParamsJson, MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(Constants.UPDATE_CELL_STYLE)
+                .url(Constants.UPDATE_CELLS_STYLE)
                 .post(requestBody)
                 .build();
 
@@ -464,7 +468,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     CellDto cellDto = currentSheet.getCells().get(cellId);
                     if (cellDto != null) {
                         String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
-                        sendCellStyleUpdateRequest (cellId, newStyle);
+                        List<String>cellToSet = new ArrayList<>();
+                        cellToSet.add(cellId);
+                        sendCellStyleUpdateRequest (cellToSet, newStyle);
                         Label cell = uiSheetModel.getCellLabel(cellId);
                         uiSheetModel.applyStyle(cell,newStyle);
                     }
@@ -480,7 +486,9 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     CellDto cellDto = currentSheet.getCells().get(cellId);
                     if (cellDto != null) {
                         String newStyle = currentSheet.getCells().get(cellId).getStyle() + alignment;
-                        sendCellStyleUpdateRequest (cellId, newStyle);
+                        List<String>cellToSet = new ArrayList<>();
+                        cellToSet.add(cellId);
+                        sendCellStyleUpdateRequest (cellToSet, newStyle);
                         Label cell = uiSheetModel.getCellLabel(cellId);
                         uiSheetModel.applyStyle(cell,newStyle);
                     }
@@ -497,7 +505,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
         });
     }
 
-    // Sends an asynchronous request to update the aligments of new empty cells
+    // Sends an asynchronous request to update the alignments of new empty cells
     private void sendUpdateAlignmentRequestForEmptyCell(List <String>cellIds,String cellStyle) {
         Map<String, Object> requestParams = new HashMap<>();
         requestParams.put("cellIds", cellIds);
@@ -520,9 +528,7 @@ public class SpreadsheetControllerImpl implements SpreadsheetController {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
                         currentSheet = extractSheetFromResponseBody(responseBody);
-                        for(String cellId : cellIds) {
-                            sendCellStyleUpdateRequest (cellId, cellStyle);
-                        }
+                        sendCellStyleUpdateRequest(cellIds,cellStyle);
 
                     });
                 } else {
