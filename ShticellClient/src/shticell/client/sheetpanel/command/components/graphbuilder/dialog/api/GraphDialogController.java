@@ -6,5 +6,5 @@ public interface GraphDialogController {
     String getYTopCell();
     String getYBottomCell();
     boolean isConfirmed();
-    void CloseDialog();
+    void closeDialog();
 }

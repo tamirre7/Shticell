@@ -86,7 +86,7 @@ public class SpreadSheetImpl implements SpreadSheet, Serializable {
 
     // Returns the sheet dimensions
     @Override
-    public Dimension getSheetDimentions() {
+    public Dimension getSheetDimensions() {
         return sheetDimension;
     }
 

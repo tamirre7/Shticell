@@ -9,7 +9,7 @@ public interface Range {
     CellIdentifier getTopLeft();
     CellIdentifier getBottomRight();
     void setActive(boolean active);
-    void InitRangeList();
+    void initRangeList();
     boolean isActive();
     String getName();
     List<CellIdentifier> getCellsInRange();

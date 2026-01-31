@@ -61,8 +61,8 @@ public class SheetManagerImpl implements SheetManager, Serializable {
 
     // Approves a specified permission request.
     @Override
-    public void ApprovePermission(PermissionRequest request) {
-        permissionManager.ApprovePermission(request);
+    public void approvePermission(PermissionRequest request) {
+        permissionManager.approvePermission(request);
     }
 
     // Adds a new pending permission request.

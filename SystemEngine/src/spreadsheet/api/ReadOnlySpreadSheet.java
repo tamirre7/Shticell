@@ -9,7 +9,7 @@ import java.util.Map;
 public interface ReadOnlySpreadSheet {
     EffectiveValue getCellEffectiveValue(CellIdentifier identifier);
     boolean isValidCellID(String cellID);
-    Dimension getSheetDimentions();
+    Dimension getSheetDimensions();
     Map<CellIdentifier, Cell> getActiveCells();
     Cell getCell(CellIdentifier identifier);
     Map<String, Range> getRanges();

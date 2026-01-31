@@ -17,20 +17,20 @@ public class RangeImpl implements Range, Serializable {
     private Dimension sheetDimensions;
 
 
-    public RangeImpl(String name, CellIdentifier topLeft, CellIdentifier bottomRight, Dimension sheetDimentions) {
+    public RangeImpl(String name, CellIdentifier topLeft, CellIdentifier bottomRight, Dimension sheetDimensions) {
         this.name = name;
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
         this.isActive = false;
-        this.sheetDimensions = sheetDimentions;
+        this.sheetDimensions = sheetDimensions;
         this.cellsInRange = new ArrayList<>();
-        this.InitRangeList();
+        this.initRangeList();
     }
 
     // Initializes the list of cells within the range
     // Performs validation and populates cellsInRange with all cells in the range
     @Override
-    public void InitRangeList() {
+    public void initRangeList() {
         // Convert column letters to numeric indices (A=1, B=2, etc.)
         int startColumnIndex = (topLeft.getCol()) - 'A' + 1;
         int endColumnIndex = (bottomRight.getCol()) - 'A' + 1;

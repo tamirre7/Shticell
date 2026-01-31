@@ -50,7 +50,7 @@ public class DimensionImpl implements Dimension, Serializable {
 
     @Override
     public String toString() {
-        return "Dimentions{" +
+        return "Dimensions{" +
                 "numRows=" + numRows +
                 ", numCols=" + numCols +
                 ", widthCol=" + widthCol +

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PermissionManager {
-    void ApprovePermission(PermissionRequest requestToApprove);
+    void approvePermission(PermissionRequest requestToApprove);
     void addPendingPermissionRequest(PermissionRequest request);
     void denyPendingRequest(PermissionRequest requestToDeny);
     Permission getPermission(String username);

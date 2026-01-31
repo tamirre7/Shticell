@@ -43,7 +43,7 @@ public class GraphDialogControllerImpl implements GraphDialogController {
     }
 
     @Override
-    public void CloseDialog() {
+    public void closeDialog() {
         isConfirmed = true;
         Stage stage = (Stage) xTopCellField.getScene().getWindow();
         stage.close();

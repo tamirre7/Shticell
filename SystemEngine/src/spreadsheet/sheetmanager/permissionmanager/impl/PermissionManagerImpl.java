@@ -27,7 +27,7 @@ public class PermissionManagerImpl implements PermissionManager, Serializable {
 
     // Approves a pending permission request, transferring it to the approved list.
     @Override
-    public void ApprovePermission(PermissionRequest requestToApprove) {
+    public void approvePermission(PermissionRequest requestToApprove) {
         String userName = requestToApprove.getRequester();
         List<PermissionRequest> requests = pendingPermissionRequests.get(userName);
         if (requests != null && requests.contains(requestToApprove)) {

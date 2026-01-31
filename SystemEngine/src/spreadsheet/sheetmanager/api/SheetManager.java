@@ -12,7 +12,7 @@ public interface SheetManager {
     void updateSheetVersion(SpreadSheet sheet);
     int getLatestVersion();
     String getUploadedBy();
-    void ApprovePermission(PermissionRequest request);
+    void approvePermission(PermissionRequest request);
     void addPendingPermissionRequest(PermissionRequest request);
     Permission getPermission(String username);
     Map<String, List<PermissionRequest>> getApprovedPermissions();

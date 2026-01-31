@@ -15,7 +15,7 @@ import java.util.Stack;
 public enum FunctionParser {
     IDENTITY {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly one argument
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for IDENTITY function. Expected 1, but got " + arguments.size());
@@ -50,15 +50,15 @@ public enum FunctionParser {
     },
     PLUS {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function (e.g. number of arguments)
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for PLUS function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Plus(left, right);
@@ -66,15 +66,15 @@ public enum FunctionParser {
     },
     MINUS {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for MINUS function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Minus(left, right);
@@ -83,15 +83,15 @@ public enum FunctionParser {
 
     TIMES {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for TIMES function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
 
             // all is good. create the relevant function instance
@@ -102,15 +102,15 @@ public enum FunctionParser {
 
     DIVIDE {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for DIVIDE function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
 
             // all is good. create the relevant function instance
@@ -120,15 +120,15 @@ public enum FunctionParser {
 
     MOD {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for MOD function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Mod(left, right);
@@ -137,15 +137,15 @@ public enum FunctionParser {
 
     POW {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for POW function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Pow(left, right);
@@ -154,14 +154,14 @@ public enum FunctionParser {
 
     ABS {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for ABS function. Expected 1, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression exp = parseExpression(arguments.getFirst(), ReadOnlySheet);
+            Expression exp = parseExpression(arguments.getFirst(), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Abs(exp);
@@ -170,15 +170,15 @@ public enum FunctionParser {
 
     CONCAT {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for CONCAT function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Concat(left, right);
@@ -187,16 +187,16 @@ public enum FunctionParser {
 
     SUB {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 3) {
                 throw new IllegalArgumentException("Invalid number of arguments for SUB function. Expected 3, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression middle = parseExpression(arguments.get(1), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(2), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression middle = parseExpression(arguments.get(1), readOnlySheet);
+            Expression right = parseExpression(arguments.get(2), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Sub(left, middle, right);
@@ -205,7 +205,7 @@ public enum FunctionParser {
 
     REF {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for REF function. Expected 1, but got " + arguments.size());
@@ -223,15 +223,15 @@ public enum FunctionParser {
 
     EQUAL {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for EQUAL function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             return new Equal(left, right);
         }
@@ -239,15 +239,15 @@ public enum FunctionParser {
 
     AND {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for AND function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             return new And(left, right);
         }
@@ -255,15 +255,15 @@ public enum FunctionParser {
 
     BIGGER{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for BIGGER function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             return new Bigger(left, right);
         }
@@ -271,15 +271,15 @@ public enum FunctionParser {
 
     LESS{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for LESS function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             return new Less(left, right);
         }
@@ -287,14 +287,14 @@ public enum FunctionParser {
 
     NOT{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for NOT function. Expected 1, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression exp = parseExpression(arguments.get(0), ReadOnlySheet);
+            Expression exp = parseExpression(arguments.get(0), readOnlySheet);
 
             return new Not(exp);
         }
@@ -302,15 +302,15 @@ public enum FunctionParser {
 
     OR{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for OR function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression left = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression right = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression left = parseExpression(arguments.get(0), readOnlySheet);
+            Expression right = parseExpression(arguments.get(1), readOnlySheet);
 
             return new Or(left, right);
         }
@@ -318,15 +318,15 @@ public enum FunctionParser {
 
     PERCENT{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 2) {
                 throw new IllegalArgumentException("Invalid number of arguments for PERCENT function. Expected 2, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression part = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression whole = parseExpression(arguments.get(1), ReadOnlySheet);
+            Expression part = parseExpression(arguments.get(0), readOnlySheet);
+            Expression whole = parseExpression(arguments.get(1), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new Percent(part, whole);
@@ -334,16 +334,16 @@ public enum FunctionParser {
     },
     IF {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             // validations of the function. it should have exactly two arguments
             if (arguments.size() != 3) {
                 throw new IllegalArgumentException("Invalid number of arguments for IF function. Expected 3, but got " + arguments.size());
             }
 
             // structure is good. parse arguments
-            Expression condition = parseExpression(arguments.get(0), ReadOnlySheet);
-            Expression thanValue = parseExpression(arguments.get(1), ReadOnlySheet);
-            Expression elseValue = parseExpression(arguments.get(2), ReadOnlySheet);
+            Expression condition = parseExpression(arguments.get(0), readOnlySheet);
+            Expression thanValue = parseExpression(arguments.get(1), readOnlySheet);
+            Expression elseValue = parseExpression(arguments.get(2), readOnlySheet);
 
             // all is good. create the relevant function instance
             return new If(condition, thanValue,elseValue);
@@ -351,26 +351,26 @@ public enum FunctionParser {
     },
     SUM {
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for SUM function. Expected 1, but got " + arguments.size());
             }
 
             String rangeName = arguments.getFirst();
-            Range range = ReadOnlySheet.getRange(rangeName);
+            Range range = readOnlySheet.getRange(rangeName);
 
             return new Sum(range);
         }
     },
     AVERAGE{
         @Override
-        public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet) {
+        public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet) {
             if (arguments.size() != 1) {
                 throw new IllegalArgumentException("Invalid number of arguments for AVERAGE function. Expected 1, but got " + arguments.size());
             }
 
             String rangeName = arguments.getFirst();
-            Range range = ReadOnlySheet.getRange(rangeName);
+            Range range = readOnlySheet.getRange(rangeName);
 
             return new Average(range);
         }
@@ -379,18 +379,18 @@ public enum FunctionParser {
     // Abstract method to parse function arguments into an Expression
     // Parameters:
     // - arguments: List of function arguments as strings
-    // - ReadOnlySheet: Reference to the spreadsheet for context
+    // - readOnlySheet: Reference to the spreadsheet for context
     // Returns: Parsed Expression object
-    abstract public Expression parse(List<String> arguments, ReadOnlySpreadSheet ReadOnlySheet);
+    abstract public Expression parse(List<String> arguments, ReadOnlySpreadSheet readOnlySheet);
 
     // Static method to parse a string input into an Expression object
     // Handles both function expressions (enclosed in {}) and identity expressions
     // Parameters:
     // - input: String to parse (e.g., "{SUM,A1,B1}" or "42")
-    // - ReadOnlySheet: Reference to the spreadsheet for context
+    // - readOnlySheet: Reference to the spreadsheet for context
     // Returns: Parsed Expression object
     // Throws: IllegalArgumentException if function name is unknown
-    public static Expression parseExpression(String input, ReadOnlySpreadSheet ReadOnlySheet) {
+    public static Expression parseExpression(String input, ReadOnlySpreadSheet readOnlySheet) {
         // Check if input is a function (enclosed in curly braces)
         if (input.startsWith("{") && input.endsWith("}")) {
             // Extract function content without braces
@@ -406,7 +406,7 @@ public enum FunctionParser {
             try {
                 // Attempt to get the corresponding function parser
                 FunctionParser functionParser = FunctionParser.valueOf(functionName);
-                return functionParser.parse(topLevelParts, ReadOnlySheet);
+                return functionParser.parse(topLevelParts, readOnlySheet);
             } catch (IllegalArgumentException e) {
                 // Check if exception was due to unknown function name
                 if (Arrays.stream(FunctionParser.values()).noneMatch(f -> f.name().equals(functionName))) {
@@ -417,7 +417,7 @@ public enum FunctionParser {
             }
         }
         // If not a function, treat as identity expression (direct value)
-        return FunctionParser.IDENTITY.parse(List.of(input), ReadOnlySheet);
+        return FunctionParser.IDENTITY.parse(List.of(input), readOnlySheet);
     }
 
     // Helper method to parse function content into main parts while respecting nested functions

@@ -142,7 +142,7 @@ public class EngineImpl implements Engine {
         String name = spreadSheet.getSheetName();
         int version = sheetMap.get(spreadSheet.getSheetName()).getLatestVersion();
         String uploadedBy = sheetMap.get(spreadSheet.getSheetName()).getUploadedBy();
-        Dimension dimensions = spreadSheet.getSheetDimentions();
+        Dimension dimensions = spreadSheet.getSheetDimensions();
         DimensionDto dimensionDto = new DimensionDto(dimensions.getNumRows(), dimensions.getNumCols(), dimensions.getWidthCol(), dimensions.getHeightRow());
 
         // Convert cells and ranges to DTOs
@@ -291,7 +291,7 @@ public class EngineImpl implements Engine {
                 CellDto cell = sheet.getCells().get(cellId);
                 if (cell == null) {
                     cell = new CellDto(cellId,"","",0,new ArrayList<>(),new ArrayList<>(),
-                            "","John Dow");
+                            "","");
                 }
 
                 if (rowMatches) {
@@ -595,7 +595,7 @@ public class EngineImpl implements Engine {
         PermissionRequestDto requestDto = responseDto.getPermissionRequestDto();
         PermissionRequest request = new PermissionRequest(requestDto.getId(), requestDto.getPermissionType(), requestDto.getRequester());
         SheetManager relevantManager = sheetMap.get(requestDto.getSheetName());
-        relevantManager.ApprovePermission(request);
+        relevantManager.approvePermission(request);
     }
 
     @Override

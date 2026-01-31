@@ -19,12 +19,12 @@ public class Ref implements Expression {
     @Override
     public EffectiveValue evaluate(ReadOnlySpreadSheet spreadSheet) {
         if (cellIdentifier.getRow() < 1
-                || cellIdentifier.getRow() > spreadSheet.getSheetDimentions().getNumRows()
+                || cellIdentifier.getRow() > spreadSheet.getSheetDimensions().getNumRows()
                 || cellIdentifier.getCol() < 'A'
-                || cellIdentifier.getCol() > spreadSheet.getSheetDimentions().getNumCols() + 'A')
+                || cellIdentifier.getCol() > spreadSheet.getSheetDimensions().getNumCols() + 'A')
             throw new IllegalArgumentException("\nInvalid cell identifier for REF function-\n" +
-                    "ROW: Expected number between 1-" + spreadSheet.getSheetDimentions().getNumRows() +
-                    "\n" + "COL: Expected character between A-" + (char) ('A' + spreadSheet.getSheetDimentions().getNumCols() - 1));
+                    "ROW: Expected number between 1-" + spreadSheet.getSheetDimensions().getNumRows() +
+                    "\n" + "COL: Expected character between A-" + (char) ('A' + spreadSheet.getSheetDimensions().getNumCols() - 1));
 
         EffectiveValue cellEffectiveVal = spreadSheet.getCellEffectiveValue(cellIdentifier);
         if (cellEffectiveVal == null)
